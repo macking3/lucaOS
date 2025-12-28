@@ -1,23 +1,36 @@
-lightrag-hku
-fastapi
-uvicorn
-networkx
-numpy
+# Railway-optimized requirements.txt
+# Lightweight dependencies for cloud deployment
+# Heavy ML dependencies (torch, transformers) removed for Railway
 
-flask-cors
-google-generativeai
-python-dotenv
-pyautogui
-websockets
-websockets
-requests
-torch
-transformers
-accelerate
-bitsandbytes
-pillow
-huggingface_hub
-protobuf
-sentencepiece
-piper-tts
-soundfile
+# Core FastAPI
+fastapi==0.128.0
+uvicorn==0.40.0
+python-dotenv==1.2.1
+pydantic==2.12.5
+
+# Google AI
+google-generativeai==0.8.6
+google-genai==1.56.0
+
+# Networking
+websockets==15.0.1
+requests==2.32.5
+aiohttp==3.13.2
+
+# Utilities
+networkx==3.6.1
+numpy==1.26.4
+pillow==12.0.0
+
+# Optional: LightRAG (if needed, but it's heavy)
+# lightrag-hku==1.4.9.10
+
+# Flask for compatibility (if needed)
+flask-cors==6.0.2
+
+# Note: Removed heavy dependencies:
+# - torch (2.9GB+)
+# - transformers (500MB+)
+# - bitsandbytes
+# - accelerate
+# These are only needed for local ML inference, not for cloud API proxy
