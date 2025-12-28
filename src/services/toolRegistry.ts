@@ -153,6 +153,58 @@ export const ToolRegistry = {
       }
     }
 
+    // 2.6 Mobile Tools (Android Automation)
+    const mobileTools = [
+      "controlAndroidAgent", // Main Android automation tool
+      "android_execute_goal",
+      "android_screenshot",
+      "android_get_ui",
+      "android_check_connection",
+    ];
+    if (mobileTools.includes(name)) {
+      try {
+        // Handle the main controlAndroidAgent tool
+        if (name === "controlAndroidAgent") {
+          const { androidAgent } = await import(
+            "../services/androidAgentService"
+          );
+          console.log(
+            `[TOOL_REGISTRY] Executing Android Agent with goal: ${args.goal}`
+          );
+
+          const result = await androidAgent.executeGoal(
+            args.goal,
+            args.strategy || "ACCURACY"
+          );
+
+          return result || "Android automation completed successfully.";
+        }
+
+        // Handle other mobile tools
+        const { mobileToolHandlers } = await import(
+          "../tools/handlers/MobileTools"
+        );
+        const handler =
+          mobileToolHandlers[name as keyof typeof mobileToolHandlers];
+
+        if (!handler) {
+          return `Mobile tool ${name} not found.`;
+        }
+
+        console.log(`[TOOL_REGISTRY] Executing mobile tool: ${name}`);
+        const result = await handler(args);
+
+        if (!result.success) {
+          return result.error || result.message || "Mobile automation failed.";
+        }
+
+        return result.message || JSON.stringify(result.data);
+      } catch (e: any) {
+        console.error("MobileTools execution failed", e);
+        return `Mobile automation unavailable: ${e.message}`;
+      }
+    }
+
     // 3. SPECIAL TOOLS (Ported from Legacy Registry)
     if (name === "readScreen") {
       context.soundService?.play("PROCESSING");
