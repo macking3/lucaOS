@@ -1,0 +1,19 @@
+# Full Local Development Requirements
+# Use this for local development with all features enabled
+# Install with: pip install -r requirements.local.txt
+
+# Include all Railway requirements first
+-r requirements.txt
+
+# Heavy ML Dependencies (for local development only)
+torch==2.5.1
+transformers==4.46.3
+bitsandbytes==0.45.0
+accelerate==1.2.1
+
+# Additional local-only dependencies
+huggingface_hub==0.26.5
+protobuf==5.29.2
+
+# Note: These dependencies are NOT installed on Railway
+# Railway uses the lightweight requirements.txt for cloud deployment
