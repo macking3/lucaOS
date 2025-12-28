@@ -28,9 +28,11 @@ export async function android_execute_goal(args: {
   try {
     console.log(`[MOBILE TOOLS] Executing goal: ${args.goal}`);
 
+    // Default to WIRELESS (Neural Link) for true wireless, remote control
+    // Only use ACCURACY (ADB) if explicitly requested
     const result = await androidAgent.executeGoal(
       args.goal,
-      args.strategy || "ACCURACY"
+      args.strategy || "WIRELESS" // Changed from "ACCURACY" to "WIRELESS"
     );
 
     return {
@@ -44,7 +46,7 @@ export async function android_execute_goal(args: {
       success: false,
       error: error.message || "Failed to execute goal on Android device",
       message:
-        "Make sure your Android device is connected via USB (ADB) or Neural Link.",
+        "Make sure your mobile device is connected via Neural Link (wireless) or USB/ADB (fallback).",
     };
   }
 }

@@ -4156,7 +4156,7 @@ export const closeAllPositionsTool: FunctionDeclaration = {
 export const controlAndroidAgentTool: FunctionDeclaration = {
   name: "controlAndroidAgent",
   description:
-    "Autonomous Android Agent using UI Semantic Analysis. Use this for HIGH-LEVEL goals on a mobile device (e.g., 'Send a WhatsApp to Mom', 'Check settings', 'Open Spotify'). This tool runs a smart loop that sees the screen structure and interacts automatically. PREFER THIS over blind 'sendAdbCommand' or raw inputs.",
+    "Control Android devices wirelessly through Neural Link. Use this for HIGH-LEVEL goals on a mobile device (e.g., 'Send a WhatsApp to Mom', 'Check settings', 'Open Spotify'). This tool runs a smart loop that sees the screen and interacts automatically. Works wirelessly via Neural Link (recommended) or USB/ADB (fallback). PREFER THIS over raw ADB commands.",
   parameters: {
     type: Type.OBJECT,
     properties: {
@@ -4167,9 +4167,9 @@ export const controlAndroidAgentTool: FunctionDeclaration = {
       },
       strategy: {
         type: Type.STRING,
-        enum: ["ACCURACY", "WIRELESS"],
+        enum: ["WIRELESS", "ACCURACY"],
         description:
-          "Strategy to use: 'ACCURACY' (default) uses XML/ADB for precision. 'WIRELESS' uses Screenshots/Vision (no ADB required).",
+          "Strategy to use: 'WIRELESS' (default, recommended) uses Neural Link for wireless remote control. 'ACCURACY' uses XML/ADB for precision but requires USB connection.",
       },
     },
     required: ["goal"],

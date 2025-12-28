@@ -172,9 +172,11 @@ export const ToolRegistry = {
             `[TOOL_REGISTRY] Executing Android Agent with goal: ${args.goal}`
           );
 
+          // Default to WIRELESS (Neural Link) for wireless, remote control
+          // This is the innovative approach - no cables, no ADB setup required
           const result = await androidAgent.executeGoal(
             args.goal,
-            args.strategy || "ACCURACY"
+            args.strategy || "WIRELESS" // Changed from "ACCURACY" to "WIRELESS"
           );
 
           return result || "Android automation completed successfully.";
