@@ -1,0 +1,446 @@
+{
+  "doc-b5a6589bf258272f246acf9af3447c7d": {
+    "entity_names": [
+      "LUCA",
+      "Audio",
+      "System Sensation",
+      "Vision",
+      "2025-12-14T11:39:33.506Z",
+      "Microphones",
+      "Tools",
+      "Cortex",
+      "2025-12-14T11:39:33.744Z",
+      "Cameras"
+    ],
+    "count": 10,
+    "create_time": 1766873865,
+    "update_time": 1766873865,
+    "_id": "doc-b5a6589bf258272f246acf9af3447c7d"
+  },
+  "doc-ca427f8955bee4bf755d97dc3b451f14": {
+    "entity_names": [
+      "LUCA",
+      "API Key",
+      "User",
+      "Generativelanguage.googleapis.com",
+      "Critical Failure",
+      "System",
+      "Googleapis.com",
+      "Neural Core",
+      "Logs"
+    ],
+    "count": 9,
+    "create_time": 1766873878,
+    "update_time": 1766873878,
+    "_id": "doc-ca427f8955bee4bf755d97dc3b451f14"
+  },
+  "doc-177bb51c57dfaf2b8af2eb8ef417b011": {
+    "entity_names": [
+      "LUCA",
+      "Timestamp",
+      "Audio",
+      "System Sensation",
+      "Vision",
+      "Microphones",
+      "Tools",
+      "Cortex",
+      "Cameras"
+    ],
+    "count": 9,
+    "create_time": 1766873932,
+    "update_time": 1766873932,
+    "_id": "doc-177bb51c57dfaf2b8af2eb8ef417b011"
+  },
+  "doc-ba1065dcb2df99aacf9436da2f286211": {
+    "entity_names": [
+      "Luca",
+      "User",
+      "2025-12-14T11:39:43.804Z",
+      "2025-12-14T11:39:43.812Z"
+    ],
+    "count": 4,
+    "create_time": 1766873957,
+    "update_time": 1766873957,
+    "_id": "doc-ba1065dcb2df99aacf9436da2f286211"
+  },
+  "doc-7f060311bad263819f02451f3546c50f": {
+    "entity_names": [
+      "LUCA",
+      "2025-12-14T11:41:45.671Z",
+      "2025-12-14T11:41:45.625Z",
+      "Audio",
+      "System Sensation",
+      "Vision",
+      "Microphones",
+      "Tools",
+      "Cortex",
+      "Cameras"
+    ],
+    "count": 10,
+    "create_time": 1766874034,
+    "update_time": 1766874034,
+    "_id": "doc-7f060311bad263819f02451f3546c50f"
+  },
+  "doc-3f4b35753e186edf9cea9a337dfa4a6f": {
+    "entity_names": [
+      "LUCA",
+      "System Logs",
+      "API Key",
+      "User",
+      "INVALID_ARGUMENT",
+      "Critical Failure",
+      "API_KEY_INVALID",
+      "Generativelanguage.googleapis.com",
+      "Google",
+      "Error 400",
+      "Googleapis.com",
+      "Neural Core"
+    ],
+    "count": 12,
+    "create_time": 1766874047,
+    "update_time": 1766874047,
+    "_id": "doc-3f4b35753e186edf9cea9a337dfa4a6f"
+  },
+  "doc-1b581766764414fabd7e76ebe67d6a09": {
+    "entity_names": [
+      "LUCA",
+      "Audio",
+      "System Sensation",
+      "Camera",
+      "Log Timestamp",
+      "Vision",
+      "System Timestamp",
+      "Microphones",
+      "Tools",
+      "Cortex"
+    ],
+    "count": 10,
+    "create_time": 1766874102,
+    "update_time": 1766874102,
+    "_id": "doc-1b581766764414fabd7e76ebe67d6a09"
+  },
+  "doc-4580785cca95aa5d4957b4fe5c8c7677": {
+    "entity_names": [
+      "2025-12-14",
+      "User",
+      "LUCA"
+    ],
+    "count": 3,
+    "create_time": 1766874145,
+    "update_time": 1766874145,
+    "_id": "doc-4580785cca95aa5d4957b4fe5c8c7677"
+  },
+  "doc-0d387f02da9e39ecb71678d2fce435a8": {
+    "entity_names": [
+      "178",
+      "LUCA",
+      "Online",
+      "Audio",
+      "System Sensation",
+      "2025-12-14T11:43:13.343Z",
+      "2025-12-14T11:43:13.323Z",
+      "Vision",
+      "Microphones",
+      "Tools",
+      "Cortex",
+      "Cameras"
+    ],
+    "count": 12,
+    "create_time": 1766874201,
+    "update_time": 1766874201,
+    "_id": "doc-0d387f02da9e39ecb71678d2fce435a8"
+  },
+  "doc-99c09cd231ad39468e9184700c25870e": {
+    "entity_names": [
+      "LUCA",
+      "API Key",
+      "User",
+      "Generativelanguage.googleapis.com",
+      "Critical Failure",
+      "Googleapis.com",
+      "Neural Core",
+      "Logs"
+    ],
+    "count": 8,
+    "create_time": 1766874231,
+    "update_time": 1766874231,
+    "_id": "doc-99c09cd231ad39468e9184700c25870e"
+  },
+  "doc-96881b586b3b070644bde1423788e78c": {
+    "entity_names": [
+      "Timestamp",
+      "Audio",
+      "System Sensation",
+      "Vision",
+      "Microphones",
+      "Tools",
+      "Cortex",
+      "Cameras",
+      "Luca"
+    ],
+    "count": 9,
+    "create_time": 1766874273,
+    "update_time": 1766874273,
+    "_id": "doc-96881b586b3b070644bde1423788e78c"
+  },
+  "doc-1f023ea663994a96059bda1b0ee8fc17": {
+    "entity_names": [
+      "LUCA",
+      "2025-12-14T11:44:58.863Z",
+      "Microphones",
+      "Audio",
+      "System Sensation",
+      "Vision",
+      "2025-12-14T11:44:58.822Z",
+      "Tools",
+      "Cortex",
+      "Cameras"
+    ],
+    "count": 10,
+    "create_time": 1766874290,
+    "update_time": 1766874290,
+    "_id": "doc-1f023ea663994a96059bda1b0ee8fc17"
+  },
+  "doc-601f94fee4bd93e645fd68c6bc87e0aa": {
+    "entity_names": [
+      "LUCA",
+      "User",
+      "2025-12-14T11:45:03.514Z",
+      "2025-12-14T11:45:03.520Z",
+      "Hey"
+    ],
+    "count": 5,
+    "create_time": 1766874321,
+    "update_time": 1766874321,
+    "_id": "doc-601f94fee4bd93e645fd68c6bc87e0aa"
+  },
+  "doc-4ac272e9bc30cc3657d122684cc33877": {
+    "entity_names": [
+      "LUCA",
+      "API Key",
+      "User",
+      "Generativelanguage.googleapis.com",
+      "Neural Core",
+      "INVALID_ARGUMENT",
+      "Logs Purged",
+      "Googleapis.com",
+      "Code 400"
+    ],
+    "count": 9,
+    "create_time": 1766874388,
+    "update_time": 1766874388,
+    "_id": "doc-4ac272e9bc30cc3657d122684cc33877"
+  },
+  "doc-8c475ad2bbcdae9e3ac73152d4c9ebf5": {
+    "entity_names": [
+      "LUCA",
+      "Timestamp",
+      "Audio",
+      "System Sensation",
+      "Log Timestamp",
+      "Vision",
+      "Microphones",
+      "Tools",
+      "Cortex",
+      "Cameras"
+    ],
+    "count": 10,
+    "create_time": 1766874447,
+    "update_time": 1766874447,
+    "_id": "doc-8c475ad2bbcdae9e3ac73152d4c9ebf5"
+  },
+  "doc-a641ac7fa0b53aa6174f2f1264b5d861": {
+    "entity_names": [
+      "2025-12-14T11:49:46.354Z",
+      "System",
+      "Luca",
+      "Logs"
+    ],
+    "count": 4,
+    "create_time": 1766874505,
+    "update_time": 1766874505,
+    "_id": "doc-a641ac7fa0b53aa6174f2f1264b5d861"
+  },
+  "doc-44e9ad3f87ddae8b74313a5bdfccb076": {
+    "entity_names": [
+      "Encrypted User Data",
+      "Keystrokes",
+      "ACPI Tables",
+      "logcat",
+      "LUCA",
+      "Vision",
+      "Machine Code",
+      "Remote Infrastructure",
+      "User",
+      "Kernel",
+      "Calendars",
+      "Solidity",
+      "Cortex Status",
+      "I/O Kit",
+      "Audio",
+      "ADB",
+      "Wireless Debugging",
+      "Tool Registry",
+      "Android",
+      "Smart Contracts",
+      "Personal Data",
+      "Menu Bar",
+      "macOS"
+    ],
+    "count": 23,
+    "create_time": 1766878002,
+    "update_time": 1766878002,
+    "_id": "doc-44e9ad3f87ddae8b74313a5bdfccb076"
+  },
+  "doc-23adc244c618d2f6e1ed71144608866a": {
+    "entity_names": [
+      "Critical Failure",
+      "Neural Core",
+      "Luca",
+      "Googleapis.com",
+      "Browser Environment",
+      "INVALID_ARGUMENT",
+      "Mac",
+      "Limited Hardware Access Protocol",
+      "API Key",
+      "Generativelanguage.googleapis.com"
+    ],
+    "count": 10,
+    "create_time": 1766878079,
+    "update_time": 1766878079,
+    "_id": "doc-23adc244c618d2f6e1ed71144608866a"
+  },
+  "doc-0a514bc0aae5f38210d09bffcab5cb9a": {
+    "entity_names": [
+      "Timestamp",
+      "LUCA",
+      "Audio",
+      "Cameras",
+      "Microphones",
+      "System Sensation",
+      "Tools",
+      "Vision",
+      "Cortex"
+    ],
+    "count": 9,
+    "create_time": 1766936116,
+    "update_time": 1766936116,
+    "_id": "doc-0a514bc0aae5f38210d09bffcab5cb9a"
+  },
+  "doc-35d438b20e0d73d5737ca228559bfd61": {
+    "entity_names": [
+      "2025-12-14T11:52:45.099Z",
+      "LUCA",
+      "Audio",
+      "Cameras",
+      "Microphones",
+      "2025-12-14T11:52:45.321Z",
+      "System Sensation",
+      "Tools",
+      "Vision",
+      "Cortex"
+    ],
+    "count": 10,
+    "create_time": 1766936148,
+    "update_time": 1766936148,
+    "_id": "doc-35d438b20e0d73d5737ca228559bfd61"
+  },
+  "doc-782c9aea3923978432750f0783d28556": {
+    "entity_names": [
+      "LUCA",
+      "Audio",
+      "Cameras",
+      "2025-12-14T11:52:43.929Z",
+      "Microphones",
+      "2025-12-14T11:52:43.949Z",
+      "System Sensation",
+      "Tools",
+      "Vision",
+      "Cortex"
+    ],
+    "count": 10,
+    "create_time": 1766936226,
+    "update_time": 1766936226,
+    "_id": "doc-782c9aea3923978432750f0783d28556"
+  },
+  "doc-df9fa9d3b42a39b97d3c8969c90e12b1": {
+    "entity_names": [
+      "Luca",
+      "User"
+    ],
+    "count": 2,
+    "create_time": 1766936284,
+    "update_time": 1766936284,
+    "_id": "doc-df9fa9d3b42a39b97d3c8969c90e12b1"
+  },
+  "doc-90bde92871f6b0278b920057123e6660": {
+    "entity_names": [
+      "SubsystemDashboard",
+      "SubsystemDashboard.tsx",
+      "MobilePhoenix.tsx",
+      "App.tsx",
+      "AppContext.tsx",
+      "Luca-Autonomous-Agent/1.0.0",
+      "Chrome/122.0.6261.156",
+      "TypeError: Cannot Read Properties Of Undefined (Reading 'toFixed')",
+      "MobilePhoenix",
+      "Mobile_crash_1766875377482",
+      "SystemErrorBoundary",
+      "Electron/29.4.6",
+      "App",
+      "AppContent",
+      "SystemErrorBoundary.tsx",
+      "Localhost:3000",
+      "Mac OS X 10_15_7",
+      "AppProvider"
+    ],
+    "count": 18,
+    "create_time": 1766936295,
+    "update_time": 1766936295,
+    "_id": "doc-90bde92871f6b0278b920057123e6660"
+  },
+  "doc-3adb71b6cbf4a8c7cab80c685a169b63": {
+    "entity_names": [
+      "Neural Core",
+      "API Key",
+      "Luca"
+    ],
+    "count": 3,
+    "create_time": 1766936395,
+    "update_time": 1766936395,
+    "_id": "doc-3adb71b6cbf4a8c7cab80c685a169b63"
+  },
+  "doc-928f8ff88a583d23197d668b0f77772d": {
+    "entity_names": [
+      "Logs",
+      "Assistant Persona",
+      "LUCA",
+      "Google Cloud",
+      "Notes",
+      "Invalid Argument",
+      "Parts Field",
+      "Vertex AI",
+      "Calculator",
+      "Neural Core",
+      "Gemini",
+      "System App",
+      "Google",
+      "TypeError",
+      "User"
+    ],
+    "count": 15,
+    "create_time": 1766936411,
+    "update_time": 1766936411,
+    "_id": "doc-928f8ff88a583d23197d668b0f77772d"
+  },
+  "doc-05e09b8bd47d4004d7f5442d0731b99c": {
+    "entity_names": [
+      "Test Memory",
+      "Hello World"
+    ],
+    "count": 2,
+    "create_time": 1766936483,
+    "update_time": 1766936483,
+    "_id": "doc-05e09b8bd47d4004d7f5442d0731b99c"
+  }
+}

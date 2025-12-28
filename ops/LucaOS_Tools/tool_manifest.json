@@ -1,0 +1,33 @@
+{
+    "tools": [
+        {
+            "name": "osintGoogleDork",
+            "description": "Performs advanced Google Dorking for OSINT on a target domain. Leverages specific search operators to find sensitive information indexed by Google.",
+            "file_path": "LucaOS_Tools/osint_google_dork.py",
+            "class_name": "GoogleDorkingTool",
+            "method_name": "osintGoogleDork",
+            "args": [
+                {
+                    "name": "target_domain",
+                    "type": "str",
+                    "description": "The domain to target (e.g., 'example.com')."
+                },
+                {
+                    "name": "dork_type",
+                    "type": "Literal['files', 'configs', 'vulnerabilities', 'logs', 'emails', 'directories']",
+                    "description": "The type of information to search for."
+                },
+                {
+                    "name": "keywords",
+                    "type": "Optional[str]",
+                    "description": "Optional additional keywords to include in the search."
+                },
+                {
+                    "name": "filetype",
+                    "type": "Optional[str]",
+                    "description": "Required if dork_type is 'files'. Specifies the file extension."
+                }
+            ]
+        }
+    ]
+}

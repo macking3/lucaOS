@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LUCA // NEURAL LINK</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LUCA // NEURAL LINK</title>
+    <!-- Load local Socket.IO for APK, fallback to server for Web -->
+    <script src="socket.io.js"></script>
+    <script>
+        // Fallback if local script fails (web mode)
+        if (typeof io === 'undefined') {
+            document.write('<script src="/mobile/socket.io/socket.io.js"><\/script>');
+        }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #000;
+            color: #00ff9d;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+        }
+
+        .cyber-border {
+            border: 1px solid rgba(0, 255, 157, 0.3);
+            box-shadow: 0 0 10px rgba(0, 255, 157, 0.1);
+        }
+
+        .message-user {
+            background: rgba(0, 255, 157, 0.1);
+            border-left: 2px solid #00ff9d;
+            align-self: flex-end;
+        }
+
+        .message-luca {
+            background: rgba(6, 182, 212, 0.1);
+            border-left: 2px solid #06b6d4;
+            align-self: flex-start;
+            color: #06b6d4;
+        }
+
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: rgba(0, 255, 157, 0.5);
+            animation: scan 3s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes scan {
+            0% {
+                top: 0%;
+            }
+
+            100% {
+                top: 100%;
+            }
+        }
+
+        /* Hide scrollbar */
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+    </style>
+</head>
+
+<body class="h-screen flex flex-col relative">
+    <div class="scan-line"></div>
+
+    <div class="scan-line"></div>
+
+    <!-- LOGIN SCREEN (For APK/Standalone) -->
+    <div id="login-screen" class="fixed inset-0 bg-black z-50 flex flex-col items-center justify-center p-6 hidden">
+        <div class="mb-8 text-center">
+            <div
+                class="w-16 h-16 rounded-full bg-cyan-500/20 border border-cyan-500 flex items-center justify-center mx-auto mb-4 animate-pulse">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                    stroke="#06b6d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"></path>
+                    <path d="M8.5 8.5v.01"></path>
+                    <path d="M16 15.5v.01"></path>
+                    <path d="M12 12v.01"></path>
+                </svg>
+            </div>
+            <h1 class="text-2xl font-bold text-cyan-400 tracking-widest">NEURAL LINK</h1>
+            <p class="text-xs text-gray-500 mt-2">ESTABLISH UPLINK</p>
+        </div>
+
+        <form id="login-form" class="w-full max-w-sm space-y-4">
+            <div>
+                <label class="block text-xs text-gray-500 mb-1">CORE ADDRESS (IP:PORT)</label>
+                <input type="text" id="host-input"
+                    class="w-full bg-gray-900 border border-gray-700 rounded p-3 text-white focus:border-cyan-500 outline-none font-mono"
+                    placeholder="192.168.1.X:3002">
+            </div>
+            <div>
+                <label class="block text-xs text-gray-500 mb-1">ACCESS TOKEN</label>
+                <input type="text" id="token-input"
+                    class="w-full bg-gray-900 border border-gray-700 rounded p-3 text-white focus:border-cyan-500 outline-none font-mono"
+                    placeholder="TOKEN">
+            </div>
+            <button type="submit"
+                class="w-full bg-cyan-900/30 border border-cyan-500 text-cyan-400 py-4 rounded font-bold tracking-widest hover:bg-cyan-500/20 transition-all">
+                CONNECT
+            </button>
+        </form>
+
+        <div class="mt-8 text-xs text-gray-600 text-center">
+            Scan QR code on Desktop to get credentials.
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="p-4 border-b border-gray-800 flex justify-between items-center bg-black/90 backdrop-blur z-10">
+        <div class="flex items-center gap-2">
+            <div id="status-dot" class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+            <span class="font-bold tracking-widest text-sm">NEURAL LINK</span>
+        </div>
+        <div class="flex items-center gap-3">
+            <div class="text-xs text-gray-500" id="device-id">INIT...</div>
+            <button id="disconnect-btn" class="text-red-500 hover:text-red-400" title="Disconnect">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+            </button>
+            <button id="deck-btn" class="text-cyan-400 hover:text-white transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Chat Area -->
+    <div id="chat-container" class="flex-1 overflow-y-auto p-4 space-y-4 flex flex-col">
+        <!-- Messages will be injected here -->
+        <div class="text-center text-gray-600 text-xs mt-4">-- ENCRYPTED UPLINK ESTABLISHED --</div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="p-4 bg-black border-t border-gray-800 flex gap-2 items-center">
+        <button id="mic-btn"
+            class="p-3 rounded-full border border-gray-700 text-gray-500 hover:text-white hover:border-white transition-all active:scale-95 active:bg-red-900/50 active:border-red-500 active:text-red-500 touch-manipulation">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                <line x1="12" y1="19" x2="12" y2="23"></line>
+                <line x1="8" y1="23" x2="16" y2="23"></line>
+            </svg>
+        </button>
+        <form id="chat-form" class="flex-1 flex gap-2">
+            <input type="text" id="message-input"
+                class="flex-1 bg-gray-900 border border-gray-700 rounded p-3 text-white focus:outline-none focus:border-cyan-500 transition-colors"
+                placeholder="Command..." autocomplete="off">
+            <button type="submit"
+                class="bg-cyan-900/30 border border-cyan-500/50 text-cyan-400 px-4 rounded hover:bg-cyan-500/20 transition-colors">
+                SEND
+            </button>
+        </form>
+    </div>
+
+    <script>
+        // --- LOGIC ---
+        const loginScreen = document.getElementById('login-screen');
+        const loginForm = document.getElementById('login-form');
+        const hostInput = document.getElementById('host-input');
+        const tokenInput = document.getElementById('token-input');
+        const disconnectBtn = document.getElementById('disconnect-btn');
+
+        let socket;
+        let host;
+        let token;
+        const deviceId = `mobile_${Math.random().toString(36).substr(2, 5)}`;
+
+        // Initialize
+        function init() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlToken = urlParams.get('token');
+            const urlHost = urlParams.get('host');
+
+            // 1. Check URL Params (Web Mode)
+            if (urlToken && urlHost) {
+                connect(urlHost, urlToken);
+                return;
+            }
+
+            // 2. Check LocalStorage (APK Mode)
+            const savedHost = localStorage.getItem('luca_host');
+            const savedToken = localStorage.getItem('luca_token');
+
+            if (savedHost && savedToken) {
+                connect(savedHost, savedToken);
+            } else {
+                // 3. Show Login
+                showLogin();
+            }
+        }
+
+        function showLogin() {
+            loginScreen.classList.remove('hidden');
+        }
+
+        function connect(h, t) {
+            host = h;
+            token = t;
+
+            // Save for future
+            localStorage.setItem('luca_host', host);
+            localStorage.setItem('luca_token', token);
+
+            loginScreen.classList.add('hidden');
+
+            // Handle Host format (IP vs IP:PORT)
+            // If host doesn't have port, assume 3002 for socket (legacy) or use as is if it's a full URL
+            let socketUrl;
+            if (host.startsWith('http')) {
+                socketUrl = host; // Full URL provided (e.g. Global Relay)
+            } else if (host.includes(':')) {
+                socketUrl = `http://${host}`; // IP:PORT provided
+            } else {
+                socketUrl = `http://${host}:3002`; // Just IP provided
+            }
+
+            // Connect to Socket.io
+            socket = io(socketUrl, {
+                path: '/mobile/socket.io',
+                query: {
+                    token,
+                    clientType: 'mobile',
+                    deviceId
+                }
+            });
+
+            setupSocketHandlers();
+        }
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const h = hostInput.value.trim();
+            const t = tokenInput.value.trim();
+            if (h && t) connect(h, t);
+        });
+
+        disconnectBtn.addEventListener('click', () => {
+            if (confirm('Disconnect from Core?')) {
+                localStorage.removeItem('luca_host');
+                localStorage.removeItem('luca_token');
+                window.location.reload();
+            }
+        });
+
+        // --- SOCKET HANDLERS ---
+        function setupSocketHandlers() {
+            // ... (Existing handlers moved here) ...
+
+            const statusDot = document.getElementById('status-dot');
+            const deviceIdEl = document.getElementById('device-id');
+            const chatContainer = document.getElementById('chat-container');
+            const chatForm = document.getElementById('chat-form');
+            const messageInput = document.getElementById('message-input');
+            const micBtn = document.getElementById('mic-btn');
+
+            // Audio State
+            let mediaRecorder = null;
+            let isRecording = false;
+
+            // --- AUDIO STREAMING LOGIC ---
+            micBtn.addEventListener('touchstart', startRecording);
+            micBtn.addEventListener('touchend', stopRecording);
+            micBtn.addEventListener('mousedown', startRecording);
+            micBtn.addEventListener('mouseup', stopRecording);
+
+            async function startRecording(e) {
+                e.preventDefault();
+                if (isRecording) return;
+
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    isRecording = true;
+
+                    // UI Feedback
+                    micBtn.classList.add('bg-red-900/50', 'border-red-500', 'text-red-500');
+                    addSystemMessage('Listening...');
+
+                    mediaRecorder.ondataavailable = (event) => {
+                        if (event.data.size > 0 && socket.connected) {
+                            // Stream binary audio chunk
+                            socket.emit('client:stream', {
+                                type: 'audio',
+                                data: event.data,
+                                deviceId,
+                                timestamp: Date.now()
+                            });
+                        }
+                    };
+
+                    mediaRecorder.start(100); // Send chunks every 100ms
+                } catch (err) {
+                    console.error('Mic Error:', err);
+                    addSystemMessage('Mic Error: ' + err.message);
+                }
+            }
+
+            function stopRecording(e) {
+                e.preventDefault();
+                if (!isRecording || !mediaRecorder) return;
+
+                mediaRecorder.stop();
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                isRecording = false;
+
+                // UI Feedback
+                micBtn.classList.remove('bg-red-900/50', 'border-red-500', 'text-red-500');
+
+                // Send End of Stream signal
+                socket.emit('client:stream', {
+                    type: 'audio_end',
+                    deviceId,
+                    timestamp: Date.now()
+                });
+            }
+
+            // Connection Events
+            socket.on('connect', () => {
+                statusDot.classList.remove('bg-red-500');
+                statusDot.classList.add('bg-green-500');
+                deviceIdEl.innerText = deviceId;
+                addSystemMessage('Connected to Desktop Brain');
+
+                // Detect device type
+                let deviceType = 'mobile';
+                const userAgent = navigator.userAgent;
+                if (userAgent.includes('Android')) {
+                    deviceType = 'android';
+                } else if (userAgent.includes('iPhone') || userAgent.includes('iPad') || userAgent.includes('iOS')) {
+                    deviceType = 'ios';
+                }
+
+                // Register Capabilities
+                socket.emit('register', {
+                    name: deviceType === 'android' ? 'Android LUCA' : deviceType === 'ios' ? 'iOS LUCA' : 'Mobile LUCA',
+                    type: deviceType,
+                    capabilities: ['vibrate', 'getLocation', 'takePhoto', 'notifications', 'sms', 'calls']
+                });
+            });
+
+            socket.on('disconnect', () => {
+                statusDot.classList.remove('bg-green-500');
+                statusDot.classList.add('bg-red-500');
+                addSystemMessage('Connection Lost');
+            });
+
+            socket.on('connect_error', (err) => {
+                statusDot.classList.remove('bg-green-500');
+                statusDot.classList.add('bg-red-500');
+                addSystemMessage('ACCESS DENIED / CONNECTION FAILED');
+                console.error('Connection Error:', err);
+            });
+
+            // Message Handling
+            socket.on('server:message', async (msg) => {
+                console.log('[NEURAL LINK] Received:', msg);
+
+                if (msg.type === 'command') {
+                    handleCommand(msg);
+                } else if (msg.type === 'response') {
+                    // Handle response from desktop
+                    if (msg.response && msg.response.result) {
+                        addMessage(`[DESKTOP]: ${JSON.stringify(msg.response.result)}`, 'luca');
+                    } else if (msg.command && msg.command.tool === 'chat') {
+                        // Chat message from desktop
+                        const sender = msg.command.args.sender || 'luca';
+                        addMessage(msg.command.args.text, sender);
+                    } else if (msg.text) {
+                        // Legacy text response
+                        addMessage(msg.text, 'luca');
+                    }
+                } else if (msg.command && msg.command.tool === 'chat') {
+                    // Chat message (new format)
+                    const sender = msg.command.args.sender || 'luca';
+                    addMessage(msg.command.args.text, sender);
+                } else if (msg.type === 'sync' && msg.sync && msg.sync.type === 'context') {
+                    // Chat history sync
+                    if (msg.sync.data.messages) {
+                        chatContainer.innerHTML = ''; // Clear current
+                        addSystemMessage('-- SYNCED WITH DESKTOP --');
+                        msg.sync.data.messages.forEach(msg => {
+                            const sender = msg.sender === 'USER' ? 'user' : 'luca';
+                            addMessage(msg.text, sender);
+                        });
+                    }
+                }
+            });
+
+            // Command Handler (The Hive Mind Logic)
+            async function handleCommand(msg) {
+                const { tool, args } = msg.command;
+                addSystemMessage(`Executing: ${tool}`);
+
+                try {
+                    let result = null;
+
+                    switch (tool) {
+                        case 'vibrate':
+                            if (navigator.vibrate) {
+                                navigator.vibrate(args.pattern || [200]);
+                                result = 'Vibrated';
+                            } else {
+                                throw new Error('Vibration not supported');
+                            }
+                            break;
+
+                        case 'getLocation':
+                            result = await new Promise((resolve, reject) => {
+                                if (!navigator.geolocation) reject('Geolocation not supported');
+                                navigator.geolocation.getCurrentPosition(
+                                    (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+                                    (err) => reject(err.message)
+                                );
+                            });
+                            break;
+
+                        case 'alert':
+                            alert(args.text);
+                            result = 'Alert shown';
+                            break;
+
+                        default:
+                            throw new Error(`Unknown tool: ${tool}`);
+                    }
+
+                    // Send Success Response
+                    socket.emit('client:message', {
+                        id: msg.id,
+                        type: 'response',
+                        target: msg.source,
+                        response: { success: true, result }
+                    });
+
+                } catch (error) {
+                    // Send Error Response
+                    socket.emit('client:message', {
+                        id: msg.id,
+                        type: 'response',
+                        target: msg.source,
+                        response: { success: false, error: error.message || error }
+                    });
+                    addSystemMessage(`Error: ${error.message}`);
+                }
+            }
+
+            socket.on('server:sync', (data) => {
+                if (data.type === 'context' && data.data.messages) {
+                    // Full sync of chat history
+                    chatContainer.innerHTML = ''; // Clear current
+                    addSystemMessage('-- SYNCED WITH CORE --');
+
+                    data.data.messages.forEach(msg => {
+                        const sender = msg.sender === 'USER' ? 'user' : 'luca';
+                        addMessage(msg.text, sender);
+                    });
+                }
+            });
+
+            // Handle Audio Stream from Desktop (TTS)
+            socket.on('server:stream', (data) => {
+                if (data.type === 'tts_audio') {
+                    try {
+                        const audioBlob = new Blob([data.data], { type: 'audio/mp3' });
+                        const audioUrl = URL.createObjectURL(audioBlob);
+                        const audio = new Audio(audioUrl);
+
+                        addSystemMessage('Incoming Audio Transmission...');
+                        audio.play().catch(e => console.error('Audio Playback Error:', e));
+
+                        audio.onended = () => {
+                            URL.revokeObjectURL(audioUrl);
+                        };
+                    } catch (e) {
+                        console.error('Audio Stream Error:', e);
+                    }
+                }
+            });
+
+            // Sending Messages
+            chatForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const text = messageInput.value.trim();
+                if (!text) return;
+
+                // Optimistic UI
+                addMessage(text, 'user');
+                messageInput.value = '';
+
+                // Send to Server as a 'chat' command or raw text
+                socket.emit('client:message', {
+                    type: 'command',
+                    target: 'desktop',
+                    command: {
+                        tool: 'chat',
+                        args: { text }
+                    },
+                    text: text, // Fallback for legacy
+                    timestamp: Date.now()
+                });
+            });
+
+            // UI Helpers
+            function addMessage(text, sender) {
+                const div = document.createElement('div');
+                div.className = `max-w-[80%] p-3 rounded text-sm ${sender === 'user' ? 'message-user' : 'message-luca'}`;
+                div.textContent = text;
+                chatContainer.appendChild(div);
+                scrollToBottom();
+            }
+
+            function addSystemMessage(text) {
+                const div = document.createElement('div');
+                div.className = "text-center text-gray-600 text-xs my-2";
+                div.textContent = `[SYSTEM] ${text}`;
+                chatContainer.appendChild(div);
+                scrollToBottom();
+            }
+
+            function scrollToBottom() {
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+
+        } // End setupSocketHandlers
+
+        // Start
+        init();
+    </script>
+</body>
+
+</html>

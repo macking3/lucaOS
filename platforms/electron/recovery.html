@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            background-color: #1a0505; /* Dark Red */
+            color: #ff3333; /* Red Alert */
+            font-family: "Courier New", Courier, monospace;
+            margin: 0;
+            padding: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 90vh;
+            border: 2px solid #ff3333;
+        }
+        .header {
+            border-bottom: 2px solid #ff3333;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            animation: pulse-border 2s infinite;
+        }
+        .logo {
+            font-size: 24px;
+            text-shadow: 0 0 10px #ff3333;
+        }
+        .status-badge {
+            background: #ff3333;
+            color: #000;
+            padding: 2px 8px;
+            font-weight: bold;
+        }
+        .logs {
+            flex-grow: 1;
+            overflow-y: auto;
+            font-size: 13px;
+            line-height: 1.4;
+            background: #000;
+            padding: 10px;
+            border: 1px solid #331111;
+        }
+        .log-entry { margin-bottom: 5px; }
+        .log-entry.medic { color: #00ffff; } /* Cyan for Medic */
+        .log-entry.sysadmin { color: #ff00ff; } /* Magenta for Sysadmin */
+        .log-entry.system { color: #666; }
+        .log-entry.success { color: #00ff41; }
+
+        .progress-container {
+            margin-top: 15px;
+            border: 1px solid #331111;
+            height: 4px;
+            background: #000;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #ff3333;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        @keyframes pulse-border {
+            0% { border-color: #ff3333; box-shadow: 0 0 5px #ff3333; }
+            50% { border-color: #880000; box-shadow: 0 0 2px #880000; }
+            100% { border-color: #ff3333; box-shadow: 0 0 5px #ff3333; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">LUCA RECOVERY SYSTEM</div>
+        <div class="status-badge" id="status-badge">CRITICAL FAILURE</div>
+    </div>
+    
+    <div class="logs" id="log-container">
+        <div class="log-entry system">[SYSTEM] Max reboot attempts exceeded.</div>
+        <div class="log-entry system">[SYSTEM] Engaging Level 2 Recovery Protocols...</div>
+        <div class="log-entry system">[SYSTEM] Summoning The Medic...</div>
+    </div>
+
+    <div class="progress-container">
+        <div class="progress-bar" id="progress"></div>
+    </div>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+        const logContainer = document.getElementById('log-container');
+        const progressBar = document.getElementById('progress');
+        const statusBadge = document.getElementById('status-badge');
+
+        function addLog(text, type = 'system') {
+            const el = document.createElement('div');
+            el.className = `log-entry ${type}`;
+            const time = new Date().toISOString().split('T')[1].split('.')[0];
+            el.innerText = `[${time}] ${text}`;
+            logContainer.appendChild(el);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        ipcRenderer.on('medic-log', (event, { message, type, progress }) => {
+            addLog(message, type);
+            if (progress !== undefined) {
+                progressBar.style.width = `${progress}%`;
+            }
+        });
+
+        ipcRenderer.on('medic-status', (event, status) => {
+            statusBadge.innerText = status;
+        });
+
+        // Intro
+        setTimeout(() => addLog("Medic: Analyzing Crash Dumps...", "medic"), 500);
+    </script>
+</body>
+</html>

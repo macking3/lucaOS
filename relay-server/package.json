@@ -1,0 +1,26 @@
+{
+  "name": "luca-neural-link-relay",
+  "version": "1.0.0",
+  "description": "Cloud relay server for Luca Neural Link - enables global device-to-device communication",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "keywords": ["luca", "neural-link", "relay", "websocket"],
+  "author": "Luca Team",
+  "license": "MIT",
+  "dependencies": {
+    "socket.io": "^4.7.2",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

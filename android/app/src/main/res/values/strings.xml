@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Luca</string>
+    <string name="title_activity_main">Luca</string>
+    <string name="package_name">com.luca.app</string>
+    <string name="custom_url_scheme">com.luca.app</string>
+</resources>

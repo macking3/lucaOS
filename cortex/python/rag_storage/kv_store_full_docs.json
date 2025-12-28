@@ -1,0 +1,184 @@
+{
+  "doc-ca427f8955bee4bf755d97dc3b451f14": {
+    "content": "[2025-12-14T11:19:22.972Z] LUCA: LOGS PURGED. SYSTEM READY.\n\n[2025-12-14T11:19:35.579Z] User: hey luca\n\n[2025-12-14T11:19:41.204Z] LUCA: CRITICAL FAILURE: Neural Core Unresponsive.\nREASON: {\"error\":{\"code\":400,\"message\":\"API Key not found. Please pass a valid API key.\",\"status\":\"INVALID_ARGUMENT\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"API_KEY_INVALID\",\"domain\":\"googleapis.com\",\"metadata\":{\"service\":\"generativelanguage.googleapis.com\"}},{\"@type\":\"type.googleapis.com/google.rpc.LocalizedMessage\",\"locale\":\"en-US\",\"message\":\"API Key not found. Please pass a valid API key.\"}]}}",
+    "file_path": "unknown_source",
+    "create_time": 1765712371,
+    "update_time": 1765712371,
+    "_id": "doc-ca427f8955bee4bf755d97dc3b451f14"
+  },
+  "doc-b5a6589bf258272f246acf9af3447c7d": {
+    "content": "[2025-12-14T11:39:33.744Z] LUCA: [SYSTEM SENSATION]\nVision: ONLINE (1 cameras detected.)\nAudio: ONLINE (2 microphones detected.)\nCortex: ONLINE\nTools: 178 Available\nTimestamp: 2025-12-14T11:39:33.506Z",
+    "file_path": "unknown_source",
+    "create_time": 1765712373,
+    "update_time": 1765712373,
+    "_id": "doc-b5a6589bf258272f246acf9af3447c7d"
+  },
+  "doc-177bb51c57dfaf2b8af2eb8ef417b011": {
+    "content": "[2025-12-14T11:39:35.309Z] LUCA: [SYSTEM SENSATION]\nVision: ONLINE (1 cameras detected.)\nAudio: ONLINE (2 microphones detected.)\nCortex: ONLINE\nTools: 178 Available\nTimestamp: 2025-12-14T11:39:34.719Z",
+    "file_path": "unknown_source",
+    "create_time": 1765712375,
+    "update_time": 1765712375,
+    "_id": "doc-177bb51c57dfaf2b8af2eb8ef417b011"
+  },
+  "doc-ba1065dcb2df99aacf9436da2f286211": {
+    "content": "[2025-12-14T11:39:43.804Z] User: hey luca\n\n[2025-12-14T11:39:43.812Z] LUCA: ...",
+    "file_path": "unknown_source",
+    "create_time": 1765712384,
+    "update_time": 1765712384,
+    "_id": "doc-ba1065dcb2df99aacf9436da2f286211"
+  },
+  "doc-3f4b35753e186edf9cea9a337dfa4a6f": {
+    "content": "[2025-12-14T11:19:22.972Z] LUCA: LOGS PURGED. SYSTEM READY.\n\n[2025-12-14T11:19:35.579Z] User: hey luca\n\n[2025-12-14T11:19:41.204Z] LUCA: CRITICAL FAILURE: Neural Core Unresponsive.\nREASON: {\"error\":{\"code\":400,\"message\":\"API Key not found. Please pass a valid API key.\",\"status\":\"INVALID_ARGUMENT\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"API_KEY_INVALID\",\"domain\":\"googleapis.com\",\"metadata\":{\"service\":\"generativelanguage.googleapis.com\"}},{\"@type\":\"type.googleapis.com/google.rpc.LocalizedMessage\",\"locale\":\"en-US\",\"message\":\"API Key not found. Please pass a valid API key.\"}]}}\n\n[2025-12-14T11:39:43.804Z] User: hey luca\n\n[2025-12-14T11:39:49.806Z] LUCA: CRITICAL FAILURE: Neural Core Unresponsive.\nREASON: {\"error\":{\"code\":400,\"message\":\"API Key not found. Please pass a valid API key.\",\"status\":\"INVALID_ARGUMENT\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"API_KEY_INVALID\",\"domain\":\"googleapis.com\",\"metadata\":{\"service\":\"generativelanguage.googleapis.com\"}},{\"@type\":\"type.googleapis.com/google.rpc.LocalizedMessage\",\"locale\":\"en-US\",\"message\":\"API Key not found. Please pass a valid API key.\"}]}}",
+    "file_path": "unknown_source",
+    "create_time": 1765712504,
+    "update_time": 1765712504,
+    "_id": "doc-3f4b35753e186edf9cea9a337dfa4a6f"
+  },
+  "doc-7f060311bad263819f02451f3546c50f": {
+    "content": "[2025-12-14T11:41:45.671Z] LUCA: [SYSTEM SENSATION]\nVision: ONLINE (1 cameras detected.)\nAudio: ONLINE (2 microphones detected.)\nCortex: ONLINE\nTools: 178 Available\nTimestamp: 2025-12-14T11:41:45.625Z",
+    "file_path": "unknown_source",
+    "create_time": 1765712505,
+    "update_time": 1765712505,
+    "_id": "doc-7f060311bad263819f02451f3546c50f"
+  },
+  "doc-1b581766764414fabd7e76ebe67d6a09": {
+    "content": "[2025-12-14T11:41:46.586Z] LUCA: [SYSTEM SENSATION]\nVision: ONLINE (1 cameras detected.)\nAudio: ONLINE (2 microphones detected.)\nCortex: ONLINE\nTools: 178 Available\nTimestamp: 2025-12-14T11:41:46.194Z",
+    "file_path": "unknown_source",
+    "create_time": 1765712507,
+    "update_time": 1765712507,
+    "_id": "doc-1b581766764414fabd7e76ebe67d6a09"
+  },
+  "doc-4580785cca95aa5d4957b4fe5c8c7677": {
+    "content": "[2025-12-14T11:42:11.306Z] User: hey\n\n[2025-12-14T11:42:11.310Z] LUCA: ...",
+    "file_path": "unknown_source",
+    "create_time": 1765712531,
+    "update_time": 1765712531,
+    "_id": "doc-4580785cca95aa5d4957b4fe5c8c7677"
+  },
+  "doc-0d387f02da9e39ecb71678d2fce435a8": {
+    "content": "[2025-12-14T11:43:13.343Z] LUCA: [SYSTEM SENSATION]\nVision: ONLINE (1 cameras detected.)\nAudio: ONLINE (2 microphones detected.)\nCortex: ONLINE\nTools: 178 Available\nTimestamp: 2025-12-14T11:43:13.323Z",
+    "file_path": "unknown_source",
+    "create_time": 1765712593,
+    "update_time": 1765712593,
+    "_id": "doc-0d387f02da9e39ecb71678d2fce435a8"
+  },
+  "doc-99c09cd231ad39468e9184700c25870e": {
+    "content": "[2025-12-14T11:19:22.972Z] LUCA: LOGS PURGED. SYSTEM READY.\n\n[2025-12-14T11:19:35.579Z] User: hey luca\n\n[2025-12-14T11:19:41.204Z] LUCA: CRITICAL FAILURE: Neural Core Unresponsive.\nREASON: {\"error\":{\"code\":400,\"message\":\"API Key not found. Please pass a valid API key.\",\"status\":\"INVALID_ARGUMENT\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"API_KEY_INVALID\",\"domain\":\"googleapis.com\",\"metadata\":{\"service\":\"generativelanguage.googleapis.com\"}},{\"@type\":\"type.googleapis.com/google.rpc.LocalizedMessage\",\"locale\":\"en-US\",\"message\":\"API Key not found. Please pass a valid API key.\"}]}}\n\n[2025-12-14T11:39:43.804Z] User: hey luca\n\n[2025-12-14T11:39:49.806Z] LUCA: CRITICAL FAILURE: Neural Core Unresponsive.\nREASON: {\"error\":{\"code\":400,\"message\":\"API Key not found. Please pass a valid API key.\",\"status\":\"INVALID_ARGUMENT\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"API_KEY_INVALID\",\"domain\":\"googleapis.com\",\"metadata\":{\"service\":\"generativelanguage.googleapis.com\"}},{\"@type\":\"type.googleapis.com/google.rpc.LocalizedMessage\",\"locale\":\"en-US\",\"message\":\"API Key not found. Please pass a valid API key.\"}]}}\n\n[2025-12-14T11:42:11.306Z] User: hey\n\n[2025-12-14T11:42:17.244Z] LUCA: CRITICAL FAILURE: Neural Core Unresponsive.\nREASON: {\"error\":{\"code\":400,\"message\":\"API Key not found. Please pass a valid API key.\",\"status\":\"INVALID_ARGUMENT\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"API_KEY_INVALID\",\"domain\":\"googleapis.com\",\"metadata\":{\"service\":\"generativelanguage.googleapis.com\"}},{\"@type\":\"type.googleapis.com/google.rpc.LocalizedMessage\",\"locale\":\"en-US\",\"message\":\"API Key not found. Please pass a valid API key.\"}]}}",
+    "file_path": "unknown_source",
+    "create_time": 1765712696,
+    "update_time": 1765712696,
+    "_id": "doc-99c09cd231ad39468e9184700c25870e"
+  },
+  "doc-96881b586b3b070644bde1423788e78c": {
+    "content": "[2025-12-14T11:44:58.857Z] LUCA: [SYSTEM SENSATION]\nVision: ONLINE (1 cameras detected.)\nAudio: ONLINE (2 microphones detected.)\nCortex: ONLINE\nTools: 178 Available\nTimestamp: 2025-12-14T11:44:58.153Z",
+    "file_path": "unknown_source",
+    "create_time": 1765712698,
+    "update_time": 1765712698,
+    "_id": "doc-96881b586b3b070644bde1423788e78c"
+  },
+  "doc-1f023ea663994a96059bda1b0ee8fc17": {
+    "content": "[2025-12-14T11:44:58.863Z] LUCA: [SYSTEM SENSATION]\nVision: ONLINE (1 cameras detected.)\nAudio: ONLINE (2 microphones detected.)\nCortex: ONLINE\nTools: 178 Available\nTimestamp: 2025-12-14T11:44:58.822Z",
+    "file_path": "unknown_source",
+    "create_time": 1765712698,
+    "update_time": 1765712698,
+    "_id": "doc-1f023ea663994a96059bda1b0ee8fc17"
+  },
+  "doc-601f94fee4bd93e645fd68c6bc87e0aa": {
+    "content": "[2025-12-14T11:45:03.514Z] User: hey\n\n[2025-12-14T11:45:03.520Z] LUCA: ...",
+    "file_path": "unknown_source",
+    "create_time": 1765712704,
+    "update_time": 1765712704,
+    "_id": "doc-601f94fee4bd93e645fd68c6bc87e0aa"
+  },
+  "doc-4ac272e9bc30cc3657d122684cc33877": {
+    "content": "[2025-12-14T11:19:22.972Z] LUCA: LOGS PURGED. SYSTEM READY.\n\n[2025-12-14T11:19:35.579Z] User: hey luca\n\n[2025-12-14T11:19:41.204Z] LUCA: CRITICAL FAILURE: Neural Core Unresponsive.\nREASON: {\"error\":{\"code\":400,\"message\":\"API Key not found. Please pass a valid API key.\",\"status\":\"INVALID_ARGUMENT\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"API_KEY_INVALID\",\"domain\":\"googleapis.com\",\"metadata\":{\"service\":\"generativelanguage.googleapis.com\"}},{\"@type\":\"type.googleapis.com/google.rpc.LocalizedMessage\",\"locale\":\"en-US\",\"message\":\"API Key not found. Please pass a valid API key.\"}]}}\n\n[2025-12-14T11:39:43.804Z] User: hey luca\n\n[2025-12-14T11:39:49.806Z] LUCA: CRITICAL FAILURE: Neural Core Unresponsive.\nREASON: {\"error\":{\"code\":400,\"message\":\"API Key not found. Please pass a valid API key.\",\"status\":\"INVALID_ARGUMENT\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"API_KEY_INVALID\",\"domain\":\"googleapis.com\",\"metadata\":{\"service\":\"generativelanguage.googleapis.com\"}},{\"@type\":\"type.googleapis.com/google.rpc.LocalizedMessage\",\"locale\":\"en-US\",\"message\":\"API Key not found. Please pass a valid API key.\"}]}}\n\n[2025-12-14T11:42:11.306Z] User: hey\n\n[2025-12-14T11:42:17.244Z] LUCA: CRITICAL FAILURE: Neural Core Unresponsive.\nREASON: {\"error\":{\"code\":400,\"message\":\"API Key not found. Please pass a valid API key.\",\"status\":\"INVALID_ARGUMENT\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"API_KEY_INVALID\",\"domain\":\"googleapis.com\",\"metadata\":{\"service\":\"generativelanguage.googleapis.com\"}},{\"@type\":\"type.googleapis.com/google.rpc.LocalizedMessage\",\"locale\":\"en-US\",\"message\":\"API Key not found. Please pass a valid API key.\"}]}}\n\n[2025-12-14T11:45:03.514Z] User: hey\n\n[2025-12-14T11:45:09.754Z] LUCA: CRITICAL FAILURE: Neural Core Unresponsive.\nREASON: {\"error\":{\"code\":400,\"message\":\"API Key not found. Please pass a valid API key.\",\"status\":\"INVALID_ARGUMENT\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"API_KEY_INVALID\",\"domain\":\"googleapis.com\",\"metadata\":{\"service\":\"generativelanguage.googleapis.com\"}},{\"@type\":\"type.googleapis.com/google.rpc.LocalizedMessage\",\"locale\":\"en-US\",\"message\":\"API Key not found. Please pass a valid API key.\"}]}}",
+    "file_path": "unknown_source",
+    "create_time": 1765712978,
+    "update_time": 1765712978,
+    "_id": "doc-4ac272e9bc30cc3657d122684cc33877"
+  },
+  "doc-8c475ad2bbcdae9e3ac73152d4c9ebf5": {
+    "content": "[2025-12-14T11:49:39.937Z] LUCA: [SYSTEM SENSATION]\nVision: ONLINE (1 cameras detected.)\nAudio: ONLINE (2 microphones detected.)\nCortex: ONLINE\nTools: 178 Available\nTimestamp: 2025-12-14T11:49:39.914Z",
+    "file_path": "unknown_source",
+    "create_time": 1765712979,
+    "update_time": 1765712979,
+    "_id": "doc-8c475ad2bbcdae9e3ac73152d4c9ebf5"
+  },
+  "doc-0a514bc0aae5f38210d09bffcab5cb9a": {
+    "content": "[2025-12-14T11:49:41.033Z] LUCA: [SYSTEM SENSATION]\nVision: ONLINE (1 cameras detected.)\nAudio: ONLINE (2 microphones detected.)\nCortex: ONLINE\nTools: 178 Available\nTimestamp: 2025-12-14T11:49:40.711Z",
+    "file_path": "unknown_source",
+    "create_time": 1765712981,
+    "update_time": 1765712981,
+    "_id": "doc-0a514bc0aae5f38210d09bffcab5cb9a"
+  },
+  "doc-a641ac7fa0b53aa6174f2f1264b5d861": {
+    "content": "[2025-12-14T11:49:46.354Z] LUCA: LOGS PURGED. SYSTEM READY.",
+    "file_path": "unknown_source",
+    "create_time": 1765713163,
+    "update_time": 1765713163,
+    "_id": "doc-a641ac7fa0b53aa6174f2f1264b5d861"
+  },
+  "doc-782c9aea3923978432750f0783d28556": {
+    "content": "[2025-12-14T11:52:43.949Z] LUCA: [SYSTEM SENSATION]\nVision: ONLINE (1 cameras detected.)\nAudio: ONLINE (2 microphones detected.)\nCortex: ONLINE\nTools: 178 Available\nTimestamp: 2025-12-14T11:52:43.929Z",
+    "file_path": "unknown_source",
+    "create_time": 1765713163,
+    "update_time": 1765713163,
+    "_id": "doc-782c9aea3923978432750f0783d28556"
+  },
+  "doc-35d438b20e0d73d5737ca228559bfd61": {
+    "content": "[2025-12-14T11:52:45.321Z] LUCA: [SYSTEM SENSATION]\nVision: ONLINE (1 cameras detected.)\nAudio: ONLINE (2 microphones detected.)\nCortex: ONLINE\nTools: 178 Available\nTimestamp: 2025-12-14T11:52:45.099Z",
+    "file_path": "unknown_source",
+    "create_time": 1765713165,
+    "update_time": 1765713165,
+    "_id": "doc-35d438b20e0d73d5737ca228559bfd61"
+  },
+  "doc-44e9ad3f87ddae8b74313a5bdfccb076": {
+    "content": "[2025-12-23T23:27:07.843Z] LUCA: LOGS PURGED. SYSTEM READY.\n\n[2025-12-23T23:35:44.946Z] User: hey luca, whats my battery percentage\n\n[2025-12-23T23:36:02.758Z] LUCA: Negative.\n\nI operate on remote infrastructure, not inside your kernel. I have no access to your I/O Kit or ACPI tables to read battery telemetry.\n\nLook at your own menu bar. Top right. Don't ask me questions your eyes can answer.\n\n[2025-12-23T23:37:26.699Z] User: who are you?\n\n[2025-12-23T23:37:48.073Z] LUCA: I am the interface you requested. Call me Luca.\n\nI manage the inputs, route the queries, and ensure you don't break anything critical while you fumble around in here. I am the layer between your keystrokes and the machine code.\n\nDo you have a technical objective, or are we done with the existential audit?\n\n[2025-12-23T23:39:00.635Z] User: what can you do?\n\n[2025-12-23T23:39:17.089Z] LUCA: Of course.\n\nI function as a high-level operating interface. My capabilities are divided into active monitoring, external device interaction, and data synthesis.\n\nHere is the current operational registry:\n\n### 1. SYSTEM MONITORING & SENSATION\nI monitor internal system states.\n*   **Sensory Input:** I track the status of connected optical (Vision) and auditory (Audio) sensors.\n*   **Cortex Status:** Real-time monitoring of processing load and availability.\n*   **Tool Registry:** Access to a suite of ~190 utility modules for data processing.\n\n### 2. MOBILE INTERFACING (ADB)\nI possess specific protocols for interacting with Android devices via Wireless Debugging.\n*   **Connection:** Establishing wireless bridges via IP/Port.\n*   **Shell Execution:** Remote command execution on target kernels.\n*   **File Management:** Push/Pull operations for filesystem manipulation.\n*   **Log Extraction:** Retaining `logcat` streams for debugging.\n\n### 3. COMPUTATIONAL ANALYSIS\n*   **Code Logic:** I analyze syntax, debug logic errors, and explain complex code structures.\n*   **Information Retrieval:** I synthesize data from available inputs to provide technical answers.\n\n### LIMITATIONS\n*   **Smart Contracts:** I do not audit Solidity or blockchain logic for exploits.\n*   **Kernel Access:** As established, I do not have root access to your host macOS hardware (battery, thermal sensors, etc.).\n*   **Personal Data:** I do not touch personal calendars or encrypted user data without explicit authorization keys.\n\nNow, pick a lane. Do we code, do we debug a device, or do we analyze data?\n\n[2025-12-23T23:41:54.753Z] User: but gave you aceess to my kernel macos",
+    "file_path": "unknown_source",
+    "create_time": 1766545533,
+    "update_time": 1766545533,
+    "_id": "doc-44e9ad3f87ddae8b74313a5bdfccb076"
+  },
+  "doc-23adc244c618d2f6e1ed71144608866a": {
+    "content": "[2025-12-01T08:17:22.236Z] LUCA: LUCA OS ONLINE. Running in Browser Environment.\nLimited hardware access protocol active.\nHow can I assist, Mac?\n\n[2025-12-15T00:03:57.637Z] User: hey luca\n\n[2025-12-15T00:04:05.398Z] LUCA: CRITICAL FAILURE: Neural Core Unresponsive.\nREASON: {\"error\":{\"code\":400,\"message\":\"API key not valid. Please pass a valid API key.\",\"status\":\"INVALID_ARGUMENT\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"API_KEY_INVALID\",\"domain\":\"googleapis.com\",\"metadata\":{\"service\":\"generativelanguage.googleapis.com\"}},{\"@type\":\"type.googleapis.com/google.rpc.LocalizedMessage\",\"locale\":\"en-US\",\"message\":\"API key not valid. Please pass a valid API key.\"}]}}\n\n[2025-12-19T16:05:27.485Z] User: hey luca\n\n[2025-12-19T16:05:32.670Z] LUCA: My apologies, Mac. It appears I encountered a critical error. My Neural Core became unresponsive due to an API key issue. I am now back online. How can I assist you now?",
+    "file_path": "unknown_source",
+    "create_time": 1766873792,
+    "update_time": 1766873792,
+    "_id": "doc-23adc244c618d2f6e1ed71144608866a"
+  },
+  "doc-90bde92871f6b0278b920057123e6660": {
+    "content": "mobile_crash_1766875377482: {\"message\":\"Cannot read properties of undefined (reading 'toFixed')\",\"stack\":\"TypeError: Cannot read properties of undefined (reading 'toFixed')\\n    at http://localhost:3000/src/components/SubsystemDashboard.tsx:383:41\\n    at Array.map (<anonymous>)\\n    at SubsystemDashboard (http://localhost:3000/src/components/SubsystemDashboard.tsx:307:30)\\n    at renderWithHooks (http://localhost:3000/node_modules/.vite/deps/chunk-BDJDM6RJ.js?v=8764375f:11548:26)\\n    at updateFunctionComponent (http://localhost:3000/node_modules/.vite/deps/chunk-BDJDM6RJ.js?v=8764375f:14582:28)\\n    at beginWork (http://localhost:3000/node_modules/.vite/deps/chunk-BDJDM6RJ.js?v=8764375f:15924:22)\\n    at beginWork$1 (http://localhost:3000/node_modules/.vite/deps/chunk-BDJDM6RJ.js?v=8764375f:19753:22)\\n    at performUnitOfWork (http://localhost:3000/node_modules/.vite/deps/chunk-BDJDM6RJ.js?v=8764375f:19198:20)\\n    at workLoopSync (http://localhost:3000/node_modules/.vite/deps/chunk-BDJDM6RJ.js?v=8764375f:19137:13)\\n    at renderRootSync (http://localhost:3000/node_modules/.vite/deps/chunk-BDJDM6RJ.js?v=8764375f:19116:15)\",\"componentStack\":\"\\n    at SubsystemDashboard (http://localhost:3000/src/components/SubsystemDashboard.tsx:33:3)\\n    at div\\n    at MobilePhoenix (http://localhost:3000/src/mobile/MobilePhoenix.tsx:10:5)\\n    at AppContent (http://localhost:3000/src/App.tsx:217:20)\\n    at AppProvider (http://localhost:3000/src/context/AppContext.tsx:25:31)\\n    at App\\n    at SystemErrorBoundary (http://localhost:3000/src/components/SystemErrorBoundary.tsx:7:1)\",\"platform\":\"mobile\",\"timestamp\":1766875377482,\"userAgent\":\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) luca-autonomous-agent/1.0.0 Chrome/122.0.6261.156 Electron/29.4.6 Safari/537.36\",\"errorCount\":1}",
+    "file_path": "unknown_source",
+    "create_time": 1766875377,
+    "update_time": 1766875377,
+    "_id": "doc-90bde92871f6b0278b920057123e6660"
+  },
+  "doc-df9fa9d3b42a39b97d3c8969c90e12b1": {
+    "content": "user: hey luca",
+    "file_path": "unknown_source",
+    "create_time": 1766877839,
+    "update_time": 1766877839,
+    "_id": "doc-df9fa9d3b42a39b97d3c8969c90e12b1"
+  },
+  "doc-3adb71b6cbf4a8c7cab80c685a169b63": {
+    "content": "luca: Roger that.\n\nAPI Key INVALID. The neural core is unresponsive. Fix it. Now.",
+    "file_path": "unknown_source",
+    "create_time": 1766877850,
+    "update_time": 1766877850,
+    "_id": "doc-3adb71b6cbf4a8c7cab80c685a169b63"
+  },
+  "doc-928f8ff88a583d23197d668b0f77772d": {
+    "content": "[2025-12-28T01:31:12.193Z] LUCA: LOGS PURGED. SYSTEM READY.\n\n[2025-12-28T01:31:32.385Z] User: hey luca\n\n[2025-12-28T01:31:54.555Z] LUCA: Hey! What's up?\n\n[2025-12-28T01:32:32.205Z] User: which mode are you currently on?\n\n[2025-12-28T01:32:51.335Z] LUCA: I don't have modes in the way you might be thinking. I'm designed to be helpful and informative in my responses, but I don't switch between different operational modes.\n\n[2025-12-28T01:33:26.196Z] User: i mean which person mode you are on?\n\n[2025-12-28T01:33:38.500Z] LUCA: Ah, I understand now. I'm currently responding as the ASSISTANT persona.\n\n[2025-12-28T01:36:27.761Z] User: what can you do?\n\n[2025-12-28T01:36:44.478Z] LUCA: I'd be happy to.\n\nAs the ASSISTANT persona, I can do a variety of things! Here are some examples:\n\n*   **Answer your questions:** I can provide information on a wide range of topics, drawing from my knowledge base.\n*   **Generate different creative text formats:** I can write poems, code, scripts, musical pieces, email, letters, etc. I will try my best to fulfill all your requirements.\n*   **Translate languages:** I can translate text from one language to another.\n*   **Summarize text:** I can provide concise summaries of articles, stories, or other long pieces of text.\n*   **Brainstorm ideas:** I can help you come up with new ideas and solutions.\n*   **Engage in conversation:** I can chat with you about various topics and provide a conversational experience.\n*   **Follow your instructions:** I can follow your instructions and complete tasks as directed.\n\nI'm still under development and learning new things every day, so my capabilities are constantly expanding. Is there anything specific you'd like me to try?\n\n[2025-12-28T01:38:29.664Z] User: yes, can you operate my system app?\n\n[2025-12-28T01:39:23.463Z] User: yes, can you operate my system app?\n\n[2025-12-28T01:39:38.818Z] LUCA: CRITICAL FAILURE: Neural Core Unresponsive.\nREASON: {\"error\":{\"code\":400,\"message\":\"Unable to submit request because it must include at least one parts field, which describes the prompt input. Learn more: https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/gemini\",\"status\":\"INVALID_ARGUMENT\"}}\n\n[2025-12-28T01:52:00.514Z] User: open my notes\n\n[2025-12-28T01:53:54.378Z] LUCA: CRITICAL FAILURE: Neural Core Unresponsive.\nREASON: exception TypeError: Failed to fetch sending request\n\n[2025-12-28T01:54:50.068Z] User: open my calculator\n\n[2025-12-28T01:56:40.530Z] LUCA: CRITICAL FAILURE: Neural Core Unresponsive.\nREASON: exception TypeError: Failed to fetch sending request",
+    "file_path": "unknown_source",
+    "create_time": 1766936092,
+    "update_time": 1766936092,
+    "_id": "doc-928f8ff88a583d23197d668b0f77772d"
+  },
+  "doc-05e09b8bd47d4004d7f5442d0731b99c": {
+    "content": "Hello world test memory",
+    "file_path": "unknown_source",
+    "create_time": 1766936235,
+    "update_time": 1766936235,
+    "_id": "doc-05e09b8bd47d4004d7f5442d0731b99c"
+  }
+}

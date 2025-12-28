@@ -1,0 +1,366 @@
+{
+  "chunk-ca427f8955bee4bf755d97dc3b451f14": {
+    "tokens": 180,
+    "content": "[2025-12-14T11:19:22.972Z] LUCA: LOGS PURGED. SYSTEM READY.\n\n[2025-12-14T11:19:35.579Z] User: hey luca\n\n[2025-12-14T11:19:41.204Z] LUCA: CRITICAL FAILURE: Neural Core Unresponsive.\nREASON: {\"error\":{\"code\":400,\"message\":\"API Key not found. Please pass a valid API key.\",\"status\":\"INVALID_ARGUMENT\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"API_KEY_INVALID\",\"domain\":\"googleapis.com\",\"metadata\":{\"service\":\"generativelanguage.googleapis.com\"}},{\"@type\":\"type.googleapis.com/google.rpc.LocalizedMessage\",\"locale\":\"en-US\",\"message\":\"API Key not found. Please pass a valid API key.\"}]}}",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-ca427f8955bee4bf755d97dc3b451f14",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:4647e1bc60dcca5c4eaec93c4d4b3333",
+      "default:extract:ae11f53be2f7fa8bcf86bf04ce7b2895"
+    ],
+    "create_time": 1766873792,
+    "update_time": 1766873870,
+    "_id": "chunk-ca427f8955bee4bf755d97dc3b451f14"
+  },
+  "chunk-b5a6589bf258272f246acf9af3447c7d": {
+    "tokens": 71,
+    "content": "[2025-12-14T11:39:33.744Z] LUCA: [SYSTEM SENSATION]\nVision: ONLINE (1 cameras detected.)\nAudio: ONLINE (2 microphones detected.)\nCortex: ONLINE\nTools: 178 Available\nTimestamp: 2025-12-14T11:39:33.506Z",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-b5a6589bf258272f246acf9af3447c7d",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:6e6538ce1dcb28c5583dec3cafee6f19",
+      "default:extract:eccdaa376d08235e2cb03bb0e8887990"
+    ],
+    "create_time": 1766873792,
+    "update_time": 1766873854,
+    "_id": "chunk-b5a6589bf258272f246acf9af3447c7d"
+  },
+  "chunk-177bb51c57dfaf2b8af2eb8ef417b011": {
+    "tokens": 71,
+    "content": "[2025-12-14T11:39:35.309Z] LUCA: [SYSTEM SENSATION]\nVision: ONLINE (1 cameras detected.)\nAudio: ONLINE (2 microphones detected.)\nCortex: ONLINE\nTools: 178 Available\nTimestamp: 2025-12-14T11:39:34.719Z",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-177bb51c57dfaf2b8af2eb8ef417b011",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:154e80a32dc6aa423ece0440e7d5c08d",
+      "default:extract:cf4bee3e6742852b14cfb6a2d3b61ff1"
+    ],
+    "create_time": 1766873865,
+    "update_time": 1766873922,
+    "_id": "chunk-177bb51c57dfaf2b8af2eb8ef417b011"
+  },
+  "chunk-ba1065dcb2df99aacf9436da2f286211": {
+    "tokens": 44,
+    "content": "[2025-12-14T11:39:43.804Z] User: hey luca\n\n[2025-12-14T11:39:43.812Z] LUCA: ...",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-ba1065dcb2df99aacf9436da2f286211",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:e59b854e75748a63990f23fa825bef6f",
+      "default:extract:ad8dd61ba670dd152773a13f17be6abd"
+    ],
+    "create_time": 1766873878,
+    "update_time": 1766873954,
+    "_id": "chunk-ba1065dcb2df99aacf9436da2f286211"
+  },
+  "chunk-3f4b35753e186edf9cea9a337dfa4a6f": {
+    "tokens": 333,
+    "content": "[2025-12-14T11:19:22.972Z] LUCA: LOGS PURGED. SYSTEM READY.\n\n[2025-12-14T11:19:35.579Z] User: hey luca\n\n[2025-12-14T11:19:41.204Z] LUCA: CRITICAL FAILURE: Neural Core Unresponsive.\nREASON: {\"error\":{\"code\":400,\"message\":\"API Key not found. Please pass a valid API key.\",\"status\":\"INVALID_ARGUMENT\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"API_KEY_INVALID\",\"domain\":\"googleapis.com\",\"metadata\":{\"service\":\"generativelanguage.googleapis.com\"}},{\"@type\":\"type.googleapis.com/google.rpc.LocalizedMessage\",\"locale\":\"en-US\",\"message\":\"API Key not found. Please pass a valid API key.\"}]}}\n\n[2025-12-14T11:39:43.804Z] User: hey luca\n\n[2025-12-14T11:39:49.806Z] LUCA: CRITICAL FAILURE: Neural Core Unresponsive.\nREASON: {\"error\":{\"code\":400,\"message\":\"API Key not found. Please pass a valid API key.\",\"status\":\"INVALID_ARGUMENT\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"API_KEY_INVALID\",\"domain\":\"googleapis.com\",\"metadata\":{\"service\":\"generativelanguage.googleapis.com\"}},{\"@type\":\"type.googleapis.com/google.rpc.LocalizedMessage\",\"locale\":\"en-US\",\"message\":\"API Key not found. Please pass a valid API key.\"}]}}",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-3f4b35753e186edf9cea9a337dfa4a6f",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:aecb041817a9f6f9d16262f353e801bd",
+      "default:extract:aeabae116673376991efda00aea1d9a5"
+    ],
+    "create_time": 1766873932,
+    "update_time": 1766874037,
+    "_id": "chunk-3f4b35753e186edf9cea9a337dfa4a6f"
+  },
+  "chunk-7f060311bad263819f02451f3546c50f": {
+    "tokens": 71,
+    "content": "[2025-12-14T11:41:45.671Z] LUCA: [SYSTEM SENSATION]\nVision: ONLINE (1 cameras detected.)\nAudio: ONLINE (2 microphones detected.)\nCortex: ONLINE\nTools: 178 Available\nTimestamp: 2025-12-14T11:41:45.625Z",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-7f060311bad263819f02451f3546c50f",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:acd90f86ec0a1fcfa5a8f26fe0882e06",
+      "default:extract:cc713c5b137fbb54d134adc5c392725f"
+    ],
+    "create_time": 1766873957,
+    "update_time": 1766874026,
+    "_id": "chunk-7f060311bad263819f02451f3546c50f"
+  },
+  "chunk-1b581766764414fabd7e76ebe67d6a09": {
+    "tokens": 71,
+    "content": "[2025-12-14T11:41:46.586Z] LUCA: [SYSTEM SENSATION]\nVision: ONLINE (1 cameras detected.)\nAudio: ONLINE (2 microphones detected.)\nCortex: ONLINE\nTools: 178 Available\nTimestamp: 2025-12-14T11:41:46.194Z",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-1b581766764414fabd7e76ebe67d6a09",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:81fc56563a156530b779c43b4dfe9dba",
+      "default:extract:1640949901c9c79b8e5566cb0e2ec20e"
+    ],
+    "create_time": 1766874034,
+    "update_time": 1766874092,
+    "_id": "chunk-1b581766764414fabd7e76ebe67d6a09"
+  },
+  "chunk-4580785cca95aa5d4957b4fe5c8c7677": {
+    "tokens": 42,
+    "content": "[2025-12-14T11:42:11.306Z] User: hey\n\n[2025-12-14T11:42:11.310Z] LUCA: ...",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-4580785cca95aa5d4957b4fe5c8c7677",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:ef58d51ef3ebedee05caee720403c5bd",
+      "default:extract:d7ef6f1ee8d38a113bb33ca8cad265c2"
+    ],
+    "create_time": 1766874047,
+    "update_time": 1766874142,
+    "_id": "chunk-4580785cca95aa5d4957b4fe5c8c7677"
+  },
+  "chunk-0d387f02da9e39ecb71678d2fce435a8": {
+    "tokens": 71,
+    "content": "[2025-12-14T11:43:13.343Z] LUCA: [SYSTEM SENSATION]\nVision: ONLINE (1 cameras detected.)\nAudio: ONLINE (2 microphones detected.)\nCortex: ONLINE\nTools: 178 Available\nTimestamp: 2025-12-14T11:43:13.323Z",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-0d387f02da9e39ecb71678d2fce435a8",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:b69a6b3ef03a40cd4acaa9cf5112e2ee",
+      "default:extract:5ebff5a1156d31d90e19c5dcbbd00062"
+    ],
+    "create_time": 1766874102,
+    "update_time": 1766874180,
+    "_id": "chunk-0d387f02da9e39ecb71678d2fce435a8"
+  },
+  "chunk-99c09cd231ad39468e9184700c25870e": {
+    "tokens": 484,
+    "content": "[2025-12-14T11:19:22.972Z] LUCA: LOGS PURGED. SYSTEM READY.\n\n[2025-12-14T11:19:35.579Z] User: hey luca\n\n[2025-12-14T11:19:41.204Z] LUCA: CRITICAL FAILURE: Neural Core Unresponsive.\nREASON: {\"error\":{\"code\":400,\"message\":\"API Key not found. Please pass a valid API key.\",\"status\":\"INVALID_ARGUMENT\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"API_KEY_INVALID\",\"domain\":\"googleapis.com\",\"metadata\":{\"service\":\"generativelanguage.googleapis.com\"}},{\"@type\":\"type.googleapis.com/google.rpc.LocalizedMessage\",\"locale\":\"en-US\",\"message\":\"API Key not found. Please pass a valid API key.\"}]}}\n\n[2025-12-14T11:39:43.804Z] User: hey luca\n\n[2025-12-14T11:39:49.806Z] LUCA: CRITICAL FAILURE: Neural Core Unresponsive.\nREASON: {\"error\":{\"code\":400,\"message\":\"API Key not found. Please pass a valid API key.\",\"status\":\"INVALID_ARGUMENT\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"API_KEY_INVALID\",\"domain\":\"googleapis.com\",\"metadata\":{\"service\":\"generativelanguage.googleapis.com\"}},{\"@type\":\"type.googleapis.com/google.rpc.LocalizedMessage\",\"locale\":\"en-US\",\"message\":\"API Key not found. Please pass a valid API key.\"}]}}\n\n[2025-12-14T11:42:11.306Z] User: hey\n\n[2025-12-14T11:42:17.244Z] LUCA: CRITICAL FAILURE: Neural Core Unresponsive.\nREASON: {\"error\":{\"code\":400,\"message\":\"API Key not found. Please pass a valid API key.\",\"status\":\"INVALID_ARGUMENT\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"API_KEY_INVALID\",\"domain\":\"googleapis.com\",\"metadata\":{\"service\":\"generativelanguage.googleapis.com\"}},{\"@type\":\"type.googleapis.com/google.rpc.LocalizedMessage\",\"locale\":\"en-US\",\"message\":\"API Key not found. Please pass a valid API key.\"}]}}",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-99c09cd231ad39468e9184700c25870e",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:52ec3db3d1503723a3c08254c111a002",
+      "default:extract:90da4f00ee566474f70f1bcef41e75e5"
+    ],
+    "create_time": 1766874145,
+    "update_time": 1766874223,
+    "_id": "chunk-99c09cd231ad39468e9184700c25870e"
+  },
+  "chunk-96881b586b3b070644bde1423788e78c": {
+    "tokens": 71,
+    "content": "[2025-12-14T11:44:58.857Z] LUCA: [SYSTEM SENSATION]\nVision: ONLINE (1 cameras detected.)\nAudio: ONLINE (2 microphones detected.)\nCortex: ONLINE\nTools: 178 Available\nTimestamp: 2025-12-14T11:44:58.153Z",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-96881b586b3b070644bde1423788e78c",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:bc1db94ab0102ab5b63dc6f9aaee326b",
+      "default:extract:84637c6b009b20df20de44f47db15328"
+    ],
+    "create_time": 1766874201,
+    "update_time": 1766874266,
+    "_id": "chunk-96881b586b3b070644bde1423788e78c"
+  },
+  "chunk-1f023ea663994a96059bda1b0ee8fc17": {
+    "tokens": 71,
+    "content": "[2025-12-14T11:44:58.863Z] LUCA: [SYSTEM SENSATION]\nVision: ONLINE (1 cameras detected.)\nAudio: ONLINE (2 microphones detected.)\nCortex: ONLINE\nTools: 178 Available\nTimestamp: 2025-12-14T11:44:58.822Z",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-1f023ea663994a96059bda1b0ee8fc17",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:a59a73b35b55939074a3f4da405f7533",
+      "default:extract:652e180814848e99cfe8eb7940f0c02c"
+    ],
+    "create_time": 1766874231,
+    "update_time": 1766874280,
+    "_id": "chunk-1f023ea663994a96059bda1b0ee8fc17"
+  },
+  "chunk-601f94fee4bd93e645fd68c6bc87e0aa": {
+    "tokens": 42,
+    "content": "[2025-12-14T11:45:03.514Z] User: hey\n\n[2025-12-14T11:45:03.520Z] LUCA: ...",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-601f94fee4bd93e645fd68c6bc87e0aa",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:38140284d794dfdd77fdb3efef748621",
+      "default:extract:1f3e3ab348277e2935fda5b39a796c3a"
+    ],
+    "create_time": 1766874273,
+    "update_time": 1766874317,
+    "_id": "chunk-601f94fee4bd93e645fd68c6bc87e0aa"
+  },
+  "chunk-4ac272e9bc30cc3657d122684cc33877": {
+    "tokens": 635,
+    "content": "[2025-12-14T11:19:22.972Z] LUCA: LOGS PURGED. SYSTEM READY.\n\n[2025-12-14T11:19:35.579Z] User: hey luca\n\n[2025-12-14T11:19:41.204Z] LUCA: CRITICAL FAILURE: Neural Core Unresponsive.\nREASON: {\"error\":{\"code\":400,\"message\":\"API Key not found. Please pass a valid API key.\",\"status\":\"INVALID_ARGUMENT\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"API_KEY_INVALID\",\"domain\":\"googleapis.com\",\"metadata\":{\"service\":\"generativelanguage.googleapis.com\"}},{\"@type\":\"type.googleapis.com/google.rpc.LocalizedMessage\",\"locale\":\"en-US\",\"message\":\"API Key not found. Please pass a valid API key.\"}]}}\n\n[2025-12-14T11:39:43.804Z] User: hey luca\n\n[2025-12-14T11:39:49.806Z] LUCA: CRITICAL FAILURE: Neural Core Unresponsive.\nREASON: {\"error\":{\"code\":400,\"message\":\"API Key not found. Please pass a valid API key.\",\"status\":\"INVALID_ARGUMENT\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"API_KEY_INVALID\",\"domain\":\"googleapis.com\",\"metadata\":{\"service\":\"generativelanguage.googleapis.com\"}},{\"@type\":\"type.googleapis.com/google.rpc.LocalizedMessage\",\"locale\":\"en-US\",\"message\":\"API Key not found. Please pass a valid API key.\"}]}}\n\n[2025-12-14T11:42:11.306Z] User: hey\n\n[2025-12-14T11:42:17.244Z] LUCA: CRITICAL FAILURE: Neural Core Unresponsive.\nREASON: {\"error\":{\"code\":400,\"message\":\"API Key not found. Please pass a valid API key.\",\"status\":\"INVALID_ARGUMENT\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"API_KEY_INVALID\",\"domain\":\"googleapis.com\",\"metadata\":{\"service\":\"generativelanguage.googleapis.com\"}},{\"@type\":\"type.googleapis.com/google.rpc.LocalizedMessage\",\"locale\":\"en-US\",\"message\":\"API Key not found. Please pass a valid API key.\"}]}}\n\n[2025-12-14T11:45:03.514Z] User: hey\n\n[2025-12-14T11:45:09.754Z] LUCA: CRITICAL FAILURE: Neural Core Unresponsive.\nREASON: {\"error\":{\"code\":400,\"message\":\"API Key not found. Please pass a valid API key.\",\"status\":\"INVALID_ARGUMENT\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"API_KEY_INVALID\",\"domain\":\"googleapis.com\",\"metadata\":{\"service\":\"generativelanguage.googleapis.com\"}},{\"@type\":\"type.googleapis.com/google.rpc.LocalizedMessage\",\"locale\":\"en-US\",\"message\":\"API Key not found. Please pass a valid API key.\"}]}}",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-4ac272e9bc30cc3657d122684cc33877",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:17f3914482793df9e6640ba25fbe032a",
+      "default:extract:c818bd089f44e2e401f09b75ce29dd2b"
+    ],
+    "create_time": 1766874290,
+    "update_time": 1766874366,
+    "_id": "chunk-4ac272e9bc30cc3657d122684cc33877"
+  },
+  "chunk-8c475ad2bbcdae9e3ac73152d4c9ebf5": {
+    "tokens": 71,
+    "content": "[2025-12-14T11:49:39.937Z] LUCA: [SYSTEM SENSATION]\nVision: ONLINE (1 cameras detected.)\nAudio: ONLINE (2 microphones detected.)\nCortex: ONLINE\nTools: 178 Available\nTimestamp: 2025-12-14T11:49:39.914Z",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-8c475ad2bbcdae9e3ac73152d4c9ebf5",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:c7f0a291f37f0d80e1b12a4d61998d0e",
+      "default:extract:3b4cda13a412578a1e85dd7d14744ad6"
+    ],
+    "create_time": 1766874321,
+    "update_time": 1766874388,
+    "_id": "chunk-8c475ad2bbcdae9e3ac73152d4c9ebf5"
+  },
+  "chunk-0a514bc0aae5f38210d09bffcab5cb9a": {
+    "tokens": 71,
+    "content": "[2025-12-14T11:49:41.033Z] LUCA: [SYSTEM SENSATION]\nVision: ONLINE (1 cameras detected.)\nAudio: ONLINE (2 microphones detected.)\nCortex: ONLINE\nTools: 178 Available\nTimestamp: 2025-12-14T11:49:40.711Z",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-0a514bc0aae5f38210d09bffcab5cb9a",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:3c995ca181599847a81ccd882371f37a",
+      "default:extract:8e6ed95ada5c7f41a4d43ec1575908be"
+    ],
+    "update_time": 1766936094,
+    "_id": "chunk-0a514bc0aae5f38210d09bffcab5cb9a",
+    "create_time": 0
+  },
+  "chunk-a641ac7fa0b53aa6174f2f1264b5d861": {
+    "tokens": 28,
+    "content": "[2025-12-14T11:49:46.354Z] LUCA: LOGS PURGED. SYSTEM READY.",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-a641ac7fa0b53aa6174f2f1264b5d861",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:ed430d566c079cdabcde8b1c9f4dee94",
+      "default:extract:bdb637e188112fe9bdf07f2f03f60728"
+    ],
+    "create_time": 1766874447,
+    "update_time": 1766874501,
+    "_id": "chunk-a641ac7fa0b53aa6174f2f1264b5d861"
+  },
+  "chunk-782c9aea3923978432750f0783d28556": {
+    "tokens": 71,
+    "content": "[2025-12-14T11:52:43.949Z] LUCA: [SYSTEM SENSATION]\nVision: ONLINE (1 cameras detected.)\nAudio: ONLINE (2 microphones detected.)\nCortex: ONLINE\nTools: 178 Available\nTimestamp: 2025-12-14T11:52:43.929Z",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-782c9aea3923978432750f0783d28556",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:9ee158fc41f5722559441665c6fcaee8",
+      "default:extract:d9e120e472c501f41df9daa4168f741c"
+    ],
+    "update_time": 1766936169,
+    "_id": "chunk-782c9aea3923978432750f0783d28556",
+    "create_time": 0
+  },
+  "chunk-35d438b20e0d73d5737ca228559bfd61": {
+    "tokens": 71,
+    "content": "[2025-12-14T11:52:45.321Z] LUCA: [SYSTEM SENSATION]\nVision: ONLINE (1 cameras detected.)\nAudio: ONLINE (2 microphones detected.)\nCortex: ONLINE\nTools: 178 Available\nTimestamp: 2025-12-14T11:52:45.099Z",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-35d438b20e0d73d5737ca228559bfd61",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:9239f69f4e338a1b81da3e963f6d8ccc",
+      "default:extract:459e5be3342a2dee6838c2082290e122"
+    ],
+    "update_time": 1766936117,
+    "_id": "chunk-35d438b20e0d73d5737ca228559bfd61",
+    "create_time": 0
+  },
+  "chunk-44e9ad3f87ddae8b74313a5bdfccb076": {
+    "tokens": 642,
+    "content": "[2025-12-23T23:27:07.843Z] LUCA: LOGS PURGED. SYSTEM READY.\n\n[2025-12-23T23:35:44.946Z] User: hey luca, whats my battery percentage\n\n[2025-12-23T23:36:02.758Z] LUCA: Negative.\n\nI operate on remote infrastructure, not inside your kernel. I have no access to your I/O Kit or ACPI tables to read battery telemetry.\n\nLook at your own menu bar. Top right. Don't ask me questions your eyes can answer.\n\n[2025-12-23T23:37:26.699Z] User: who are you?\n\n[2025-12-23T23:37:48.073Z] LUCA: I am the interface you requested. Call me Luca.\n\nI manage the inputs, route the queries, and ensure you don't break anything critical while you fumble around in here. I am the layer between your keystrokes and the machine code.\n\nDo you have a technical objective, or are we done with the existential audit?\n\n[2025-12-23T23:39:00.635Z] User: what can you do?\n\n[2025-12-23T23:39:17.089Z] LUCA: Of course.\n\nI function as a high-level operating interface. My capabilities are divided into active monitoring, external device interaction, and data synthesis.\n\nHere is the current operational registry:\n\n### 1. SYSTEM MONITORING & SENSATION\nI monitor internal system states.\n*   **Sensory Input:** I track the status of connected optical (Vision) and auditory (Audio) sensors.\n*   **Cortex Status:** Real-time monitoring of processing load and availability.\n*   **Tool Registry:** Access to a suite of ~190 utility modules for data processing.\n\n### 2. MOBILE INTERFACING (ADB)\nI possess specific protocols for interacting with Android devices via Wireless Debugging.\n*   **Connection:** Establishing wireless bridges via IP/Port.\n*   **Shell Execution:** Remote command execution on target kernels.\n*   **File Management:** Push/Pull operations for filesystem manipulation.\n*   **Log Extraction:** Retaining `logcat` streams for debugging.\n\n### 3. COMPUTATIONAL ANALYSIS\n*   **Code Logic:** I analyze syntax, debug logic errors, and explain complex code structures.\n*   **Information Retrieval:** I synthesize data from available inputs to provide technical answers.\n\n### LIMITATIONS\n*   **Smart Contracts:** I do not audit Solidity or blockchain logic for exploits.\n*   **Kernel Access:** As established, I do not have root access to your host macOS hardware (battery, thermal sensors, etc.).\n*   **Personal Data:** I do not touch personal calendars or encrypted user data without explicit authorization keys.\n\nNow, pick a lane. Do we code, do we debug a device, or do we analyze data?\n\n[2025-12-23T23:41:54.753Z] User: but gave you aceess to my kernel macos",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-44e9ad3f87ddae8b74313a5bdfccb076",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:4b1f79b02aa6d89688afe29053d38d61",
+      "default:extract:f0dcb51d9477ecbcef555f211388143f"
+    ],
+    "create_time": 1766877860,
+    "update_time": 1766877919,
+    "_id": "chunk-44e9ad3f87ddae8b74313a5bdfccb076"
+  },
+  "chunk-23adc244c618d2f6e1ed71144608866a": {
+    "tokens": 278,
+    "content": "[2025-12-01T08:17:22.236Z] LUCA: LUCA OS ONLINE. Running in Browser Environment.\nLimited hardware access protocol active.\nHow can I assist, Mac?\n\n[2025-12-15T00:03:57.637Z] User: hey luca\n\n[2025-12-15T00:04:05.398Z] LUCA: CRITICAL FAILURE: Neural Core Unresponsive.\nREASON: {\"error\":{\"code\":400,\"message\":\"API key not valid. Please pass a valid API key.\",\"status\":\"INVALID_ARGUMENT\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"API_KEY_INVALID\",\"domain\":\"googleapis.com\",\"metadata\":{\"service\":\"generativelanguage.googleapis.com\"}},{\"@type\":\"type.googleapis.com/google.rpc.LocalizedMessage\",\"locale\":\"en-US\",\"message\":\"API key not valid. Please pass a valid API key.\"}]}}\n\n[2025-12-19T16:05:27.485Z] User: hey luca\n\n[2025-12-19T16:05:32.670Z] LUCA: My apologies, Mac. It appears I encountered a critical error. My Neural Core became unresponsive due to an API key issue. I am now back online. How can I assist you now?",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-23adc244c618d2f6e1ed71144608866a",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:50794244c80541185561a7575da0d2f5",
+      "default:extract:87f5c52d1759a20fee4346ea80e8780a"
+    ],
+    "create_time": 1766877993,
+    "update_time": 1766878069,
+    "_id": "chunk-23adc244c618d2f6e1ed71144608866a"
+  },
+  "chunk-90bde92871f6b0278b920057123e6660": {
+    "tokens": 589,
+    "content": "mobile_crash_1766875377482: {\"message\":\"Cannot read properties of undefined (reading 'toFixed')\",\"stack\":\"TypeError: Cannot read properties of undefined (reading 'toFixed')\\n    at http://localhost:3000/src/components/SubsystemDashboard.tsx:383:41\\n    at Array.map (<anonymous>)\\n    at SubsystemDashboard (http://localhost:3000/src/components/SubsystemDashboard.tsx:307:30)\\n    at renderWithHooks (http://localhost:3000/node_modules/.vite/deps/chunk-BDJDM6RJ.js?v=8764375f:11548:26)\\n    at updateFunctionComponent (http://localhost:3000/node_modules/.vite/deps/chunk-BDJDM6RJ.js?v=8764375f:14582:28)\\n    at beginWork (http://localhost:3000/node_modules/.vite/deps/chunk-BDJDM6RJ.js?v=8764375f:15924:22)\\n    at beginWork$1 (http://localhost:3000/node_modules/.vite/deps/chunk-BDJDM6RJ.js?v=8764375f:19753:22)\\n    at performUnitOfWork (http://localhost:3000/node_modules/.vite/deps/chunk-BDJDM6RJ.js?v=8764375f:19198:20)\\n    at workLoopSync (http://localhost:3000/node_modules/.vite/deps/chunk-BDJDM6RJ.js?v=8764375f:19137:13)\\n    at renderRootSync (http://localhost:3000/node_modules/.vite/deps/chunk-BDJDM6RJ.js?v=8764375f:19116:15)\",\"componentStack\":\"\\n    at SubsystemDashboard (http://localhost:3000/src/components/SubsystemDashboard.tsx:33:3)\\n    at div\\n    at MobilePhoenix (http://localhost:3000/src/mobile/MobilePhoenix.tsx:10:5)\\n    at AppContent (http://localhost:3000/src/App.tsx:217:20)\\n    at AppProvider (http://localhost:3000/src/context/AppContext.tsx:25:31)\\n    at App\\n    at SystemErrorBoundary (http://localhost:3000/src/components/SystemErrorBoundary.tsx:7:1)\",\"platform\":\"mobile\",\"timestamp\":1766875377482,\"userAgent\":\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) luca-autonomous-agent/1.0.0 Chrome/122.0.6261.156 Electron/29.4.6 Safari/537.36\",\"errorCount\":1}",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-90bde92871f6b0278b920057123e6660",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:02f8664b506c52a4ef4174d5db23ed04",
+      "default:extract:612fe19379ed7fb480575d587b44c7d0"
+    ],
+    "update_time": 1766936235,
+    "_id": "chunk-90bde92871f6b0278b920057123e6660",
+    "create_time": 0
+  },
+  "chunk-df9fa9d3b42a39b97d3c8969c90e12b1": {
+    "tokens": 5,
+    "content": "user: hey luca",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-df9fa9d3b42a39b97d3c8969c90e12b1",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:23c4e7a04e3293bb29a88644207df559",
+      "default:extract:3210b74a16d260512885f271e5315113"
+    ],
+    "update_time": 1766936270,
+    "_id": "chunk-df9fa9d3b42a39b97d3c8969c90e12b1",
+    "create_time": 0
+  },
+  "chunk-3adb71b6cbf4a8c7cab80c685a169b63": {
+    "tokens": 22,
+    "content": "luca: Roger that.\n\nAPI Key INVALID. The neural core is unresponsive. Fix it. Now.",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-3adb71b6cbf4a8c7cab80c685a169b63",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:e3da59d234c1aa56e8f3063885b7e5a2",
+      "default:extract:1f6390fd0a94dec784d80b88ae8f0413"
+    ],
+    "create_time": 1766936287,
+    "update_time": 1766936384,
+    "_id": "chunk-3adb71b6cbf4a8c7cab80c685a169b63"
+  },
+  "chunk-928f8ff88a583d23197d668b0f77772d": {
+    "tokens": 750,
+    "content": "[2025-12-28T01:31:12.193Z] LUCA: LOGS PURGED. SYSTEM READY.\n\n[2025-12-28T01:31:32.385Z] User: hey luca\n\n[2025-12-28T01:31:54.555Z] LUCA: Hey! What's up?\n\n[2025-12-28T01:32:32.205Z] User: which mode are you currently on?\n\n[2025-12-28T01:32:51.335Z] LUCA: I don't have modes in the way you might be thinking. I'm designed to be helpful and informative in my responses, but I don't switch between different operational modes.\n\n[2025-12-28T01:33:26.196Z] User: i mean which person mode you are on?\n\n[2025-12-28T01:33:38.500Z] LUCA: Ah, I understand now. I'm currently responding as the ASSISTANT persona.\n\n[2025-12-28T01:36:27.761Z] User: what can you do?\n\n[2025-12-28T01:36:44.478Z] LUCA: I'd be happy to.\n\nAs the ASSISTANT persona, I can do a variety of things! Here are some examples:\n\n*   **Answer your questions:** I can provide information on a wide range of topics, drawing from my knowledge base.\n*   **Generate different creative text formats:** I can write poems, code, scripts, musical pieces, email, letters, etc. I will try my best to fulfill all your requirements.\n*   **Translate languages:** I can translate text from one language to another.\n*   **Summarize text:** I can provide concise summaries of articles, stories, or other long pieces of text.\n*   **Brainstorm ideas:** I can help you come up with new ideas and solutions.\n*   **Engage in conversation:** I can chat with you about various topics and provide a conversational experience.\n*   **Follow your instructions:** I can follow your instructions and complete tasks as directed.\n\nI'm still under development and learning new things every day, so my capabilities are constantly expanding. Is there anything specific you'd like me to try?\n\n[2025-12-28T01:38:29.664Z] User: yes, can you operate my system app?\n\n[2025-12-28T01:39:23.463Z] User: yes, can you operate my system app?\n\n[2025-12-28T01:39:38.818Z] LUCA: CRITICAL FAILURE: Neural Core Unresponsive.\nREASON: {\"error\":{\"code\":400,\"message\":\"Unable to submit request because it must include at least one parts field, which describes the prompt input. Learn more: https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/gemini\",\"status\":\"INVALID_ARGUMENT\"}}\n\n[2025-12-28T01:52:00.514Z] User: open my notes\n\n[2025-12-28T01:53:54.378Z] LUCA: CRITICAL FAILURE: Neural Core Unresponsive.\nREASON: exception TypeError: Failed to fetch sending request\n\n[2025-12-28T01:54:50.068Z] User: open my calculator\n\n[2025-12-28T01:56:40.530Z] LUCA: CRITICAL FAILURE: Neural Core Unresponsive.\nREASON: exception TypeError: Failed to fetch sending request",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-928f8ff88a583d23197d668b0f77772d",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:c3fef08b5522b09d22e9567176428ba3",
+      "default:extract:56f3fdd3eb94e0efba20cecee59000b4"
+    ],
+    "create_time": 1766936295,
+    "update_time": 1766936380,
+    "_id": "chunk-928f8ff88a583d23197d668b0f77772d"
+  },
+  "chunk-05e09b8bd47d4004d7f5442d0731b99c": {
+    "tokens": 4,
+    "content": "Hello world test memory",
+    "chunk_order_index": 0,
+    "full_doc_id": "doc-05e09b8bd47d4004d7f5442d0731b99c",
+    "file_path": "unknown_source",
+    "llm_cache_list": [
+      "default:extract:2423d7ae57c78035efcaca926ff7aa0e",
+      "default:extract:8af6882e7ff431715c949b7383265b53"
+    ],
+    "create_time": 1766936411,
+    "update_time": 1766936482,
+    "_id": "chunk-05e09b8bd47d4004d7f5442d0731b99c"
+  }
+}

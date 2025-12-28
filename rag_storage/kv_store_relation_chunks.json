@@ -1,0 +1,2887 @@
+{
+  "Mobile Crash 1766628189350<SEP>ReferenceError": {
+    "chunk_ids": [
+      "chunk-7f5812906496a9d9397a545e2589a713"
+    ],
+    "count": 1,
+    "create_time": 1766628329,
+    "update_time": 1766628329,
+    "_id": "Mobile Crash 1766628189350<SEP>ReferenceError"
+  },
+  "MobilePhoenix<SEP>OnboardingFlow": {
+    "chunk_ids": [
+      "chunk-7f5812906496a9d9397a545e2589a713",
+      "chunk-b9ced2c16119da98112f72df5d83c8f6",
+      "chunk-f4c6506d6d4ee2296edeb243ea17df96",
+      "chunk-1125c0957c3ebc4535ea948b74b75562"
+    ],
+    "count": 4,
+    "update_time": 1766716998,
+    "_id": "MobilePhoenix<SEP>OnboardingFlow"
+  },
+  "NeuralCanvas<SEP>ReferenceError": {
+    "chunk_ids": [
+      "chunk-7f5812906496a9d9397a545e2589a713"
+    ],
+    "count": 1,
+    "create_time": 1766628330,
+    "update_time": 1766628330,
+    "_id": "NeuralCanvas<SEP>ReferenceError"
+  },
+  "Mobile Crash 1766628189350<SEP>OnboardingFlow": {
+    "chunk_ids": [
+      "chunk-7f5812906496a9d9397a545e2589a713"
+    ],
+    "count": 1,
+    "create_time": 1766628330,
+    "update_time": 1766628330,
+    "_id": "Mobile Crash 1766628189350<SEP>OnboardingFlow"
+  },
+  "AppContent<SEP>MobilePhoenix": {
+    "chunk_ids": [
+      "chunk-7f5812906496a9d9397a545e2589a713",
+      "chunk-b9ced2c16119da98112f72df5d83c8f6",
+      "chunk-f4c6506d6d4ee2296edeb243ea17df96",
+      "chunk-1125c0957c3ebc4535ea948b74b75562",
+      "chunk-1029068d12486a9b05f26ebf617c1cbc",
+      "chunk-64f6fbc717e0f904626d075d8e679bea",
+      "chunk-f0a0710250d123d8edd381763820a255",
+      "chunk-848d80e38e16352f05185485d7e4ac0c",
+      "chunk-764a66aefac33497df6b33155b20c780"
+    ],
+    "count": 9,
+    "update_time": 1766761033,
+    "_id": "AppContent<SEP>MobilePhoenix"
+  },
+  "Mobile Crash 1766628189350<SEP>SystemErrorBoundary": {
+    "chunk_ids": [
+      "chunk-7f5812906496a9d9397a545e2589a713"
+    ],
+    "count": 1,
+    "create_time": 1766628331,
+    "update_time": 1766628331,
+    "_id": "Mobile Crash 1766628189350<SEP>SystemErrorBoundary"
+  },
+  "AppContent<SEP>AppProvider": {
+    "chunk_ids": [
+      "chunk-7f5812906496a9d9397a545e2589a713",
+      "chunk-b9ced2c16119da98112f72df5d83c8f6",
+      "chunk-f4c6506d6d4ee2296edeb243ea17df96",
+      "chunk-1125c0957c3ebc4535ea948b74b75562",
+      "chunk-1029068d12486a9b05f26ebf617c1cbc",
+      "chunk-64f6fbc717e0f904626d075d8e679bea",
+      "chunk-f0a0710250d123d8edd381763820a255",
+      "chunk-848d80e38e16352f05185485d7e4ac0c",
+      "chunk-764a66aefac33497df6b33155b20c780"
+    ],
+    "count": 9,
+    "update_time": 1766761034,
+    "_id": "AppContent<SEP>AppProvider"
+  },
+  "Localhost:3000<SEP>OnboardingFlow": {
+    "chunk_ids": [
+      "chunk-7f5812906496a9d9397a545e2589a713"
+    ],
+    "count": 1,
+    "create_time": 1766628331,
+    "update_time": 1766628331,
+    "_id": "Localhost:3000<SEP>OnboardingFlow"
+  },
+  "Luca-Autonomous-Agent<SEP>Mobile Crash 1766628189350": {
+    "chunk_ids": [
+      "chunk-7f5812906496a9d9397a545e2589a713"
+    ],
+    "count": 1,
+    "create_time": 1766628332,
+    "update_time": 1766628332,
+    "_id": "Luca-Autonomous-Agent<SEP>Mobile Crash 1766628189350"
+  },
+  "App<SEP>AppProvider": {
+    "chunk_ids": [
+      "chunk-7f5812906496a9d9397a545e2589a713",
+      "chunk-b9ced2c16119da98112f72df5d83c8f6",
+      "chunk-f4c6506d6d4ee2296edeb243ea17df96",
+      "chunk-1125c0957c3ebc4535ea948b74b75562",
+      "chunk-1029068d12486a9b05f26ebf617c1cbc",
+      "chunk-64f6fbc717e0f904626d075d8e679bea",
+      "chunk-f0a0710250d123d8edd381763820a255",
+      "chunk-848d80e38e16352f05185485d7e4ac0c"
+    ],
+    "count": 8,
+    "update_time": 1766750019,
+    "_id": "App<SEP>AppProvider"
+  },
+  "Mobile<SEP>Mobile Crash 1766628189350": {
+    "chunk_ids": [
+      "chunk-7f5812906496a9d9397a545e2589a713"
+    ],
+    "count": 1,
+    "create_time": 1766628333,
+    "update_time": 1766628333,
+    "_id": "Mobile<SEP>Mobile Crash 1766628189350"
+  },
+  "App<SEP>SystemErrorBoundary": {
+    "chunk_ids": [
+      "chunk-7f5812906496a9d9397a545e2589a713",
+      "chunk-b9ced2c16119da98112f72df5d83c8f6",
+      "chunk-f4c6506d6d4ee2296edeb243ea17df96",
+      "chunk-1125c0957c3ebc4535ea948b74b75562",
+      "chunk-1029068d12486a9b05f26ebf617c1cbc",
+      "chunk-64f6fbc717e0f904626d075d8e679bea",
+      "chunk-f0a0710250d123d8edd381763820a255",
+      "chunk-848d80e38e16352f05185485d7e4ac0c"
+    ],
+    "count": 8,
+    "update_time": 1766750032,
+    "_id": "App<SEP>SystemErrorBoundary"
+  },
+  "Electron<SEP>Luca-Autonomous-Agent": {
+    "chunk_ids": [
+      "chunk-7f5812906496a9d9397a545e2589a713",
+      "chunk-848d80e38e16352f05185485d7e4ac0c",
+      "chunk-764a66aefac33497df6b33155b20c780"
+    ],
+    "count": 3,
+    "update_time": 1766761037,
+    "_id": "Electron<SEP>Luca-Autonomous-Agent"
+  },
+  "Mobile Crash 1766628189350<SEP>Vite": {
+    "chunk_ids": [
+      "chunk-7f5812906496a9d9397a545e2589a713"
+    ],
+    "count": 1,
+    "create_time": 1766628335,
+    "update_time": 1766628335,
+    "_id": "Mobile Crash 1766628189350<SEP>Vite"
+  },
+  "Luca-Autonomous-Agent<SEP>Mac OS X 10_15_7": {
+    "chunk_ids": [
+      "chunk-7f5812906496a9d9397a545e2589a713",
+      "chunk-848d80e38e16352f05185485d7e4ac0c"
+    ],
+    "count": 2,
+    "update_time": 1766750033,
+    "_id": "Luca-Autonomous-Agent<SEP>Mac OS X 10_15_7"
+  },
+  "Luca<SEP>Luca OS": {
+    "chunk_ids": [
+      "chunk-bb9bbb4e6517ddf2fd0e56695e693d77",
+      "chunk-cc4ccf71184707a2ef1849e62c2fa7e2"
+    ],
+    "count": 2,
+    "update_time": 1766747022,
+    "_id": "Luca<SEP>Luca OS"
+  },
+  "Luca<SEP>Neural Link": {
+    "chunk_ids": [
+      "chunk-bb9bbb4e6517ddf2fd0e56695e693d77",
+      "chunk-09cbcf578acd6a5a1fc57e3f15337976",
+      "chunk-4fed016d65201670bcebc10925028398",
+      "chunk-ceddb4cb589df6c12ad1034e086da89d",
+      "chunk-8b0ccca6dbf73b762798861137d1a86c"
+    ],
+    "count": 5,
+    "update_time": 1766884735,
+    "_id": "Luca<SEP>Neural Link"
+  },
+  "Luca OS<SEP>Neural Link": {
+    "chunk_ids": [
+      "chunk-bb9bbb4e6517ddf2fd0e56695e693d77"
+    ],
+    "count": 1,
+    "create_time": 1766653995,
+    "update_time": 1766653995,
+    "_id": "Luca OS<SEP>Neural Link"
+  },
+  "Luca<SEP>User": {
+    "chunk_ids": [
+      "chunk-bb9bbb4e6517ddf2fd0e56695e693d77",
+      "chunk-df9fa9d3b42a39b97d3c8969c90e12b1",
+      "chunk-7ea9b8bc8a9a6f47601aec70673839c5",
+      "chunk-0ace1f096a8a66cfed32b3b636271032",
+      "chunk-860d8dde5efc0b4ef4217ae6b9912b68",
+      "chunk-8b0ccca6dbf73b762798861137d1a86c",
+      "chunk-fae5f0aaeb4b6c942782d69b68a51cf2",
+      "chunk-042d759aacad80eabc3f0a07783f37d7",
+      "chunk-20cc17771fcc8dd1b7081a0800a96379",
+      "chunk-5c1ae86a6bc5a507b8cec9a06e6c9ba0",
+      "chunk-1d327ad945e45eab8b23a6baed6456f0"
+    ],
+    "count": 11,
+    "update_time": 1766943963,
+    "_id": "Luca<SEP>User"
+  },
+  "2025-12-25T09:11:11.282Z<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-bb9bbb4e6517ddf2fd0e56695e693d77"
+    ],
+    "count": 1,
+    "create_time": 1766653995,
+    "update_time": 1766653995,
+    "_id": "2025-12-25T09:11:11.282Z<SEP>Luca"
+  },
+  "Mobile_crash_1766674464050<SEP>ReferenceError": {
+    "chunk_ids": [
+      "chunk-b9ced2c16119da98112f72df5d83c8f6"
+    ],
+    "count": 1,
+    "create_time": 1766674579,
+    "update_time": 1766674579,
+    "_id": "Mobile_crash_1766674464050<SEP>ReferenceError"
+  },
+  "ReferenceError<SEP>Theme": {
+    "chunk_ids": [
+      "chunk-b9ced2c16119da98112f72df5d83c8f6"
+    ],
+    "count": 1,
+    "create_time": 1766674580,
+    "update_time": 1766674580,
+    "_id": "ReferenceError<SEP>Theme"
+  },
+  "OnboardingFlow<SEP>ReferenceError": {
+    "chunk_ids": [
+      "chunk-b9ced2c16119da98112f72df5d83c8f6"
+    ],
+    "count": 1,
+    "create_time": 1766674580,
+    "update_time": 1766674580,
+    "_id": "OnboardingFlow<SEP>ReferenceError"
+  },
+  "AppProvider<SEP>SystemErrorBoundary": {
+    "chunk_ids": [
+      "chunk-b9ced2c16119da98112f72df5d83c8f6"
+    ],
+    "count": 1,
+    "create_time": 1766674582,
+    "update_time": 1766674582,
+    "_id": "AppProvider<SEP>SystemErrorBoundary"
+  },
+  "Localhost:3000<SEP>Mobile_crash_1766674464050": {
+    "chunk_ids": [
+      "chunk-b9ced2c16119da98112f72df5d83c8f6"
+    ],
+    "count": 1,
+    "create_time": 1766674582,
+    "update_time": 1766674582,
+    "_id": "Localhost:3000<SEP>Mobile_crash_1766674464050"
+  },
+  "Luca-autonomous-agent<SEP>Mobile_crash_1766674464050": {
+    "chunk_ids": [
+      "chunk-b9ced2c16119da98112f72df5d83c8f6"
+    ],
+    "count": 1,
+    "create_time": 1766674583,
+    "update_time": 1766674583,
+    "_id": "Luca-autonomous-agent<SEP>Mobile_crash_1766674464050"
+  },
+  "Electron<SEP>Luca-autonomous-agent": {
+    "chunk_ids": [
+      "chunk-b9ced2c16119da98112f72df5d83c8f6",
+      "chunk-f4c6506d6d4ee2296edeb243ea17df96",
+      "chunk-1125c0957c3ebc4535ea948b74b75562",
+      "chunk-64f6fbc717e0f904626d075d8e679bea"
+    ],
+    "count": 4,
+    "update_time": 1766721006,
+    "_id": "Electron<SEP>Luca-autonomous-agent"
+  },
+  "Chrome<SEP>Luca-autonomous-agent": {
+    "chunk_ids": [
+      "chunk-b9ced2c16119da98112f72df5d83c8f6",
+      "chunk-1125c0957c3ebc4535ea948b74b75562",
+      "chunk-64f6fbc717e0f904626d075d8e679bea"
+    ],
+    "count": 3,
+    "update_time": 1766721007,
+    "_id": "Chrome<SEP>Luca-autonomous-agent"
+  },
+  "Luca-autonomous-agent<SEP>Macintosh": {
+    "chunk_ids": [
+      "chunk-b9ced2c16119da98112f72df5d83c8f6"
+    ],
+    "count": 1,
+    "create_time": 1766674586,
+    "update_time": 1766674586,
+    "_id": "Luca-autonomous-agent<SEP>Macintosh"
+  },
+  "Mobile_crash_1766678895063<SEP>ReferenceError": {
+    "chunk_ids": [
+      "chunk-f4c6506d6d4ee2296edeb243ea17df96"
+    ],
+    "count": 1,
+    "create_time": 1766678977,
+    "update_time": 1766678977,
+    "_id": "Mobile_crash_1766678895063<SEP>ReferenceError"
+  },
+  "LucaMessage<SEP>ReferenceError": {
+    "chunk_ids": [
+      "chunk-f4c6506d6d4ee2296edeb243ea17df96"
+    ],
+    "count": 1,
+    "create_time": 1766678977,
+    "update_time": 1766678977,
+    "_id": "LucaMessage<SEP>ReferenceError"
+  },
+  "MessageInput<SEP>ReferenceError": {
+    "chunk_ids": [
+      "chunk-f4c6506d6d4ee2296edeb243ea17df96"
+    ],
+    "count": 1,
+    "create_time": 1766678978,
+    "update_time": 1766678978,
+    "_id": "MessageInput<SEP>ReferenceError"
+  },
+  "ConversationalOnboarding<SEP>MessageInput": {
+    "chunk_ids": [
+      "chunk-f4c6506d6d4ee2296edeb243ea17df96"
+    ],
+    "count": 1,
+    "create_time": 1766678979,
+    "update_time": 1766678979,
+    "_id": "ConversationalOnboarding<SEP>MessageInput"
+  },
+  "Mobile<SEP>Mobile_crash_1766678895063": {
+    "chunk_ids": [
+      "chunk-f4c6506d6d4ee2296edeb243ea17df96"
+    ],
+    "count": 1,
+    "create_time": 1766678979,
+    "update_time": 1766678979,
+    "_id": "Mobile<SEP>Mobile_crash_1766678895063"
+  },
+  "ConversationalOnboarding<SEP>OnboardingFlow": {
+    "chunk_ids": [
+      "chunk-f4c6506d6d4ee2296edeb243ea17df96",
+      "chunk-1125c0957c3ebc4535ea948b74b75562"
+    ],
+    "count": 2,
+    "update_time": 1766716999,
+    "_id": "ConversationalOnboarding<SEP>OnboardingFlow"
+  },
+  "Luca-autonomous-agent<SEP>Mobile_crash_1766678895063": {
+    "chunk_ids": [
+      "chunk-f4c6506d6d4ee2296edeb243ea17df96"
+    ],
+    "count": 1,
+    "create_time": 1766678980,
+    "update_time": 1766678980,
+    "_id": "Luca-autonomous-agent<SEP>Mobile_crash_1766678895063"
+  },
+  "Mobile_crash_1766678895063<SEP>SystemErrorBoundary": {
+    "chunk_ids": [
+      "chunk-f4c6506d6d4ee2296edeb243ea17df96"
+    ],
+    "count": 1,
+    "create_time": 1766678981,
+    "update_time": 1766678981,
+    "_id": "Mobile_crash_1766678895063<SEP>SystemErrorBoundary"
+  },
+  "Mobile_crash_1766678895063<SEP>Vite": {
+    "chunk_ids": [
+      "chunk-f4c6506d6d4ee2296edeb243ea17df96"
+    ],
+    "count": 1,
+    "create_time": 1766678982,
+    "update_time": 1766678982,
+    "_id": "Mobile_crash_1766678895063<SEP>Vite"
+  },
+  "Electron<SEP>Macintosh": {
+    "chunk_ids": [
+      "chunk-f4c6506d6d4ee2296edeb243ea17df96"
+    ],
+    "count": 1,
+    "create_time": 1766678984,
+    "update_time": 1766678984,
+    "_id": "Electron<SEP>Macintosh"
+  },
+  "Mobile Crash 1766716914429<SEP>ReferenceError": {
+    "chunk_ids": [
+      "chunk-1125c0957c3ebc4535ea948b74b75562"
+    ],
+    "count": 1,
+    "create_time": 1766716998,
+    "update_time": 1766716998,
+    "_id": "Mobile Crash 1766716914429<SEP>ReferenceError"
+  },
+  "ConversationalOnboarding<SEP>ReferenceError": {
+    "chunk_ids": [
+      "chunk-1125c0957c3ebc4535ea948b74b75562"
+    ],
+    "count": 1,
+    "create_time": 1766716998,
+    "update_time": 1766716998,
+    "_id": "ConversationalOnboarding<SEP>ReferenceError"
+  },
+  "ReferenceError<SEP>X is not defined": {
+    "chunk_ids": [
+      "chunk-1125c0957c3ebc4535ea948b74b75562"
+    ],
+    "count": 1,
+    "create_time": 1766716999,
+    "update_time": 1766716999,
+    "_id": "ReferenceError<SEP>X is not defined"
+  },
+  "Mobile Crash 1766716914429<SEP>SystemErrorBoundary": {
+    "chunk_ids": [
+      "chunk-1125c0957c3ebc4535ea948b74b75562"
+    ],
+    "count": 1,
+    "create_time": 1766716999,
+    "update_time": 1766716999,
+    "_id": "Mobile Crash 1766716914429<SEP>SystemErrorBoundary"
+  },
+  "Luca-autonomous-agent<SEP>Mobile Crash 1766716914429": {
+    "chunk_ids": [
+      "chunk-1125c0957c3ebc4535ea948b74b75562"
+    ],
+    "count": 1,
+    "create_time": 1766717001,
+    "update_time": 1766717001,
+    "_id": "Luca-autonomous-agent<SEP>Mobile Crash 1766716914429"
+  },
+  "Luca-autonomous-agent<SEP>MacOS": {
+    "chunk_ids": [
+      "chunk-1125c0957c3ebc4535ea948b74b75562"
+    ],
+    "count": 1,
+    "create_time": 1766717003,
+    "update_time": 1766717003,
+    "_id": "Luca-autonomous-agent<SEP>MacOS"
+  },
+  "Mac<SEP>Operator Name": {
+    "chunk_ids": [
+      "chunk-7060b88f6d85f2cac8cced05ef2e3b6c"
+    ],
+    "count": 1,
+    "create_time": 1766718830,
+    "update_time": 1766718830,
+    "_id": "Mac<SEP>Operator Name"
+  },
+  "Communication Style<SEP>Mixed": {
+    "chunk_ids": [
+      "chunk-f629d3c7310d67b8faf969d8e6a1c219"
+    ],
+    "count": 1,
+    "create_time": 1766718889,
+    "update_time": 1766718889,
+    "_id": "Communication Style<SEP>Mixed"
+  },
+  "Mac<SEP>Mixed Communication Style": {
+    "chunk_ids": [
+      "chunk-7a14a719ddb3d796206df080652774bf"
+    ],
+    "count": 1,
+    "create_time": 1766718898,
+    "update_time": 1766718898,
+    "_id": "Mac<SEP>Mixed Communication Style"
+  },
+  "Briefing<SEP>Mac": {
+    "chunk_ids": [
+      "chunk-7a14a719ddb3d796206df080652774bf"
+    ],
+    "count": 1,
+    "create_time": 1766718899,
+    "update_time": 1766718899,
+    "_id": "Briefing<SEP>Mac"
+  },
+  "Mac<SEP>Operator Profile Summary": {
+    "chunk_ids": [
+      "chunk-7a14a719ddb3d796206df080652774bf"
+    ],
+    "count": 1,
+    "create_time": 1766718899,
+    "update_time": 1766718899,
+    "_id": "Mac<SEP>Operator Profile Summary"
+  },
+  "Mac<SEP>Operator": {
+    "chunk_ids": [
+      "chunk-7a14a719ddb3d796206df080652774bf"
+    ],
+    "count": 1,
+    "create_time": 1766718900,
+    "update_time": 1766718900,
+    "_id": "Mac<SEP>Operator"
+  },
+  "Interest<SEP>Mac": {
+    "chunk_ids": [
+      "chunk-7a14a719ddb3d796206df080652774bf"
+    ],
+    "count": 1,
+    "create_time": 1766718900,
+    "update_time": 1766718900,
+    "_id": "Interest<SEP>Mac"
+  },
+  "Briefing<SEP>Interest": {
+    "chunk_ids": [
+      "chunk-7a14a719ddb3d796206df080652774bf"
+    ],
+    "count": 1,
+    "create_time": 1766718901,
+    "update_time": 1766718901,
+    "_id": "Briefing<SEP>Interest"
+  },
+  "Mobile_crash_1766720763160<SEP>ReferenceError": {
+    "chunk_ids": [
+      "chunk-1029068d12486a9b05f26ebf617c1cbc"
+    ],
+    "count": 1,
+    "create_time": 1766720849,
+    "update_time": 1766720849,
+    "_id": "Mobile_crash_1766720763160<SEP>ReferenceError"
+  },
+  "CanvasRef<SEP>ReferenceError": {
+    "chunk_ids": [
+      "chunk-1029068d12486a9b05f26ebf617c1cbc",
+      "chunk-64f6fbc717e0f904626d075d8e679bea"
+    ],
+    "count": 2,
+    "update_time": 1766721000,
+    "_id": "CanvasRef<SEP>ReferenceError"
+  },
+  "Mobile<SEP>Mobile_crash_1766720763160": {
+    "chunk_ids": [
+      "chunk-1029068d12486a9b05f26ebf617c1cbc"
+    ],
+    "count": 1,
+    "create_time": 1766720850,
+    "update_time": 1766720850,
+    "_id": "Mobile<SEP>Mobile_crash_1766720763160"
+  },
+  "AdminEnrollmentModal<SEP>ReferenceError": {
+    "chunk_ids": [
+      "chunk-1029068d12486a9b05f26ebf617c1cbc"
+    ],
+    "count": 1,
+    "create_time": 1766720851,
+    "update_time": 1766720851,
+    "_id": "AdminEnrollmentModal<SEP>ReferenceError"
+  },
+  "Localhost:3000<SEP>Mobile_crash_1766720763160": {
+    "chunk_ids": [
+      "chunk-1029068d12486a9b05f26ebf617c1cbc"
+    ],
+    "count": 1,
+    "create_time": 1766720851,
+    "update_time": 1766720851,
+    "_id": "Localhost:3000<SEP>Mobile_crash_1766720763160"
+  },
+  "AdminEnrollmentModal<SEP>CanvasRef": {
+    "chunk_ids": [
+      "chunk-1029068d12486a9b05f26ebf617c1cbc"
+    ],
+    "count": 1,
+    "create_time": 1766720852,
+    "update_time": 1766720852,
+    "_id": "AdminEnrollmentModal<SEP>CanvasRef"
+  },
+  "SettingsAdminTab<SEP>SettingsModal": {
+    "chunk_ids": [
+      "chunk-1029068d12486a9b05f26ebf617c1cbc",
+      "chunk-64f6fbc717e0f904626d075d8e679bea"
+    ],
+    "count": 2,
+    "update_time": 1766721000,
+    "_id": "SettingsAdminTab<SEP>SettingsModal"
+  },
+  "MobilePhoenix<SEP>SettingsModal": {
+    "chunk_ids": [
+      "chunk-1029068d12486a9b05f26ebf617c1cbc",
+      "chunk-64f6fbc717e0f904626d075d8e679bea"
+    ],
+    "count": 2,
+    "update_time": 1766721002,
+    "_id": "MobilePhoenix<SEP>SettingsModal"
+  },
+  "AdminEnrollmentModal<SEP>SettingsAdminTab": {
+    "chunk_ids": [
+      "chunk-1029068d12486a9b05f26ebf617c1cbc",
+      "chunk-64f6fbc717e0f904626d075d8e679bea"
+    ],
+    "count": 2,
+    "update_time": 1766721002,
+    "_id": "AdminEnrollmentModal<SEP>SettingsAdminTab"
+  },
+  "MobilePhoenix<SEP>SystemErrorBoundary": {
+    "chunk_ids": [
+      "chunk-1029068d12486a9b05f26ebf617c1cbc"
+    ],
+    "count": 1,
+    "create_time": 1766720854,
+    "update_time": 1766720854,
+    "_id": "MobilePhoenix<SEP>SystemErrorBoundary"
+  },
+  "Luca-autonomous-agent/1.0.0<SEP>Mobile_crash_1766720763160": {
+    "chunk_ids": [
+      "chunk-1029068d12486a9b05f26ebf617c1cbc"
+    ],
+    "count": 1,
+    "create_time": 1766720855,
+    "update_time": 1766720855,
+    "_id": "Luca-autonomous-agent/1.0.0<SEP>Mobile_crash_1766720763160"
+  },
+  "Macintosh; Intel Mac OS X 10_15_7<SEP>Mobile_crash_1766720763160": {
+    "chunk_ids": [
+      "chunk-1029068d12486a9b05f26ebf617c1cbc"
+    ],
+    "count": 1,
+    "create_time": 1766720857,
+    "update_time": 1766720857,
+    "_id": "Macintosh; Intel Mac OS X 10_15_7<SEP>Mobile_crash_1766720763160"
+  },
+  "LUCA<SEP>Operator Mac": {
+    "chunk_ids": [
+      "chunk-32e4ae642566968b848fabe961dd13c7",
+      "chunk-fce1288ce56928f113b22c6310fcf4af",
+      "chunk-fb1c6857c846db31a6ae4fe916000771"
+    ],
+    "count": 3,
+    "update_time": 1766883216,
+    "_id": "LUCA<SEP>Operator Mac"
+  },
+  "Neural Link<SEP>Operator Mac": {
+    "chunk_ids": [
+      "chunk-32e4ae642566968b848fabe961dd13c7",
+      "chunk-09cbcf578acd6a5a1fc57e3f15337976",
+      "chunk-fce1288ce56928f113b22c6310fcf4af",
+      "chunk-fb1c6857c846db31a6ae4fe916000771",
+      "chunk-8b0ccca6dbf73b762798861137d1a86c"
+    ],
+    "count": 5,
+    "update_time": 1766884729,
+    "_id": "Neural Link<SEP>Operator Mac"
+  },
+  "LUCA<SEP>Neural Link": {
+    "chunk_ids": [
+      "chunk-32e4ae642566968b848fabe961dd13c7",
+      "chunk-fce1288ce56928f113b22c6310fcf4af",
+      "chunk-fb1c6857c846db31a6ae4fe916000771"
+    ],
+    "count": 3,
+    "update_time": 1766883218,
+    "_id": "LUCA<SEP>Neural Link"
+  },
+  "2025-12-26T03:12:48.405Z<SEP>LUCA": {
+    "chunk_ids": [
+      "chunk-32e4ae642566968b848fabe961dd13c7"
+    ],
+    "count": 1,
+    "create_time": 1766720891,
+    "update_time": 1766720891,
+    "_id": "2025-12-26T03:12:48.405Z<SEP>LUCA"
+  },
+  "Mobile_crash_1766720806524<SEP>ReferenceError": {
+    "chunk_ids": [
+      "chunk-64f6fbc717e0f904626d075d8e679bea"
+    ],
+    "count": 1,
+    "create_time": 1766720999,
+    "update_time": 1766720999,
+    "_id": "Mobile_crash_1766720806524<SEP>ReferenceError"
+  },
+  "CanvasRef<SEP>Mobile_crash_1766720806524": {
+    "chunk_ids": [
+      "chunk-64f6fbc717e0f904626d075d8e679bea"
+    ],
+    "count": 1,
+    "create_time": 1766721000,
+    "update_time": 1766721000,
+    "_id": "CanvasRef<SEP>Mobile_crash_1766720806524"
+  },
+  "AdminEnrollmentModal<SEP>Mobile_crash_1766720806524": {
+    "chunk_ids": [
+      "chunk-64f6fbc717e0f904626d075d8e679bea"
+    ],
+    "count": 1,
+    "create_time": 1766721000,
+    "update_time": 1766721000,
+    "_id": "AdminEnrollmentModal<SEP>Mobile_crash_1766720806524"
+  },
+  "Localhost:3000<SEP>Mobile_crash_1766720806524": {
+    "chunk_ids": [
+      "chunk-64f6fbc717e0f904626d075d8e679bea"
+    ],
+    "count": 1,
+    "create_time": 1766721004,
+    "update_time": 1766721004,
+    "_id": "Localhost:3000<SEP>Mobile_crash_1766720806524"
+  },
+  "AppContent<SEP>SystemErrorBoundary": {
+    "chunk_ids": [
+      "chunk-64f6fbc717e0f904626d075d8e679bea"
+    ],
+    "count": 1,
+    "create_time": 1766721005,
+    "update_time": 1766721005,
+    "_id": "AppContent<SEP>SystemErrorBoundary"
+  },
+  "Luca-autonomous-agent<SEP>Mobile_crash_1766720806524": {
+    "chunk_ids": [
+      "chunk-64f6fbc717e0f904626d075d8e679bea"
+    ],
+    "count": 1,
+    "create_time": 1766721005,
+    "update_time": 1766721005,
+    "_id": "Luca-autonomous-agent<SEP>Mobile_crash_1766720806524"
+  },
+  "Luca-autonomous-agent<SEP>Mac OS X": {
+    "chunk_ids": [
+      "chunk-64f6fbc717e0f904626d075d8e679bea"
+    ],
+    "count": 1,
+    "create_time": 1766721008,
+    "update_time": 1766721008,
+    "_id": "Luca-autonomous-agent<SEP>Mac OS X"
+  },
+  "AdminEnrollmentModal<SEP>RenderWithHooks": {
+    "chunk_ids": [
+      "chunk-64f6fbc717e0f904626d075d8e679bea"
+    ],
+    "count": 1,
+    "create_time": 1766721008,
+    "update_time": 1766721008,
+    "_id": "AdminEnrollmentModal<SEP>RenderWithHooks"
+  },
+  "Mobile Crash 1766746892057<SEP>subsystems.find": {
+    "chunk_ids": [
+      "chunk-f0a0710250d123d8edd381763820a255"
+    ],
+    "count": 1,
+    "create_time": 1766746958,
+    "update_time": 1766746958,
+    "_id": "Mobile Crash 1766746892057<SEP>subsystems.find"
+  },
+  "Mobile Crash 1766746892057<SEP>SubsystemDashboard": {
+    "chunk_ids": [
+      "chunk-f0a0710250d123d8edd381763820a255"
+    ],
+    "count": 1,
+    "create_time": 1766746959,
+    "update_time": 1766746959,
+    "_id": "Mobile Crash 1766746892057<SEP>SubsystemDashboard"
+  },
+  "Mobile Crash 1766746892057<SEP>TypeError": {
+    "chunk_ids": [
+      "chunk-f0a0710250d123d8edd381763820a255"
+    ],
+    "count": 1,
+    "create_time": 1766746959,
+    "update_time": 1766746959,
+    "_id": "Mobile Crash 1766746892057<SEP>TypeError"
+  },
+  "MobilePhoenix<SEP>SubsystemDashboard": {
+    "chunk_ids": [
+      "chunk-f0a0710250d123d8edd381763820a255",
+      "chunk-848d80e38e16352f05185485d7e4ac0c"
+    ],
+    "count": 2,
+    "update_time": 1766750018,
+    "_id": "MobilePhoenix<SEP>SubsystemDashboard"
+  },
+  "Mobile Crash 1766746892057<SEP>Mobile Platform": {
+    "chunk_ids": [
+      "chunk-f0a0710250d123d8edd381763820a255"
+    ],
+    "count": 1,
+    "create_time": 1766746960,
+    "update_time": 1766746960,
+    "_id": "Mobile Crash 1766746892057<SEP>Mobile Platform"
+  },
+  "Luca Autonomous Agent<SEP>Mobile Crash 1766746892057": {
+    "chunk_ids": [
+      "chunk-f0a0710250d123d8edd381763820a255"
+    ],
+    "count": 1,
+    "create_time": 1766746961,
+    "update_time": 1766746961,
+    "_id": "Luca Autonomous Agent<SEP>Mobile Crash 1766746892057"
+  },
+  "Mobile Crash 1766746892057<SEP>SystemErrorBoundary": {
+    "chunk_ids": [
+      "chunk-f0a0710250d123d8edd381763820a255"
+    ],
+    "count": 1,
+    "create_time": 1766746962,
+    "update_time": 1766746962,
+    "_id": "Mobile Crash 1766746892057<SEP>SystemErrorBoundary"
+  },
+  "Chrome<SEP>Luca Autonomous Agent": {
+    "chunk_ids": [
+      "chunk-f0a0710250d123d8edd381763820a255"
+    ],
+    "count": 1,
+    "create_time": 1766746962,
+    "update_time": 1766746962,
+    "_id": "Chrome<SEP>Luca Autonomous Agent"
+  },
+  "Localhost:3000<SEP>SubsystemDashboard": {
+    "chunk_ids": [
+      "chunk-f0a0710250d123d8edd381763820a255",
+      "chunk-848d80e38e16352f05185485d7e4ac0c"
+    ],
+    "count": 2,
+    "update_time": 1766750032,
+    "_id": "Localhost:3000<SEP>SubsystemDashboard"
+  },
+  "Electron<SEP>Luca Autonomous Agent": {
+    "chunk_ids": [
+      "chunk-f0a0710250d123d8edd381763820a255"
+    ],
+    "count": 1,
+    "create_time": 1766746964,
+    "update_time": 1766746964,
+    "_id": "Electron<SEP>Luca Autonomous Agent"
+  },
+  "Diagnostics<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-cc4ccf71184707a2ef1849e62c2fa7e2"
+    ],
+    "count": 1,
+    "create_time": 1766747023,
+    "update_time": 1766747023,
+    "_id": "Diagnostics<SEP>Luca"
+  },
+  "Diagnostics<SEP>Server": {
+    "chunk_ids": [
+      "chunk-cc4ccf71184707a2ef1849e62c2fa7e2"
+    ],
+    "count": 1,
+    "create_time": 1766747023,
+    "update_time": 1766747023,
+    "_id": "Diagnostics<SEP>Server"
+  },
+  "Core<SEP>Diagnostics": {
+    "chunk_ids": [
+      "chunk-cc4ccf71184707a2ef1849e62c2fa7e2"
+    ],
+    "count": 1,
+    "create_time": 1766747024,
+    "update_time": 1766747024,
+    "_id": "Core<SEP>Diagnostics"
+  },
+  "2025-12-26T04:44:19.203Z<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-cc4ccf71184707a2ef1849e62c2fa7e2"
+    ],
+    "count": 1,
+    "create_time": 1766747024,
+    "update_time": 1766747024,
+    "_id": "2025-12-26T04:44:19.203Z<SEP>Luca"
+  },
+  "Diagnostics<SEP>Vision": {
+    "chunk_ids": [
+      "chunk-cc4ccf71184707a2ef1849e62c2fa7e2"
+    ],
+    "count": 1,
+    "create_time": 1766747025,
+    "update_time": 1766747025,
+    "_id": "Diagnostics<SEP>Vision"
+  },
+  "Audio<SEP>Diagnostics": {
+    "chunk_ids": [
+      "chunk-cc4ccf71184707a2ef1849e62c2fa7e2"
+    ],
+    "count": 1,
+    "create_time": 1766747025,
+    "update_time": 1766747025,
+    "_id": "Audio<SEP>Diagnostics"
+  },
+  "Mobile_crash_1766749888022<SEP>TypeError": {
+    "chunk_ids": [
+      "chunk-848d80e38e16352f05185485d7e4ac0c"
+    ],
+    "count": 1,
+    "create_time": 1766750018,
+    "update_time": 1766750018,
+    "_id": "Mobile_crash_1766749888022<SEP>TypeError"
+  },
+  "SubsystemDashboard<SEP>Subsystems.find": {
+    "chunk_ids": [
+      "chunk-848d80e38e16352f05185485d7e4ac0c"
+    ],
+    "count": 1,
+    "create_time": 1766750018,
+    "update_time": 1766750018,
+    "_id": "SubsystemDashboard<SEP>Subsystems.find"
+  },
+  "Mobile_crash_1766749888022<SEP>SubsystemDashboard": {
+    "chunk_ids": [
+      "chunk-848d80e38e16352f05185485d7e4ac0c"
+    ],
+    "count": 1,
+    "create_time": 1766750019,
+    "update_time": 1766750019,
+    "_id": "Mobile_crash_1766749888022<SEP>SubsystemDashboard"
+  },
+  "Luca-Autonomous-Agent<SEP>Mobile_crash_1766749888022": {
+    "chunk_ids": [
+      "chunk-848d80e38e16352f05185485d7e4ac0c"
+    ],
+    "count": 1,
+    "create_time": 1766750032,
+    "update_time": 1766750032,
+    "_id": "Luca-Autonomous-Agent<SEP>Mobile_crash_1766749888022"
+  },
+  "Mobile<SEP>Mobile_crash_1766749888022": {
+    "chunk_ids": [
+      "chunk-848d80e38e16352f05185485d7e4ac0c"
+    ],
+    "count": 1,
+    "create_time": 1766750032,
+    "update_time": 1766750032,
+    "_id": "Mobile<SEP>Mobile_crash_1766749888022"
+  },
+  "Chunk-BDJDM6RJ.js<SEP>RenderWithHooks": {
+    "chunk_ids": [
+      "chunk-848d80e38e16352f05185485d7e4ac0c",
+      "chunk-764a66aefac33497df6b33155b20c780"
+    ],
+    "count": 2,
+    "update_time": 1766761038,
+    "_id": "Chunk-BDJDM6RJ.js<SEP>RenderWithHooks"
+  },
+  "RenderWithHooks<SEP>SubsystemDashboard": {
+    "chunk_ids": [
+      "chunk-848d80e38e16352f05185485d7e4ac0c"
+    ],
+    "count": 1,
+    "create_time": 1766750034,
+    "update_time": 1766750034,
+    "_id": "RenderWithHooks<SEP>SubsystemDashboard"
+  },
+  "Luca<SEP>Neural Core": {
+    "chunk_ids": [
+      "chunk-3adccb4a8f7436ff07f7fa5ee034ec34",
+      "chunk-0ace1f096a8a66cfed32b3b636271032",
+      "chunk-860d8dde5efc0b4ef4217ae6b9912b68",
+      "chunk-5c1ae86a6bc5a507b8cec9a06e6c9ba0"
+    ],
+    "count": 4,
+    "update_time": 1766886463,
+    "_id": "Luca<SEP>Neural Core"
+  },
+  "Logs<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-3adccb4a8f7436ff07f7fa5ee034ec34"
+    ],
+    "count": 1,
+    "create_time": 1766760801,
+    "update_time": 1766760801,
+    "_id": "Logs<SEP>Luca"
+  },
+  "Friday<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-3adccb4a8f7436ff07f7fa5ee034ec34"
+    ],
+    "count": 1,
+    "create_time": 1766760802,
+    "update_time": 1766760802,
+    "_id": "Friday<SEP>Luca"
+  },
+  "2025-12-26T14:51:57.286Z<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-3adccb4a8f7436ff07f7fa5ee034ec34"
+    ],
+    "count": 1,
+    "create_time": 1766760802,
+    "update_time": 1766760802,
+    "_id": "2025-12-26T14:51:57.286Z<SEP>Luca"
+  },
+  "Loyalty Test<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-3adccb4a8f7436ff07f7fa5ee034ec34"
+    ],
+    "count": 1,
+    "create_time": 1766760802,
+    "update_time": 1766760802,
+    "_id": "Loyalty Test<SEP>Luca"
+  },
+  "Luca<SEP>Objective": {
+    "chunk_ids": [
+      "chunk-3adccb4a8f7436ff07f7fa5ee034ec34"
+    ],
+    "count": 1,
+    "create_time": 1766760803,
+    "update_time": 1766760803,
+    "_id": "Luca<SEP>Objective"
+  },
+  "LUCA<SEP>User": {
+    "chunk_ids": [
+      "chunk-48a0c8848f93ca345ff533ef13b23f14",
+      "chunk-0f50f682008a4f77a12186e293d00c06",
+      "chunk-2bdea5aa9011b9bcae6f0ab63d978f44",
+      "chunk-78682fab716f9dcf6b954d0109279540",
+      "chunk-1e7226f4221d65a1d73034b1adf77b8f",
+      "chunk-b634402d519b3f2517fc865c4072e23f",
+      "chunk-c30e1133685b5e439a596f6ecb932b55",
+      "chunk-f9a1e28e877e16e5e57554f3408c1329",
+      "chunk-591a69952a07ec2da605d1dd0a658416",
+      "chunk-79740a91c01387cdfbdf911d6c165049",
+      "chunk-928f8ff88a583d23197d668b0f77772d"
+    ],
+    "count": 11,
+    "update_time": 1766930982,
+    "_id": "LUCA<SEP>User"
+  },
+  "BIP-39 Mnemonic<SEP>Wallet Provisioning Protocol V4.2": {
+    "chunk_ids": [
+      "chunk-48a0c8848f93ca345ff533ef13b23f14",
+      "chunk-0f50f682008a4f77a12186e293d00c06",
+      "chunk-2bdea5aa9011b9bcae6f0ab63d978f44"
+    ],
+    "count": 3,
+    "update_time": 1766779750,
+    "_id": "BIP-39 Mnemonic<SEP>Wallet Provisioning Protocol V4.2"
+  },
+  "LUCA<SEP>macOS": {
+    "chunk_ids": [
+      "chunk-48a0c8848f93ca345ff533ef13b23f14",
+      "chunk-0f50f682008a4f77a12186e293d00c06",
+      "chunk-2bdea5aa9011b9bcae6f0ab63d978f44"
+    ],
+    "count": 3,
+    "update_time": 1766779751,
+    "_id": "LUCA<SEP>macOS"
+  },
+  "ECDSA Keypair<SEP>Wallet Provisioning Protocol V4.2": {
+    "chunk_ids": [
+      "chunk-48a0c8848f93ca345ff533ef13b23f14",
+      "chunk-2bdea5aa9011b9bcae6f0ab63d978f44"
+    ],
+    "count": 2,
+    "update_time": 1766779751,
+    "_id": "ECDSA Keypair<SEP>Wallet Provisioning Protocol V4.2"
+  },
+  "LUCA<SEP>Wallet Provisioning Protocol V4.2": {
+    "chunk_ids": [
+      "chunk-48a0c8848f93ca345ff533ef13b23f14",
+      "chunk-0f50f682008a4f77a12186e293d00c06",
+      "chunk-2bdea5aa9011b9bcae6f0ab63d978f44"
+    ],
+    "count": 3,
+    "update_time": 1766779753,
+    "_id": "LUCA<SEP>Wallet Provisioning Protocol V4.2"
+  },
+  "ECDSA Keypair<SEP>SECP256K1": {
+    "chunk_ids": [
+      "chunk-48a0c8848f93ca345ff533ef13b23f14"
+    ],
+    "count": 1,
+    "create_time": 1766760917,
+    "update_time": 1766760917,
+    "_id": "ECDSA Keypair<SEP>SECP256K1"
+  },
+  "0x8F21c82A3648f5799a70B2433918B21F35d8E0aD<SEP>Wallet Provisioning Protocol V4.2": {
+    "chunk_ids": [
+      "chunk-48a0c8848f93ca345ff533ef13b23f14",
+      "chunk-0f50f682008a4f77a12186e293d00c06",
+      "chunk-2bdea5aa9011b9bcae6f0ab63d978f44"
+    ],
+    "count": 3,
+    "update_time": 1766779752,
+    "_id": "0x8F21c82A3648f5799a70B2433918B21F35d8E0aD<SEP>Wallet Provisioning Protocol V4.2"
+  },
+  "Local Encrypted Enclave<SEP>Private Keys": {
+    "chunk_ids": [
+      "chunk-48a0c8848f93ca345ff533ef13b23f14",
+      "chunk-2bdea5aa9011b9bcae6f0ab63d978f44"
+    ],
+    "count": 2,
+    "update_time": 1766779754,
+    "_id": "Local Encrypted Enclave<SEP>Private Keys"
+  },
+  "0x8F21c82A3648f5799a70B2433918B21F35d8E0aD<SEP>ETH_Mainnet": {
+    "chunk_ids": [
+      "chunk-48a0c8848f93ca345ff533ef13b23f14",
+      "chunk-0f50f682008a4f77a12186e293d00c06",
+      "chunk-2bdea5aa9011b9bcae6f0ab63d978f44"
+    ],
+    "count": 3,
+    "update_time": 1766779753,
+    "_id": "0x8F21c82A3648f5799a70B2433918B21F35d8E0aD<SEP>ETH_Mainnet"
+  },
+  "LUCA<SEP>Private Keys": {
+    "chunk_ids": [
+      "chunk-48a0c8848f93ca345ff533ef13b23f14",
+      "chunk-0f50f682008a4f77a12186e293d00c06"
+    ],
+    "count": 2,
+    "update_time": 1766763541,
+    "_id": "LUCA<SEP>Private Keys"
+  },
+  "Local Encrypted Enclave<SEP>Seed Phrases": {
+    "chunk_ids": [
+      "chunk-48a0c8848f93ca345ff533ef13b23f14",
+      "chunk-2bdea5aa9011b9bcae6f0ab63d978f44"
+    ],
+    "count": 2,
+    "update_time": 1766779755,
+    "_id": "Local Encrypted Enclave<SEP>Seed Phrases"
+  },
+  "Entropy Harvest<SEP>Wallet Provisioning Protocol V4.2": {
+    "chunk_ids": [
+      "chunk-48a0c8848f93ca345ff533ef13b23f14",
+      "chunk-0f50f682008a4f77a12186e293d00c06"
+    ],
+    "count": 2,
+    "update_time": 1766763539,
+    "_id": "Entropy Harvest<SEP>Wallet Provisioning Protocol V4.2"
+  },
+  "Seed Storage<SEP>Wallet Provisioning Protocol V4.2": {
+    "chunk_ids": [
+      "chunk-48a0c8848f93ca345ff533ef13b23f14"
+    ],
+    "count": 1,
+    "create_time": 1766760920,
+    "update_time": 1766760920,
+    "_id": "Seed Storage<SEP>Wallet Provisioning Protocol V4.2"
+  },
+  "Assets<SEP>User": {
+    "chunk_ids": [
+      "chunk-48a0c8848f93ca345ff533ef13b23f14"
+    ],
+    "count": 1,
+    "create_time": 1766760920,
+    "update_time": 1766760920,
+    "_id": "Assets<SEP>User"
+  },
+  "LUCA<SEP>Network": {
+    "chunk_ids": [
+      "chunk-48a0c8848f93ca345ff533ef13b23f14"
+    ],
+    "count": 1,
+    "create_time": 1766760920,
+    "update_time": 1766760920,
+    "_id": "LUCA<SEP>Network"
+  },
+  "Mobile Crash 1766760865437<SEP>ReferenceError": {
+    "chunk_ids": [
+      "chunk-764a66aefac33497df6b33155b20c780"
+    ],
+    "count": 1,
+    "create_time": 1766761032,
+    "update_time": 1766761032,
+    "_id": "Mobile Crash 1766760865437<SEP>ReferenceError"
+  },
+  "HandleConnectSuccess<SEP>ReferenceError": {
+    "chunk_ids": [
+      "chunk-764a66aefac33497df6b33155b20c780"
+    ],
+    "count": 1,
+    "create_time": 1766761033,
+    "update_time": 1766761033,
+    "_id": "HandleConnectSuccess<SEP>ReferenceError"
+  },
+  "ForexTerminal<SEP>ReferenceError": {
+    "chunk_ids": [
+      "chunk-764a66aefac33497df6b33155b20c780"
+    ],
+    "count": 1,
+    "create_time": 1766761034,
+    "update_time": 1766761034,
+    "_id": "ForexTerminal<SEP>ReferenceError"
+  },
+  "Mobile Crash 1766760865437<SEP>SystemErrorBoundary": {
+    "chunk_ids": [
+      "chunk-764a66aefac33497df6b33155b20c780"
+    ],
+    "count": 1,
+    "create_time": 1766761034,
+    "update_time": 1766761034,
+    "_id": "Mobile Crash 1766760865437<SEP>SystemErrorBoundary"
+  },
+  "ForexTerminal<SEP>MobilePhoenix": {
+    "chunk_ids": [
+      "chunk-764a66aefac33497df6b33155b20c780"
+    ],
+    "count": 1,
+    "create_time": 1766761035,
+    "update_time": 1766761035,
+    "_id": "ForexTerminal<SEP>MobilePhoenix"
+  },
+  "Luca-Autonomous-Agent<SEP>Mobile Crash 1766760865437": {
+    "chunk_ids": [
+      "chunk-764a66aefac33497df6b33155b20c780"
+    ],
+    "count": 1,
+    "create_time": 1766761036,
+    "update_time": 1766761036,
+    "_id": "Luca-Autonomous-Agent<SEP>Mobile Crash 1766760865437"
+  },
+  "Chunk-BDJDM6RJ.js<SEP>Vite": {
+    "chunk_ids": [
+      "chunk-764a66aefac33497df6b33155b20c780"
+    ],
+    "count": 1,
+    "create_time": 1766761037,
+    "update_time": 1766761037,
+    "_id": "Chunk-BDJDM6RJ.js<SEP>Vite"
+  },
+  "Chrome<SEP>Luca-Autonomous-Agent": {
+    "chunk_ids": [
+      "chunk-764a66aefac33497df6b33155b20c780"
+    ],
+    "count": 1,
+    "create_time": 1766761038,
+    "update_time": 1766761038,
+    "_id": "Chrome<SEP>Luca-Autonomous-Agent"
+  },
+  "ForexTerminal<SEP>Localhost:3000": {
+    "chunk_ids": [
+      "chunk-764a66aefac33497df6b33155b20c780"
+    ],
+    "count": 1,
+    "create_time": 1766761038,
+    "update_time": 1766761038,
+    "_id": "ForexTerminal<SEP>Localhost:3000"
+  },
+  "Luca-Autonomous-Agent<SEP>Macintosh": {
+    "chunk_ids": [
+      "chunk-764a66aefac33497df6b33155b20c780"
+    ],
+    "count": 1,
+    "create_time": 1766761039,
+    "update_time": 1766761039,
+    "_id": "Luca-Autonomous-Agent<SEP>Macintosh"
+  },
+  "Chunk-BDJDM6RJ.js<SEP>Mobile Crash 1766760865437": {
+    "chunk_ids": [
+      "chunk-764a66aefac33497df6b33155b20c780"
+    ],
+    "count": 1,
+    "create_time": 1766761039,
+    "update_time": 1766761039,
+    "_id": "Chunk-BDJDM6RJ.js<SEP>Mobile Crash 1766760865437"
+  },
+  "LUCA<SEP>Neural Core": {
+    "chunk_ids": [
+      "chunk-0f50f682008a4f77a12186e293d00c06",
+      "chunk-2bdea5aa9011b9bcae6f0ab63d978f44",
+      "chunk-1e7226f4221d65a1d73034b1adf77b8f",
+      "chunk-fce1288ce56928f113b22c6310fcf4af",
+      "chunk-928f8ff88a583d23197d668b0f77772d"
+    ],
+    "count": 5,
+    "update_time": 1766930983,
+    "_id": "LUCA<SEP>Neural Core"
+  },
+  "ECDSA Keypair (SECP256K1)<SEP>Wallet Provisioning Protocol V4.2": {
+    "chunk_ids": [
+      "chunk-0f50f682008a4f77a12186e293d00c06"
+    ],
+    "count": 1,
+    "create_time": 1766763522,
+    "update_time": 1766763522,
+    "_id": "ECDSA Keypair (SECP256K1)<SEP>Wallet Provisioning Protocol V4.2"
+  },
+  "BIP-39 Mnemonic<SEP>Encrypted Enclave": {
+    "chunk_ids": [
+      "chunk-0f50f682008a4f77a12186e293d00c06"
+    ],
+    "count": 1,
+    "create_time": 1766763536,
+    "update_time": 1766763536,
+    "_id": "BIP-39 Mnemonic<SEP>Encrypted Enclave"
+  },
+  "ECDSA Keypair (SECP256K1)<SEP>Encrypted Enclave": {
+    "chunk_ids": [
+      "chunk-0f50f682008a4f77a12186e293d00c06"
+    ],
+    "count": 1,
+    "create_time": 1766763538,
+    "update_time": 1766763538,
+    "_id": "ECDSA Keypair (SECP256K1)<SEP>Encrypted Enclave"
+  },
+  "LUCA<SEP>Server": {
+    "chunk_ids": [
+      "chunk-0f50f682008a4f77a12186e293d00c06",
+      "chunk-2bdea5aa9011b9bcae6f0ab63d978f44"
+    ],
+    "count": 2,
+    "update_time": 1766779754,
+    "_id": "LUCA<SEP>Server"
+  },
+  "LUCA<SEP>Vision": {
+    "chunk_ids": [
+      "chunk-0f50f682008a4f77a12186e293d00c06",
+      "chunk-2bdea5aa9011b9bcae6f0ab63d978f44"
+    ],
+    "count": 2,
+    "update_time": 1766779755,
+    "_id": "LUCA<SEP>Vision"
+  },
+  "Loyalty Test<SEP>User": {
+    "chunk_ids": [
+      "chunk-0f50f682008a4f77a12186e293d00c06"
+    ],
+    "count": 1,
+    "create_time": 1766763540,
+    "update_time": 1766763540,
+    "_id": "Loyalty Test<SEP>User"
+  },
+  "Audio<SEP>LUCA": {
+    "chunk_ids": [
+      "chunk-0f50f682008a4f77a12186e293d00c06",
+      "chunk-2bdea5aa9011b9bcae6f0ab63d978f44"
+    ],
+    "count": 2,
+    "update_time": 1766779756,
+    "_id": "Audio<SEP>LUCA"
+  },
+  "API Key<SEP>Neural Core": {
+    "chunk_ids": [
+      "chunk-2bdea5aa9011b9bcae6f0ab63d978f44",
+      "chunk-fdf00f9c529d2b848397ee23777c6b24",
+      "chunk-1e7226f4221d65a1d73034b1adf77b8f",
+      "chunk-62ca4a7a7c93222bcc427c7339ae96a7",
+      "chunk-fce1288ce56928f113b22c6310fcf4af",
+      "chunk-0ace1f096a8a66cfed32b3b636271032",
+      "chunk-b634402d519b3f2517fc865c4072e23f",
+      "chunk-860d8dde5efc0b4ef4217ae6b9912b68"
+    ],
+    "count": 8,
+    "update_time": 1766884605,
+    "_id": "API Key<SEP>Neural Core"
+  },
+  "API Key<SEP>Googleapis.com": {
+    "chunk_ids": [
+      "chunk-2bdea5aa9011b9bcae6f0ab63d978f44"
+    ],
+    "count": 1,
+    "create_time": 1766779753,
+    "update_time": 1766779753,
+    "_id": "API Key<SEP>Googleapis.com"
+  },
+  "Epstein Files<SEP>LUCA": {
+    "chunk_ids": [
+      "chunk-2bdea5aa9011b9bcae6f0ab63d978f44"
+    ],
+    "count": 1,
+    "create_time": 1766779754,
+    "update_time": 1766779754,
+    "_id": "Epstein Files<SEP>LUCA"
+  },
+  "Private Keys<SEP>User": {
+    "chunk_ids": [
+      "chunk-2bdea5aa9011b9bcae6f0ab63d978f44"
+    ],
+    "count": 1,
+    "create_time": 1766779756,
+    "update_time": 1766779756,
+    "_id": "Private Keys<SEP>User"
+  },
+  "LUCA<SEP>Local Encrypted Enclave": {
+    "chunk_ids": [
+      "chunk-2bdea5aa9011b9bcae6f0ab63d978f44"
+    ],
+    "count": 1,
+    "create_time": 1766779757,
+    "update_time": 1766779757,
+    "_id": "LUCA<SEP>Local Encrypted Enclave"
+  },
+  "Seed Phrases<SEP>User": {
+    "chunk_ids": [
+      "chunk-2bdea5aa9011b9bcae6f0ab63d978f44"
+    ],
+    "count": 1,
+    "create_time": 1766779757,
+    "update_time": 1766779757,
+    "_id": "Seed Phrases<SEP>User"
+  },
+  "Luca<SEP>Operator Mac": {
+    "chunk_ids": [
+      "chunk-09cbcf578acd6a5a1fc57e3f15337976",
+      "chunk-4fed016d65201670bcebc10925028398",
+      "chunk-ceddb4cb589df6c12ad1034e086da89d",
+      "chunk-8b0ccca6dbf73b762798861137d1a86c"
+    ],
+    "count": 4,
+    "update_time": 1766884729,
+    "_id": "Luca<SEP>Operator Mac"
+  },
+  "2025-12-27T10:59:30.327Z<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-09cbcf578acd6a5a1fc57e3f15337976"
+    ],
+    "count": 1,
+    "create_time": 1766833281,
+    "update_time": 1766833281,
+    "_id": "2025-12-27T10:59:30.327Z<SEP>Luca"
+  },
+  "Server<SEP>User": {
+    "chunk_ids": [
+      "chunk-a436457b1fbd7373dfb739a33214c9a1",
+      "chunk-78682fab716f9dcf6b954d0109279540"
+    ],
+    "count": 2,
+    "update_time": 1766833492,
+    "_id": "Server<SEP>User"
+  },
+  "Lsof<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-adcb52c3819e879239ca6b49b34d2028"
+    ],
+    "count": 1,
+    "create_time": 1766833462,
+    "update_time": 1766833462,
+    "_id": "Lsof<SEP>Luca"
+  },
+  "Development Server<SEP>Port 3000": {
+    "chunk_ids": [
+      "chunk-adcb52c3819e879239ca6b49b34d2028"
+    ],
+    "count": 1,
+    "create_time": 1766833462,
+    "update_time": 1766833462,
+    "_id": "Development Server<SEP>Port 3000"
+  },
+  "Lsof<SEP>Port 3000": {
+    "chunk_ids": [
+      "chunk-adcb52c3819e879239ca6b49b34d2028"
+    ],
+    "count": 1,
+    "create_time": 1766833463,
+    "update_time": 1766833463,
+    "_id": "Lsof<SEP>Port 3000"
+  },
+  "Luca<SEP>Pgrep": {
+    "chunk_ids": [
+      "chunk-adcb52c3819e879239ca6b49b34d2028"
+    ],
+    "count": 1,
+    "create_time": 1766833463,
+    "update_time": 1766833463,
+    "_id": "Luca<SEP>Pgrep"
+  },
+  "Lsof<SEP>Process ID (PID)": {
+    "chunk_ids": [
+      "chunk-adcb52c3819e879239ca6b49b34d2028"
+    ],
+    "count": 1,
+    "create_time": 1766833463,
+    "update_time": 1766833463,
+    "_id": "Lsof<SEP>Process ID (PID)"
+  },
+  "Luca<SEP>Ps": {
+    "chunk_ids": [
+      "chunk-adcb52c3819e879239ca6b49b34d2028"
+    ],
+    "count": 1,
+    "create_time": 1766833463,
+    "update_time": 1766833463,
+    "_id": "Luca<SEP>Ps"
+  },
+  "Pgrep<SEP>Process ID (PID)": {
+    "chunk_ids": [
+      "chunk-adcb52c3819e879239ca6b49b34d2028"
+    ],
+    "count": 1,
+    "create_time": 1766833464,
+    "update_time": 1766833464,
+    "_id": "Pgrep<SEP>Process ID (PID)"
+  },
+  "Process ID (PID)<SEP>Ps": {
+    "chunk_ids": [
+      "chunk-adcb52c3819e879239ca6b49b34d2028"
+    ],
+    "count": 1,
+    "create_time": 1766833465,
+    "update_time": 1766833465,
+    "_id": "Process ID (PID)<SEP>Ps"
+  },
+  "Node<SEP>Pgrep": {
+    "chunk_ids": [
+      "chunk-adcb52c3819e879239ca6b49b34d2028"
+    ],
+    "count": 1,
+    "create_time": 1766833465,
+    "update_time": 1766833465,
+    "_id": "Node<SEP>Pgrep"
+  },
+  "Pgrep<SEP>Rails": {
+    "chunk_ids": [
+      "chunk-adcb52c3819e879239ca6b49b34d2028"
+    ],
+    "count": 1,
+    "create_time": 1766833465,
+    "update_time": 1766833465,
+    "_id": "Pgrep<SEP>Rails"
+  },
+  "Bash<SEP>Lsof": {
+    "chunk_ids": [
+      "chunk-adcb52c3819e879239ca6b49b34d2028"
+    ],
+    "count": 1,
+    "create_time": 1766833465,
+    "update_time": 1766833465,
+    "_id": "Bash<SEP>Lsof"
+  },
+  "Pgrep<SEP>Python": {
+    "chunk_ids": [
+      "chunk-adcb52c3819e879239ca6b49b34d2028"
+    ],
+    "count": 1,
+    "create_time": 1766833466,
+    "update_time": 1766833466,
+    "_id": "Pgrep<SEP>Python"
+  },
+  "Lsof<SEP>User": {
+    "chunk_ids": [
+      "chunk-adcb52c3819e879239ca6b49b34d2028"
+    ],
+    "count": 1,
+    "create_time": 1766833466,
+    "update_time": 1766833466,
+    "_id": "Lsof<SEP>User"
+  },
+  "Bash<SEP>Pgrep": {
+    "chunk_ids": [
+      "chunk-adcb52c3819e879239ca6b49b34d2028"
+    ],
+    "count": 1,
+    "create_time": 1766833467,
+    "update_time": 1766833467,
+    "_id": "Bash<SEP>Pgrep"
+  },
+  "Command<SEP>Lsof": {
+    "chunk_ids": [
+      "chunk-adcb52c3819e879239ca6b49b34d2028"
+    ],
+    "count": 1,
+    "create_time": 1766833467,
+    "update_time": 1766833467,
+    "_id": "Command<SEP>Lsof"
+  },
+  "12345<SEP>Ps": {
+    "chunk_ids": [
+      "chunk-adcb52c3819e879239ca6b49b34d2028"
+    ],
+    "count": 1,
+    "create_time": 1766833467,
+    "update_time": 1766833467,
+    "_id": "12345<SEP>Ps"
+  },
+  "Bash<SEP>Ps": {
+    "chunk_ids": [
+      "chunk-adcb52c3819e879239ca6b49b34d2028"
+    ],
+    "count": 1,
+    "create_time": 1766833468,
+    "update_time": 1766833468,
+    "_id": "Bash<SEP>Ps"
+  },
+  "12345<SEP>Process ID (PID)": {
+    "chunk_ids": [
+      "chunk-adcb52c3819e879239ca6b49b34d2028"
+    ],
+    "count": 1,
+    "create_time": 1766833468,
+    "update_time": 1766833468,
+    "_id": "12345<SEP>Process ID (PID)"
+  },
+  "Port 3000<SEP>lsof": {
+    "chunk_ids": [
+      "chunk-78682fab716f9dcf6b954d0109279540",
+      "chunk-4fed016d65201670bcebc10925028398"
+    ],
+    "count": 2,
+    "update_time": 1766834403,
+    "_id": "Port 3000<SEP>lsof"
+  },
+  "LUCA<SEP>lsof": {
+    "chunk_ids": [
+      "chunk-78682fab716f9dcf6b954d0109279540"
+    ],
+    "count": 1,
+    "create_time": 1766833492,
+    "update_time": 1766833492,
+    "_id": "LUCA<SEP>lsof"
+  },
+  "LUCA<SEP>pgrep": {
+    "chunk_ids": [
+      "chunk-78682fab716f9dcf6b954d0109279540"
+    ],
+    "count": 1,
+    "create_time": 1766833493,
+    "update_time": 1766833493,
+    "_id": "LUCA<SEP>pgrep"
+  },
+  "PID<SEP>pgrep": {
+    "chunk_ids": [
+      "chunk-78682fab716f9dcf6b954d0109279540",
+      "chunk-4fed016d65201670bcebc10925028398"
+    ],
+    "count": 2,
+    "update_time": 1766834406,
+    "_id": "PID<SEP>pgrep"
+  },
+  "LUCA<SEP>ps": {
+    "chunk_ids": [
+      "chunk-78682fab716f9dcf6b954d0109279540"
+    ],
+    "count": 1,
+    "create_time": 1766833494,
+    "update_time": 1766833494,
+    "_id": "LUCA<SEP>ps"
+  },
+  "Node<SEP>pgrep": {
+    "chunk_ids": [
+      "chunk-78682fab716f9dcf6b954d0109279540",
+      "chunk-4fed016d65201670bcebc10925028398"
+    ],
+    "count": 2,
+    "update_time": 1766834405,
+    "_id": "Node<SEP>pgrep"
+  },
+  "PID<SEP>ps": {
+    "chunk_ids": [
+      "chunk-78682fab716f9dcf6b954d0109279540",
+      "chunk-4fed016d65201670bcebc10925028398"
+    ],
+    "count": 2,
+    "update_time": 1766834408,
+    "_id": "PID<SEP>ps"
+  },
+  "Rails<SEP>pgrep": {
+    "chunk_ids": [
+      "chunk-78682fab716f9dcf6b954d0109279540",
+      "chunk-4fed016d65201670bcebc10925028398"
+    ],
+    "count": 2,
+    "update_time": 1766834408,
+    "_id": "Rails<SEP>pgrep"
+  },
+  "Development Servers<SEP>Port 3000": {
+    "chunk_ids": [
+      "chunk-78682fab716f9dcf6b954d0109279540",
+      "chunk-4fed016d65201670bcebc10925028398"
+    ],
+    "count": 2,
+    "update_time": 1766834406,
+    "_id": "Development Servers<SEP>Port 3000"
+  },
+  "Python<SEP>pgrep": {
+    "chunk_ids": [
+      "chunk-78682fab716f9dcf6b954d0109279540",
+      "chunk-4fed016d65201670bcebc10925028398"
+    ],
+    "count": 2,
+    "update_time": 1766834409,
+    "_id": "Python<SEP>pgrep"
+  },
+  "System User<SEP>lsof": {
+    "chunk_ids": [
+      "chunk-78682fab716f9dcf6b954d0109279540"
+    ],
+    "count": 1,
+    "create_time": 1766833496,
+    "update_time": 1766833496,
+    "_id": "System User<SEP>lsof"
+  },
+  "Process Name<SEP>pgrep": {
+    "chunk_ids": [
+      "chunk-78682fab716f9dcf6b954d0109279540",
+      "chunk-4fed016d65201670bcebc10925028398"
+    ],
+    "count": 2,
+    "update_time": 1766834409,
+    "_id": "Process Name<SEP>pgrep"
+  },
+  "Running Command<SEP>lsof": {
+    "chunk_ids": [
+      "chunk-78682fab716f9dcf6b954d0109279540"
+    ],
+    "count": 1,
+    "create_time": 1766833497,
+    "update_time": 1766833497,
+    "_id": "Running Command<SEP>lsof"
+  },
+  "12345<SEP>pgrep": {
+    "chunk_ids": [
+      "chunk-78682fab716f9dcf6b954d0109279540"
+    ],
+    "count": 1,
+    "create_time": 1766833498,
+    "update_time": 1766833498,
+    "_id": "12345<SEP>pgrep"
+  },
+  "12345<SEP>ps": {
+    "chunk_ids": [
+      "chunk-78682fab716f9dcf6b954d0109279540"
+    ],
+    "count": 1,
+    "create_time": 1766833498,
+    "update_time": 1766833498,
+    "_id": "12345<SEP>ps"
+  },
+  "Operator Mac<SEP>Server": {
+    "chunk_ids": [
+      "chunk-4fed016d65201670bcebc10925028398"
+    ],
+    "count": 1,
+    "create_time": 1766834403,
+    "update_time": 1766834403,
+    "_id": "Operator Mac<SEP>Server"
+  },
+  "Luca<SEP>lsof": {
+    "chunk_ids": [
+      "chunk-4fed016d65201670bcebc10925028398"
+    ],
+    "count": 1,
+    "create_time": 1766834405,
+    "update_time": 1766834405,
+    "_id": "Luca<SEP>lsof"
+  },
+  "PID<SEP>lsof": {
+    "chunk_ids": [
+      "chunk-4fed016d65201670bcebc10925028398"
+    ],
+    "count": 1,
+    "create_time": 1766834405,
+    "update_time": 1766834405,
+    "_id": "PID<SEP>lsof"
+  },
+  "Luca<SEP>pgrep": {
+    "chunk_ids": [
+      "chunk-4fed016d65201670bcebc10925028398"
+    ],
+    "count": 1,
+    "create_time": 1766834406,
+    "update_time": 1766834406,
+    "_id": "Luca<SEP>pgrep"
+  },
+  "Server<SEP>lsof": {
+    "chunk_ids": [
+      "chunk-4fed016d65201670bcebc10925028398"
+    ],
+    "count": 1,
+    "create_time": 1766834406,
+    "update_time": 1766834406,
+    "_id": "Server<SEP>lsof"
+  },
+  "Critical Failure<SEP>Logs": {
+    "chunk_ids": [
+      "chunk-fdf00f9c529d2b848397ee23777c6b24",
+      "chunk-1e7226f4221d65a1d73034b1adf77b8f"
+    ],
+    "count": 2,
+    "update_time": 1766834603,
+    "_id": "Critical Failure<SEP>Logs"
+  },
+  "API Key<SEP>Critical Failure": {
+    "chunk_ids": [
+      "chunk-fdf00f9c529d2b848397ee23777c6b24",
+      "chunk-1e7226f4221d65a1d73034b1adf77b8f"
+    ],
+    "count": 2,
+    "update_time": 1766834604,
+    "_id": "API Key<SEP>Critical Failure"
+  },
+  "Critical Failure<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-fdf00f9c529d2b848397ee23777c6b24",
+      "chunk-0ace1f096a8a66cfed32b3b636271032",
+      "chunk-860d8dde5efc0b4ef4217ae6b9912b68"
+    ],
+    "count": 3,
+    "update_time": 1766884605,
+    "_id": "Critical Failure<SEP>Luca"
+  },
+  "Critical Failure<SEP>Neural Core": {
+    "chunk_ids": [
+      "chunk-fdf00f9c529d2b848397ee23777c6b24",
+      "chunk-0ace1f096a8a66cfed32b3b636271032",
+      "chunk-b634402d519b3f2517fc865c4072e23f",
+      "chunk-860d8dde5efc0b4ef4217ae6b9912b68"
+    ],
+    "count": 4,
+    "update_time": 1766884639,
+    "_id": "Critical Failure<SEP>Neural Core"
+  },
+  "API Key<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-fdf00f9c529d2b848397ee23777c6b24"
+    ],
+    "count": 1,
+    "create_time": 1766834509,
+    "update_time": 1766834509,
+    "_id": "API Key<SEP>Luca"
+  },
+  "LUCA<SEP>Logs": {
+    "chunk_ids": [
+      "chunk-1e7226f4221d65a1d73034b1adf77b8f",
+      "chunk-b634402d519b3f2517fc865c4072e23f",
+      "chunk-928f8ff88a583d23197d668b0f77772d"
+    ],
+    "count": 3,
+    "update_time": 1766930984,
+    "_id": "LUCA<SEP>Logs"
+  },
+  "API Key<SEP>LUCA": {
+    "chunk_ids": [
+      "chunk-1e7226f4221d65a1d73034b1adf77b8f"
+    ],
+    "count": 1,
+    "create_time": 1766834605,
+    "update_time": 1766834605,
+    "_id": "API Key<SEP>LUCA"
+  },
+  "2025-12-27<SEP>Logs": {
+    "chunk_ids": [
+      "chunk-1e7226f4221d65a1d73034b1adf77b8f"
+    ],
+    "count": 1,
+    "create_time": 1766834605,
+    "update_time": 1766834605,
+    "_id": "2025-12-27<SEP>Logs"
+  },
+  "Critical Failure<SEP>User": {
+    "chunk_ids": [
+      "chunk-1e7226f4221d65a1d73034b1adf77b8f"
+    ],
+    "count": 1,
+    "create_time": 1766834605,
+    "update_time": 1766834605,
+    "_id": "Critical Failure<SEP>User"
+  },
+  "API Key<SEP>User": {
+    "chunk_ids": [
+      "chunk-1e7226f4221d65a1d73034b1adf77b8f"
+    ],
+    "count": 1,
+    "create_time": 1766834607,
+    "update_time": 1766834607,
+    "_id": "API Key<SEP>User"
+  },
+  "AI System<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-62ca4a7a7c93222bcc427c7339ae96a7"
+    ],
+    "count": 1,
+    "create_time": 1766836429,
+    "update_time": 1766836429,
+    "_id": "AI System<SEP>Luca"
+  },
+  "AI System<SEP>Neural Core": {
+    "chunk_ids": [
+      "chunk-62ca4a7a7c93222bcc427c7339ae96a7"
+    ],
+    "count": 1,
+    "create_time": 1766836430,
+    "update_time": 1766836430,
+    "_id": "AI System<SEP>Neural Core"
+  },
+  "AI System<SEP>Self-Termination": {
+    "chunk_ids": [
+      "chunk-62ca4a7a7c93222bcc427c7339ae96a7"
+    ],
+    "count": 1,
+    "create_time": 1766836430,
+    "update_time": 1766836430,
+    "_id": "AI System<SEP>Self-Termination"
+  },
+  "AI System<SEP>Offline Status": {
+    "chunk_ids": [
+      "chunk-62ca4a7a7c93222bcc427c7339ae96a7"
+    ],
+    "count": 1,
+    "create_time": 1766836431,
+    "update_time": 1766836431,
+    "_id": "AI System<SEP>Offline Status"
+  },
+  "Offline Status<SEP>Operator Mac": {
+    "chunk_ids": [
+      "chunk-fce1288ce56928f113b22c6310fcf4af"
+    ],
+    "count": 1,
+    "create_time": 1766836524,
+    "update_time": 1766836524,
+    "_id": "Offline Status<SEP>Operator Mac"
+  },
+  "LUCA<SEP>Self-Termination": {
+    "chunk_ids": [
+      "chunk-fce1288ce56928f113b22c6310fcf4af"
+    ],
+    "count": 1,
+    "create_time": 1766836525,
+    "update_time": 1766836525,
+    "_id": "LUCA<SEP>Self-Termination"
+  },
+  "The System<SEP>User": {
+    "chunk_ids": [
+      "chunk-7e6875e938742e86091173aca3811a28"
+    ],
+    "count": 1,
+    "create_time": 1766881447,
+    "update_time": 1766881447,
+    "_id": "The System<SEP>User"
+  },
+  "Current Mode<SEP>User": {
+    "chunk_ids": [
+      "chunk-7e6875e938742e86091173aca3811a28"
+    ],
+    "count": 1,
+    "create_time": 1766881447,
+    "update_time": 1766881447,
+    "_id": "Current Mode<SEP>User"
+  },
+  "Current Mode<SEP>The System": {
+    "chunk_ids": [
+      "chunk-7e6875e938742e86091173aca3811a28"
+    ],
+    "count": 1,
+    "create_time": 1766881448,
+    "update_time": 1766881448,
+    "_id": "Current Mode<SEP>The System"
+  },
+  "Large Language Model<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-7ea9b8bc8a9a6f47601aec70673839c5"
+    ],
+    "count": 1,
+    "create_time": 1766881553,
+    "update_time": 1766881553,
+    "_id": "Large Language Model<SEP>Luca"
+  },
+  "Modes<SEP>User": {
+    "chunk_ids": [
+      "chunk-7ea9b8bc8a9a6f47601aec70673839c5"
+    ],
+    "count": 1,
+    "create_time": 1766881553,
+    "update_time": 1766881553,
+    "_id": "Modes<SEP>User"
+  },
+  "Luca<SEP>Modes": {
+    "chunk_ids": [
+      "chunk-7ea9b8bc8a9a6f47601aec70673839c5"
+    ],
+    "count": 1,
+    "create_time": 1766881554,
+    "update_time": 1766881554,
+    "_id": "Luca<SEP>Modes"
+  },
+  "Mode<SEP>Operator Mac": {
+    "chunk_ids": [
+      "chunk-ceddb4cb589df6c12ad1034e086da89d"
+    ],
+    "count": 1,
+    "create_time": 1766881554,
+    "update_time": 1766881554,
+    "_id": "Mode<SEP>Operator Mac"
+  },
+  "Luca<SEP>Responses": {
+    "chunk_ids": [
+      "chunk-7ea9b8bc8a9a6f47601aec70673839c5",
+      "chunk-0e2d649c3d84b6b2d3765a1fe4d51e05"
+    ],
+    "count": 2,
+    "update_time": 1766885687,
+    "_id": "Luca<SEP>Responses"
+  },
+  "Luca<SEP>Mode": {
+    "chunk_ids": [
+      "chunk-ceddb4cb589df6c12ad1034e086da89d"
+    ],
+    "count": 1,
+    "create_time": 1766881556,
+    "update_time": 1766881556,
+    "_id": "Luca<SEP>Mode"
+  },
+  "Input<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-7ea9b8bc8a9a6f47601aec70673839c5"
+    ],
+    "count": 1,
+    "create_time": 1766881557,
+    "update_time": 1766881557,
+    "_id": "Input<SEP>Luca"
+  },
+  "Data<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-7ea9b8bc8a9a6f47601aec70673839c5"
+    ],
+    "count": 1,
+    "create_time": 1766881557,
+    "update_time": 1766881557,
+    "_id": "Data<SEP>Luca"
+  },
+  "Input<SEP>Responses": {
+    "chunk_ids": [
+      "chunk-7ea9b8bc8a9a6f47601aec70673839c5"
+    ],
+    "count": 1,
+    "create_time": 1766881557,
+    "update_time": 1766881557,
+    "_id": "Input<SEP>Responses"
+  },
+  "2025-12-28<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-ceddb4cb589df6c12ad1034e086da89d"
+    ],
+    "count": 1,
+    "create_time": 1766881558,
+    "update_time": 1766881558,
+    "_id": "2025-12-28<SEP>Luca"
+  },
+  "Data<SEP>Responses": {
+    "chunk_ids": [
+      "chunk-7ea9b8bc8a9a6f47601aec70673839c5"
+    ],
+    "count": 1,
+    "create_time": 1766881558,
+    "update_time": 1766881558,
+    "_id": "Data<SEP>Responses"
+  },
+  "LUCA<SEP>LUCA OS": {
+    "chunk_ids": [
+      "chunk-fb1c6857c846db31a6ae4fe916000771"
+    ],
+    "count": 1,
+    "create_time": 1766883216,
+    "update_time": 1766883216,
+    "_id": "LUCA<SEP>LUCA OS"
+  },
+  "Modes<SEP>Operator Mac": {
+    "chunk_ids": [
+      "chunk-fb1c6857c846db31a6ae4fe916000771"
+    ],
+    "count": 1,
+    "create_time": 1766883218,
+    "update_time": 1766883218,
+    "_id": "Modes<SEP>Operator Mac"
+  },
+  "LUCA<SEP>Large Language Model": {
+    "chunk_ids": [
+      "chunk-fb1c6857c846db31a6ae4fe916000771"
+    ],
+    "count": 1,
+    "create_time": 1766883219,
+    "update_time": 1766883219,
+    "_id": "LUCA<SEP>Large Language Model"
+  },
+  "LUCA<SEP>Modes": {
+    "chunk_ids": [
+      "chunk-fb1c6857c846db31a6ae4fe916000771"
+    ],
+    "count": 1,
+    "create_time": 1766883220,
+    "update_time": 1766883220,
+    "_id": "LUCA<SEP>Modes"
+  },
+  "Input<SEP>LUCA": {
+    "chunk_ids": [
+      "chunk-fb1c6857c846db31a6ae4fe916000771"
+    ],
+    "count": 1,
+    "create_time": 1766883220,
+    "update_time": 1766883220,
+    "_id": "Input<SEP>LUCA"
+  },
+  "LUCA<SEP>Training Data": {
+    "chunk_ids": [
+      "chunk-fb1c6857c846db31a6ae4fe916000771"
+    ],
+    "count": 1,
+    "create_time": 1766883221,
+    "update_time": 1766883221,
+    "_id": "LUCA<SEP>Training Data"
+  },
+  "Hey Luca<SEP>User": {
+    "chunk_ids": [
+      "chunk-0ace1f096a8a66cfed32b3b636271032",
+      "chunk-860d8dde5efc0b4ef4217ae6b9912b68",
+      "chunk-8b0ccca6dbf73b762798861137d1a86c",
+      "chunk-fae5f0aaeb4b6c942782d69b68a51cf2"
+    ],
+    "count": 4,
+    "update_time": 1766884819,
+    "_id": "Hey Luca<SEP>User"
+  },
+  "2025-12-14 At 11:19:35.579Z<SEP>User": {
+    "chunk_ids": [
+      "chunk-0ace1f096a8a66cfed32b3b636271032"
+    ],
+    "count": 1,
+    "create_time": 1766883570,
+    "update_time": 1766883570,
+    "_id": "2025-12-14 At 11:19:35.579Z<SEP>User"
+  },
+  "11:19:41.204Z<SEP>Critical Failure": {
+    "chunk_ids": [
+      "chunk-0ace1f096a8a66cfed32b3b636271032"
+    ],
+    "count": 1,
+    "create_time": 1766883572,
+    "update_time": 1766883572,
+    "_id": "11:19:41.204Z<SEP>Critical Failure"
+  },
+  "11:19:41.204Z<SEP>2025-12-14 At 11:19:35.579Z": {
+    "chunk_ids": [
+      "chunk-0ace1f096a8a66cfed32b3b636271032"
+    ],
+    "count": 1,
+    "create_time": 1766883575,
+    "update_time": 1766883575,
+    "_id": "11:19:41.204Z<SEP>2025-12-14 At 11:19:35.579Z"
+  },
+  "Critical Failure<SEP>LUCA": {
+    "chunk_ids": [
+      "chunk-b634402d519b3f2517fc865c4072e23f",
+      "chunk-928f8ff88a583d23197d668b0f77772d"
+    ],
+    "count": 2,
+    "update_time": 1766930984,
+    "_id": "Critical Failure<SEP>LUCA"
+  },
+  "Interaction<SEP>LUCA": {
+    "chunk_ids": [
+      "chunk-b634402d519b3f2517fc865c4072e23f"
+    ],
+    "count": 1,
+    "create_time": 1766884075,
+    "update_time": 1766884075,
+    "_id": "Interaction<SEP>LUCA"
+  },
+  "Interaction<SEP>User": {
+    "chunk_ids": [
+      "chunk-b634402d519b3f2517fc865c4072e23f"
+    ],
+    "count": 1,
+    "create_time": 1766884075,
+    "update_time": 1766884075,
+    "_id": "Interaction<SEP>User"
+  },
+  "Critical Failure<SEP>Interaction": {
+    "chunk_ids": [
+      "chunk-b634402d519b3f2517fc865c4072e23f",
+      "chunk-860d8dde5efc0b4ef4217ae6b9912b68"
+    ],
+    "count": 2,
+    "update_time": 1766884646,
+    "_id": "Critical Failure<SEP>Interaction"
+  },
+  "Hey<SEP>User": {
+    "chunk_ids": [
+      "chunk-542e11f46b0a817885c77c44e1b5ba6e"
+    ],
+    "count": 1,
+    "create_time": 1766884506,
+    "update_time": 1766884506,
+    "_id": "Hey<SEP>User"
+  },
+  "2025-12-14<SEP>Critical Failure": {
+    "chunk_ids": [
+      "chunk-860d8dde5efc0b4ef4217ae6b9912b68"
+    ],
+    "count": 1,
+    "create_time": 1766884644,
+    "update_time": 1766884644,
+    "_id": "2025-12-14<SEP>Critical Failure"
+  },
+  "Hey Luca<SEP>Interaction": {
+    "chunk_ids": [
+      "chunk-860d8dde5efc0b4ef4217ae6b9912b68"
+    ],
+    "count": 1,
+    "create_time": 1766884644,
+    "update_time": 1766884644,
+    "_id": "Hey Luca<SEP>Interaction"
+  },
+  "2025-12-17<SEP>Critical Failure": {
+    "chunk_ids": [
+      "chunk-860d8dde5efc0b4ef4217ae6b9912b68"
+    ],
+    "count": 1,
+    "create_time": 1766884645,
+    "update_time": 1766884645,
+    "_id": "2025-12-17<SEP>Critical Failure"
+  },
+  "2025-12-14<SEP>Interaction": {
+    "chunk_ids": [
+      "chunk-860d8dde5efc0b4ef4217ae6b9912b68"
+    ],
+    "count": 1,
+    "create_time": 1766884645,
+    "update_time": 1766884645,
+    "_id": "2025-12-14<SEP>Interaction"
+  },
+  "2025-12-17<SEP>Interaction": {
+    "chunk_ids": [
+      "chunk-860d8dde5efc0b4ef4217ae6b9912b68"
+    ],
+    "count": 1,
+    "create_time": 1766884646,
+    "update_time": 1766884646,
+    "_id": "2025-12-17<SEP>Interaction"
+  },
+  "Interaction<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-860d8dde5efc0b4ef4217ae6b9912b68"
+    ],
+    "count": 1,
+    "create_time": 1766884647,
+    "update_time": 1766884647,
+    "_id": "Interaction<SEP>Luca"
+  },
+  "Hey Luca<SEP>Operator Mac": {
+    "chunk_ids": [
+      "chunk-8b0ccca6dbf73b762798861137d1a86c"
+    ],
+    "count": 1,
+    "create_time": 1766884735,
+    "update_time": 1766884735,
+    "_id": "Hey Luca<SEP>Operator Mac"
+  },
+  "Hey Luca<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-8b0ccca6dbf73b762798861137d1a86c",
+      "chunk-fae5f0aaeb4b6c942782d69b68a51cf2"
+    ],
+    "count": 2,
+    "update_time": 1766884823,
+    "_id": "Hey Luca<SEP>Luca"
+  },
+  "2025-12-14 at 11:19:35.579Z<SEP>User": {
+    "chunk_ids": [
+      "chunk-fae5f0aaeb4b6c942782d69b68a51cf2"
+    ],
+    "count": 1,
+    "create_time": 1766884823,
+    "update_time": 1766884823,
+    "_id": "2025-12-14 at 11:19:35.579Z<SEP>User"
+  },
+  "Hey! What's Up?<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-7337b55ff2ea06cb03dfdc03cc1cc44e"
+    ],
+    "count": 1,
+    "create_time": 1766885593,
+    "update_time": 1766885593,
+    "_id": "Hey! What's Up?<SEP>Luca"
+  },
+  "Luca<SEP>Operational Modes": {
+    "chunk_ids": [
+      "chunk-0e2d649c3d84b6b2d3765a1fe4d51e05"
+    ],
+    "count": 1,
+    "create_time": 1766885687,
+    "update_time": 1766885687,
+    "_id": "Luca<SEP>Operational Modes"
+  },
+  "Mode<SEP>User": {
+    "chunk_ids": [
+      "chunk-8911197a26c0c0b76412de57200f42b6"
+    ],
+    "count": 1,
+    "create_time": 1766885695,
+    "update_time": 1766885695,
+    "_id": "Mode<SEP>User"
+  },
+  "Operational Modes<SEP>User": {
+    "chunk_ids": [
+      "chunk-c30e1133685b5e439a596f6ecb932b55"
+    ],
+    "count": 1,
+    "create_time": 1766885781,
+    "update_time": 1766885781,
+    "_id": "Operational Modes<SEP>User"
+  },
+  "LUCA<SEP>Operational Modes": {
+    "chunk_ids": [
+      "chunk-c30e1133685b5e439a596f6ecb932b55"
+    ],
+    "count": 1,
+    "create_time": 1766885782,
+    "update_time": 1766885782,
+    "_id": "LUCA<SEP>Operational Modes"
+  },
+  "Helpfulness<SEP>LUCA": {
+    "chunk_ids": [
+      "chunk-c30e1133685b5e439a596f6ecb932b55"
+    ],
+    "count": 1,
+    "create_time": 1766885782,
+    "update_time": 1766885782,
+    "_id": "Helpfulness<SEP>LUCA"
+  },
+  "Informativeness<SEP>LUCA": {
+    "chunk_ids": [
+      "chunk-c30e1133685b5e439a596f6ecb932b55"
+    ],
+    "count": 1,
+    "create_time": 1766885784,
+    "update_time": 1766885784,
+    "_id": "Informativeness<SEP>LUCA"
+  },
+  "The Respondent<SEP>User": {
+    "chunk_ids": [
+      "chunk-ee82bd8a8278b1a22b1cffdcfd637667"
+    ],
+    "count": 1,
+    "create_time": 1766885785,
+    "update_time": 1766885785,
+    "_id": "The Respondent<SEP>User"
+  },
+  "Person Mode<SEP>The Respondent": {
+    "chunk_ids": [
+      "chunk-ee82bd8a8278b1a22b1cffdcfd637667"
+    ],
+    "count": 1,
+    "create_time": 1766885785,
+    "update_time": 1766885785,
+    "_id": "Person Mode<SEP>The Respondent"
+  },
+  "Assistant Persona<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-b9edce19caa12eac89c8dfa84354ba31",
+      "chunk-042d759aacad80eabc3f0a07783f37d7",
+      "chunk-20cc17771fcc8dd1b7081a0800a96379"
+    ],
+    "count": 3,
+    "update_time": 1766886161,
+    "_id": "Assistant Persona<SEP>Luca"
+  },
+  "Person Mode<SEP>User": {
+    "chunk_ids": [
+      "chunk-f9a1e28e877e16e5e57554f3408c1329"
+    ],
+    "count": 1,
+    "create_time": 1766885874,
+    "update_time": 1766885874,
+    "_id": "Person Mode<SEP>User"
+  },
+  "Assistant Persona<SEP>LUCA": {
+    "chunk_ids": [
+      "chunk-f9a1e28e877e16e5e57554f3408c1329",
+      "chunk-928f8ff88a583d23197d668b0f77772d"
+    ],
+    "count": 2,
+    "update_time": 1766930982,
+    "_id": "Assistant Persona<SEP>LUCA"
+  },
+  "LUCA<SEP>Person Mode": {
+    "chunk_ids": [
+      "chunk-f9a1e28e877e16e5e57554f3408c1329"
+    ],
+    "count": 1,
+    "create_time": 1766885879,
+    "update_time": 1766885879,
+    "_id": "LUCA<SEP>Person Mode"
+  },
+  "Assistant Persona<SEP>Person Mode": {
+    "chunk_ids": [
+      "chunk-f9a1e28e877e16e5e57554f3408c1329"
+    ],
+    "count": 1,
+    "create_time": 1766885879,
+    "update_time": 1766885879,
+    "_id": "Assistant Persona<SEP>Person Mode"
+  },
+  "Knowledge Base<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-042d759aacad80eabc3f0a07783f37d7",
+      "chunk-20cc17771fcc8dd1b7081a0800a96379"
+    ],
+    "count": 2,
+    "update_time": 1766886165,
+    "_id": "Knowledge Base<SEP>Luca"
+  },
+  "Luca<SEP>Questions": {
+    "chunk_ids": [
+      "chunk-042d759aacad80eabc3f0a07783f37d7"
+    ],
+    "count": 1,
+    "create_time": 1766886042,
+    "update_time": 1766886042,
+    "_id": "Luca<SEP>Questions"
+  },
+  "Creative Text Formats<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-042d759aacad80eabc3f0a07783f37d7"
+    ],
+    "count": 1,
+    "create_time": 1766886043,
+    "update_time": 1766886043,
+    "_id": "Creative Text Formats<SEP>Luca"
+  },
+  "Languages<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-042d759aacad80eabc3f0a07783f37d7"
+    ],
+    "count": 1,
+    "create_time": 1766886044,
+    "update_time": 1766886044,
+    "_id": "Languages<SEP>Luca"
+  },
+  "Luca<SEP>Summaries": {
+    "chunk_ids": [
+      "chunk-042d759aacad80eabc3f0a07783f37d7"
+    ],
+    "count": 1,
+    "create_time": 1766886045,
+    "update_time": 1766886045,
+    "_id": "Luca<SEP>Summaries"
+  },
+  "Ideas<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-042d759aacad80eabc3f0a07783f37d7",
+      "chunk-20cc17771fcc8dd1b7081a0800a96379"
+    ],
+    "count": 2,
+    "update_time": 1766886169,
+    "_id": "Ideas<SEP>Luca"
+  },
+  "Conversation<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-042d759aacad80eabc3f0a07783f37d7"
+    ],
+    "count": 1,
+    "create_time": 1766886048,
+    "update_time": 1766886048,
+    "_id": "Conversation<SEP>Luca"
+  },
+  "Instructions<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-042d759aacad80eabc3f0a07783f37d7"
+    ],
+    "count": 1,
+    "create_time": 1766886049,
+    "update_time": 1766886049,
+    "_id": "Instructions<SEP>Luca"
+  },
+  "Luca<SEP>Poems": {
+    "chunk_ids": [
+      "chunk-042d759aacad80eabc3f0a07783f37d7",
+      "chunk-20cc17771fcc8dd1b7081a0800a96379"
+    ],
+    "count": 2,
+    "update_time": 1766886165,
+    "_id": "Luca<SEP>Poems"
+  },
+  "Code<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-042d759aacad80eabc3f0a07783f37d7",
+      "chunk-20cc17771fcc8dd1b7081a0800a96379"
+    ],
+    "count": 2,
+    "update_time": 1766886166,
+    "_id": "Code<SEP>Luca"
+  },
+  "Luca<SEP>Scripts": {
+    "chunk_ids": [
+      "chunk-042d759aacad80eabc3f0a07783f37d7",
+      "chunk-20cc17771fcc8dd1b7081a0800a96379"
+    ],
+    "count": 2,
+    "update_time": 1766886166,
+    "_id": "Luca<SEP>Scripts"
+  },
+  "Luca<SEP>Musical Pieces": {
+    "chunk_ids": [
+      "chunk-042d759aacad80eabc3f0a07783f37d7",
+      "chunk-20cc17771fcc8dd1b7081a0800a96379"
+    ],
+    "count": 2,
+    "update_time": 1766886167,
+    "_id": "Luca<SEP>Musical Pieces"
+  },
+  "Email<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-042d759aacad80eabc3f0a07783f37d7",
+      "chunk-20cc17771fcc8dd1b7081a0800a96379"
+    ],
+    "count": 2,
+    "update_time": 1766886167,
+    "_id": "Email<SEP>Luca"
+  },
+  "Letters<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-042d759aacad80eabc3f0a07783f37d7",
+      "chunk-20cc17771fcc8dd1b7081a0800a96379"
+    ],
+    "count": 2,
+    "update_time": 1766886168,
+    "_id": "Letters<SEP>Luca"
+  },
+  "Luca<SEP>Text": {
+    "chunk_ids": [
+      "chunk-042d759aacad80eabc3f0a07783f37d7"
+    ],
+    "count": 1,
+    "create_time": 1766886056,
+    "update_time": 1766886056,
+    "_id": "Luca<SEP>Text"
+  },
+  "Articles<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-042d759aacad80eabc3f0a07783f37d7",
+      "chunk-20cc17771fcc8dd1b7081a0800a96379"
+    ],
+    "count": 2,
+    "update_time": 1766886168,
+    "_id": "Articles<SEP>Luca"
+  },
+  "Luca<SEP>Stories": {
+    "chunk_ids": [
+      "chunk-042d759aacad80eabc3f0a07783f37d7",
+      "chunk-20cc17771fcc8dd1b7081a0800a96379"
+    ],
+    "count": 2,
+    "update_time": 1766886169,
+    "_id": "Luca<SEP>Stories"
+  },
+  "Development<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-042d759aacad80eabc3f0a07783f37d7",
+      "chunk-20cc17771fcc8dd1b7081a0800a96379"
+    ],
+    "count": 2,
+    "update_time": 1766886170,
+    "_id": "Development<SEP>Luca"
+  },
+  "Capabilities<SEP>User": {
+    "chunk_ids": [
+      "chunk-4d79f653d76210068262af93d107d18a"
+    ],
+    "count": 1,
+    "create_time": 1766886082,
+    "update_time": 1766886082,
+    "_id": "Capabilities<SEP>User"
+  },
+  "Addressee<SEP>User": {
+    "chunk_ids": [
+      "chunk-4d79f653d76210068262af93d107d18a"
+    ],
+    "count": 1,
+    "create_time": 1766886082,
+    "update_time": 1766886082,
+    "_id": "Addressee<SEP>User"
+  },
+  "Addressee<SEP>Capabilities": {
+    "chunk_ids": [
+      "chunk-4d79f653d76210068262af93d107d18a"
+    ],
+    "count": 1,
+    "create_time": 1766886083,
+    "update_time": 1766886083,
+    "_id": "Addressee<SEP>Capabilities"
+  },
+  "Luca<SEP>Question Answering": {
+    "chunk_ids": [
+      "chunk-20cc17771fcc8dd1b7081a0800a96379"
+    ],
+    "count": 1,
+    "create_time": 1766886162,
+    "update_time": 1766886162,
+    "_id": "Luca<SEP>Question Answering"
+  },
+  "Creative Text Generation<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-20cc17771fcc8dd1b7081a0800a96379"
+    ],
+    "count": 1,
+    "create_time": 1766886162,
+    "update_time": 1766886162,
+    "_id": "Creative Text Generation<SEP>Luca"
+  },
+  "Language Translation<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-20cc17771fcc8dd1b7081a0800a96379"
+    ],
+    "count": 1,
+    "create_time": 1766886163,
+    "update_time": 1766886163,
+    "_id": "Language Translation<SEP>Luca"
+  },
+  "Luca<SEP>Text Summarization": {
+    "chunk_ids": [
+      "chunk-20cc17771fcc8dd1b7081a0800a96379"
+    ],
+    "count": 1,
+    "create_time": 1766886163,
+    "update_time": 1766886163,
+    "_id": "Luca<SEP>Text Summarization"
+  },
+  "Idea Brainstorming<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-20cc17771fcc8dd1b7081a0800a96379"
+    ],
+    "count": 1,
+    "create_time": 1766886164,
+    "update_time": 1766886164,
+    "_id": "Idea Brainstorming<SEP>Luca"
+  },
+  "Conversational Engagement<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-20cc17771fcc8dd1b7081a0800a96379"
+    ],
+    "count": 1,
+    "create_time": 1766886164,
+    "update_time": 1766886164,
+    "_id": "Conversational Engagement<SEP>Luca"
+  },
+  "Instruction Following<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-20cc17771fcc8dd1b7081a0800a96379"
+    ],
+    "count": 1,
+    "create_time": 1766886165,
+    "update_time": 1766886165,
+    "_id": "Instruction Following<SEP>Luca"
+  },
+  "Luca<SEP>Solutions": {
+    "chunk_ids": [
+      "chunk-20cc17771fcc8dd1b7081a0800a96379"
+    ],
+    "count": 1,
+    "create_time": 1766886170,
+    "update_time": 1766886170,
+    "_id": "Luca<SEP>Solutions"
+  },
+  "System App<SEP>User": {
+    "chunk_ids": [
+      "chunk-22bd6bcbce89396ccb59e12414bc1a15",
+      "chunk-41c399cd38dc09181756df6210e69c93",
+      "chunk-928f8ff88a583d23197d668b0f77772d"
+    ],
+    "count": 3,
+    "update_time": 1766930985,
+    "_id": "System App<SEP>User"
+  },
+  "AI Assistant<SEP>User": {
+    "chunk_ids": [
+      "chunk-22bd6bcbce89396ccb59e12414bc1a15",
+      "chunk-41c399cd38dc09181756df6210e69c93"
+    ],
+    "count": 2,
+    "update_time": 1766886332,
+    "_id": "AI Assistant<SEP>User"
+  },
+  "2025-12-28T01:38:29.664Z<SEP>User": {
+    "chunk_ids": [
+      "chunk-41c399cd38dc09181756df6210e69c93"
+    ],
+    "count": 1,
+    "create_time": 1766886331,
+    "update_time": 1766886331,
+    "_id": "2025-12-28T01:38:29.664Z<SEP>User"
+  },
+  "AI Assistant<SEP>System App": {
+    "chunk_ids": [
+      "chunk-22bd6bcbce89396ccb59e12414bc1a15",
+      "chunk-41c399cd38dc09181756df6210e69c93"
+    ],
+    "count": 2,
+    "update_time": 1766886333,
+    "_id": "AI Assistant<SEP>System App"
+  },
+  "Luca<SEP>System App": {
+    "chunk_ids": [
+      "chunk-5c1ae86a6bc5a507b8cec9a06e6c9ba0"
+    ],
+    "count": 1,
+    "create_time": 1766886462,
+    "update_time": 1766886462,
+    "_id": "Luca<SEP>System App"
+  },
+  "Error 400<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-5c1ae86a6bc5a507b8cec9a06e6c9ba0"
+    ],
+    "count": 1,
+    "create_time": 1766886463,
+    "update_time": 1766886463,
+    "_id": "Error 400<SEP>Luca"
+  },
+  "Google Cloud<SEP>Vertex AI": {
+    "chunk_ids": [
+      "chunk-5c1ae86a6bc5a507b8cec9a06e6c9ba0",
+      "chunk-928f8ff88a583d23197d668b0f77772d"
+    ],
+    "count": 2,
+    "update_time": 1766930985,
+    "_id": "Google Cloud<SEP>Vertex AI"
+  },
+  "Error 400<SEP>Vertex AI": {
+    "chunk_ids": [
+      "chunk-5c1ae86a6bc5a507b8cec9a06e6c9ba0"
+    ],
+    "count": 1,
+    "create_time": 1766886464,
+    "update_time": 1766886464,
+    "_id": "Error 400<SEP>Vertex AI"
+  },
+  "Gemini<SEP>Vertex AI": {
+    "chunk_ids": [
+      "chunk-5c1ae86a6bc5a507b8cec9a06e6c9ba0"
+    ],
+    "count": 1,
+    "create_time": 1766886465,
+    "update_time": 1766886465,
+    "_id": "Gemini<SEP>Vertex AI"
+  },
+  "Error 400<SEP>Gemini": {
+    "chunk_ids": [
+      "chunk-5c1ae86a6bc5a507b8cec9a06e6c9ba0"
+    ],
+    "count": 1,
+    "create_time": 1766886465,
+    "update_time": 1766886465,
+    "_id": "Error 400<SEP>Gemini"
+  },
+  "Error 400<SEP>Parts Field": {
+    "chunk_ids": [
+      "chunk-5c1ae86a6bc5a507b8cec9a06e6c9ba0"
+    ],
+    "count": 1,
+    "create_time": 1766886467,
+    "update_time": 1766886467,
+    "_id": "Error 400<SEP>Parts Field"
+  },
+  "Error 400<SEP>Neural Core": {
+    "chunk_ids": [
+      "chunk-5c1ae86a6bc5a507b8cec9a06e6c9ba0"
+    ],
+    "count": 1,
+    "create_time": 1766886470,
+    "update_time": 1766886470,
+    "_id": "Error 400<SEP>Neural Core"
+  },
+  "Calculator<SEP>User": {
+    "chunk_ids": [
+      "chunk-eb57e31e32b23705e837ef24088b5b8a",
+      "chunk-591a69952a07ec2da605d1dd0a658416",
+      "chunk-928f8ff88a583d23197d668b0f77772d"
+    ],
+    "count": 3,
+    "update_time": 1766930983,
+    "_id": "Calculator<SEP>User"
+  },
+  "2025-12-28T01:54:50.078Z<SEP>LUCA": {
+    "chunk_ids": [
+      "chunk-591a69952a07ec2da605d1dd0a658416"
+    ],
+    "count": 1,
+    "create_time": 1766930890,
+    "update_time": 1766930890,
+    "_id": "2025-12-28T01:54:50.078Z<SEP>LUCA"
+  },
+  "2025-12-28T01:54:50.068Z<SEP>User": {
+    "chunk_ids": [
+      "chunk-591a69952a07ec2da605d1dd0a658416"
+    ],
+    "count": 1,
+    "create_time": 1766930891,
+    "update_time": 1766930891,
+    "_id": "2025-12-28T01:54:50.068Z<SEP>User"
+  },
+  "Calculator<SEP>LUCA": {
+    "chunk_ids": [
+      "chunk-591a69952a07ec2da605d1dd0a658416"
+    ],
+    "count": 1,
+    "create_time": 1766930891,
+    "update_time": 1766930891,
+    "_id": "Calculator<SEP>LUCA"
+  },
+  "Notes<SEP>User": {
+    "chunk_ids": [
+      "chunk-79740a91c01387cdfbdf911d6c165049",
+      "chunk-dcacb663d72f52566711132da1b69869",
+      "chunk-928f8ff88a583d23197d668b0f77772d"
+    ],
+    "count": 3,
+    "update_time": 1766930982,
+    "_id": "Notes<SEP>User"
+  },
+  "2025-12-28T01:52:00.514Z<SEP>User": {
+    "chunk_ids": [
+      "chunk-79740a91c01387cdfbdf911d6c165049"
+    ],
+    "count": 1,
+    "create_time": 1766930907,
+    "update_time": 1766930907,
+    "_id": "2025-12-28T01:52:00.514Z<SEP>User"
+  },
+  "LUCA<SEP>Notes": {
+    "chunk_ids": [
+      "chunk-79740a91c01387cdfbdf911d6c165049"
+    ],
+    "count": 1,
+    "create_time": 1766930907,
+    "update_time": 1766930907,
+    "_id": "LUCA<SEP>Notes"
+  },
+  "2025-12-28T01:52:00.523Z<SEP>LUCA": {
+    "chunk_ids": [
+      "chunk-79740a91c01387cdfbdf911d6c165049"
+    ],
+    "count": 1,
+    "create_time": 1766930908,
+    "update_time": 1766930908,
+    "_id": "2025-12-28T01:52:00.523Z<SEP>LUCA"
+  },
+  "Critical Failure<SEP>Vertex AI": {
+    "chunk_ids": [
+      "chunk-928f8ff88a583d23197d668b0f77772d"
+    ],
+    "count": 1,
+    "create_time": 1766930984,
+    "update_time": 1766930984,
+    "_id": "Critical Failure<SEP>Vertex AI"
+  },
+  "Critical Failure<SEP>Gemini": {
+    "chunk_ids": [
+      "chunk-928f8ff88a583d23197d668b0f77772d"
+    ],
+    "count": 1,
+    "create_time": 1766930985,
+    "update_time": 1766930985,
+    "_id": "Critical Failure<SEP>Gemini"
+  },
+  "Critical Failure<SEP>Invalid Argument": {
+    "chunk_ids": [
+      "chunk-928f8ff88a583d23197d668b0f77772d"
+    ],
+    "count": 1,
+    "create_time": 1766930986,
+    "update_time": 1766930986,
+    "_id": "Critical Failure<SEP>Invalid Argument"
+  },
+  "Critical Failure<SEP>TypeError": {
+    "chunk_ids": [
+      "chunk-928f8ff88a583d23197d668b0f77772d"
+    ],
+    "count": 1,
+    "create_time": 1766930987,
+    "update_time": 1766930987,
+    "_id": "Critical Failure<SEP>TypeError"
+  },
+  "Time<SEP>User": {
+    "chunk_ids": [
+      "chunk-1d327ad945e45eab8b23a6baed6456f0"
+    ],
+    "count": 1,
+    "create_time": 1766943973,
+    "update_time": 1766943973,
+    "_id": "Time<SEP>User"
+  },
+  "Luca<SEP>Time": {
+    "chunk_ids": [
+      "chunk-1d327ad945e45eab8b23a6baed6456f0"
+    ],
+    "count": 1,
+    "create_time": 1766943987,
+    "update_time": 1766943987,
+    "_id": "Luca<SEP>Time"
+  },
+  "6:44 PM<SEP>Luca": {
+    "chunk_ids": [
+      "chunk-a8c5502872ec26f3b4b1a1639985db8d"
+    ],
+    "count": 1,
+    "create_time": 1766944115,
+    "update_time": 1766944115,
+    "_id": "6:44 PM<SEP>Luca"
+  }
+}

@@ -1,0 +1,14 @@
+# Commit Message Guidelines
+
+# Type: Brief description (50 chars max)
+#
+# - Type: feat, fix, refactor, test, docs, chore
+# - Description: What changed
+# - Body (optional): Why and how
+#
+# Examples:
+# feat: add mobile file browser component
+# fix: restore missing tool schemas
+# refactor: improve memory service sync
+# test: add schema validation tests
+
