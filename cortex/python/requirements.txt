@@ -22,17 +22,11 @@ networkx==3.6.1
 numpy==1.26.4
 pillow==12.0.0
 
-# LightRAG for knowledge graph and RAG features (REQUIRED)
+# LightRAG for knowledge graph and RAG features
 lightrag-hku==1.4.9.10
-
-# ML Dependencies (required for LightRAG and vision_agent)
-torch==2.5.1
-transformers==4.46.3
-bitsandbytes==0.45.0
-accelerate==1.2.1
 
 # Flask for compatibility (if needed)
 flask-cors==6.0.2
 
-# Note: Full dependencies for both local and cloud deployment
-# LightRAG is REQUIRED for this system to start
+# Note: This is the LIGHTWEIGHT version for Railway cloud deployment
+# For local development with full features, use: pip install -r requirements.local.txt
