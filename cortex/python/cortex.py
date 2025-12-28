@@ -576,7 +576,15 @@ async def tts_endpoint(request: TTSRequest):
         raise HTTPException(status_code=500, detail="TTS Generation Failed")
 
 # --- VISION AGENT (UI-TARS) ---
-from vision_agent import ui_tars
+try:
+    from vision_agent import ui_tars
+    VISION_AGENT_AVAILABLE = True
+    print("[CORTEX] Vision Agent (UI-TARS) loaded successfully")
+except ImportError as e:
+    print(f"[CORTEX] WARN: Vision Agent not available: {e}")
+    print("[CORTEX] Vision analysis features will be disabled.")
+    VISION_AGENT_AVAILABLE = False
+    ui_tars = None
 
 class VisionRequest(BaseModel):
     screenshot: str # Base64
@@ -584,6 +592,12 @@ class VisionRequest(BaseModel):
 
 @app.post("/vision/analyze")
 async def vision_analyze(request: VisionRequest):
+    if not VISION_AGENT_AVAILABLE:
+        raise HTTPException(
+            status_code=503,
+            detail="Vision Agent not available on this server. Install torch and vision_agent dependencies."
+        )
+    
     try:
         # Lazy load happens inside the agent
         result = ui_tars.process_screenshot(request.screenshot, request.instruction)
