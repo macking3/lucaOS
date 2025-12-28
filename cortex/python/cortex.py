@@ -87,14 +87,9 @@ try:
     rag_embedding_func = GeminiEmbedding(func=None, embedding_dim=768, max_token_size=2048)
 
 except Exception as e:
-    print(f"[CORTEX] WARN: LightRAG not available: {e}")
-    print("[CORTEX] RAG features will be disabled. API proxy mode only.")
-    # Set flag to disable RAG endpoints
-    LIGHTRAG_AVAILABLE = False
-    rag = None
-    rag_embedding_func = None
-else:
-    LIGHTRAG_AVAILABLE = True
+    print(f"[CORTEX] CRITICAL: LightRAG Import Failed: {e}")
+    print("[CORTEX] LightRAG is required for this system. Exiting.")
+    sys.exit(1)
 
 # Initialize FastAPI
 app = FastAPI()
