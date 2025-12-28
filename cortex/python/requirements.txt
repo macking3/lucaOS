@@ -22,8 +22,9 @@ networkx==3.6.1
 numpy==1.26.4
 pillow==12.0.0
 
-# Optional: LightRAG (if needed, but it's heavy)
-# lightrag-hku==1.4.9.10
+# LightRAG for knowledge graph and RAG features
+lightrag-hku==1.4.9.10
+
 
 # Flask for compatibility (if needed)
 flask-cors==6.0.2
