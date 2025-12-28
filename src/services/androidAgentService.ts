@@ -111,7 +111,7 @@ export class AndroidAgentService {
     }
   }
 
-  private getConnectedMobileDevice() {
+  public getConnectedMobileDevice() {
     if (!neuralLinkManager) return null;
     // Find the first device that is 'android'
     for (const [id, device] of neuralLinkManager.devices) {
@@ -122,7 +122,7 @@ export class AndroidAgentService {
     return null;
   }
 
-  private async getUiTree() {
+  public async getUiTree() {
     try {
       const res = await fetch(`${SERVER_URL}/ui-tree`);
       const data = await res.json();
@@ -145,7 +145,7 @@ export class AndroidAgentService {
     }
   }
 
-  private async getScreenshot(): Promise<string | null> {
+  public async getScreenshot(): Promise<string | null> {
     try {
       // Priority 1: Neural Link (Wireless)
       const mobileDevice = this.getConnectedMobileDevice();
