@@ -7,7 +7,7 @@
 
 import { io, Socket } from "socket.io-client";
 import { settingsService } from "./settingsService";
-import { cortexUrl } from "../config/api";
+import { cortexUrl, RELAY_SERVER_URL } from "../config/api";
 
 // Types
 export interface NeuralLinkMessage {
@@ -42,7 +42,7 @@ type StateListener = (state: NeuralLinkState) => void;
 type MessageListener = (message: NeuralLinkMessage) => void;
 
 // Default relay server
-const DEFAULT_RELAY_URL = "https://relay-server-eight.vercel.app";
+const DEFAULT_RELAY_URL = RELAY_SERVER_URL || "https://lucaos.onrender.com";
 
 class NeuralLinkService {
   private socket: Socket | null = null;
@@ -722,7 +722,7 @@ class NeuralLinkService {
               this.sendToGuestAuth(data.sessionId, "auth-failed");
               return; // Don't process as chat message
             }
-          } catch (e) {
+          } catch {
             // Not a valid JSON or not an auth message, treat as chat
           }
         }

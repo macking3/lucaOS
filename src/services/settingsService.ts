@@ -161,7 +161,7 @@ const DEFAULT_SETTINGS: LucaSettings = {
   neuralLink: {
     enabled: true,
     connectionMode: "auto",
-    relayServerUrl: "https://relay-server-eight.vercel.app", // Production relay server
+    relayServerUrl: "https://lucaos.onrender.com", // Production relay server
     vpnServerUrl: "",
   },
   mcp: {

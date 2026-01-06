@@ -639,7 +639,7 @@ const SettingsNeuralLinkTab: React.FC<SettingsNeuralLinkTabProps> = ({
                 onChange={(e) =>
                   onUpdate("neuralLink", "relayServerUrl", e.target.value)
                 }
-                placeholder="https://relay-server-eight.vercel.app"
+                placeholder="https://lucaos.onrender.com"
                 className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white outline-none font-mono text-sm"
                 style={{ borderColor: "rgba(255,255,255,0.1)" }}
                 onFocus={(e) => (e.target.style.borderColor = theme.hex)}
@@ -894,7 +894,7 @@ const SettingsNeuralLinkTab: React.FC<SettingsNeuralLinkTabProps> = ({
                   onUpdate("neuralLink", "relayServerUrl", e.target.value)
                 }
                 disabled={!settings.neuralLink.enabled}
-                placeholder="https://relay-server-eight.vercel.app"
+                placeholder="https://lucaos.onrender.com"
                 className="w-full bg-black/20 border border-white/10 rounded-lg p-2 text-white outline-none font-mono text-xs disabled:opacity-50"
                 style={{ borderColor: "rgba(255,255,255,0.1)" }}
                 onFocus={(e) => (e.target.style.borderColor = theme.hex)}
