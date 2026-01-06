@@ -11,14 +11,12 @@ import {
   Database,
   Info,
   Shield,
-  ArrowLeft,
   Wifi,
+  Plug,
 } from "lucide-react";
 import { settingsService, LucaSettings } from "../services/settingsService";
 import { useMobile } from "../hooks/useMobile";
-import { CredentialVault } from "../services/credentialVault";
 import { memoryService } from "../services/memoryService";
-import { PERSONA_UI_CONFIG, PersonaType } from "../services/lucaService";
 
 // Import Refactored Tabs
 import SettingsGeneralTab from "./settings/SettingsGeneralTab";
@@ -30,11 +28,9 @@ import SettingsConnectorsTab from "./settings/SettingsConnectorsTab";
 import SettingsNeuralLinkTab from "./settings/SettingsNeuralLinkTab";
 import SettingsDataTab from "./settings/SettingsDataTab";
 import SettingsAboutTab from "./settings/SettingsAboutTab";
+import SettingsMCPTab from "./settings/SettingsMCPTab";
 import OperatorProfilePanel from "./settings/OperatorProfilePanel";
 import PersonalityDashboard from "./settings/PersonalityDashboard";
-
-// Initialize Vault
-const vault = new CredentialVault();
 
 interface SettingsModalProps {
   onClose: () => void;
@@ -49,17 +45,58 @@ interface SettingsModalProps {
 }
 
 const TABS = [
-  { id: "general", label: "General", icon: Settings },
-  { id: "brain", label: "Brain", icon: Cpu },
-  { id: "voice", label: "Voice", icon: Mic },
-  { id: "profile", label: "Profile", icon: Settings },
-  { id: "personality", label: "Personality", icon: Settings },
-  { id: "neurallink", label: "Neural Link", icon: Wifi },
-  { id: "admin", label: "Admin Registry", icon: Shield },
-  { id: "iot", label: "Smart Home", icon: Home },
-  { id: "connectors", label: "Connectors", icon: Link },
-  { id: "data", label: "Data & Memory", icon: Database },
-  { id: "about", label: "About", icon: Info },
+  {
+    id: "general",
+    label: "General",
+    icon: Settings,
+    platforms: ["desktop", "mobile"],
+  },
+  { id: "brain", label: "Brain", icon: Cpu, platforms: ["desktop", "mobile"] },
+  { id: "voice", label: "Voice", icon: Mic, platforms: ["desktop", "mobile"] },
+  {
+    id: "profile",
+    label: "Profile",
+    icon: Settings,
+    platforms: ["desktop", "mobile"],
+  },
+  {
+    id: "personality",
+    label: "Personality",
+    icon: Settings,
+    platforms: ["desktop", "mobile"],
+  },
+  {
+    id: "neurallink",
+    label: "Neural Link",
+    icon: Wifi,
+    platforms: ["desktop", "mobile"],
+  }, // Both - Desktop hosts, Mobile connects
+  { id: "mcp", label: "MCP Skills", icon: Plug, platforms: ["desktop"] }, // Desktop only - requires local processes
+  {
+    id: "admin",
+    label: "Admin Registry",
+    icon: Shield,
+    platforms: ["desktop"],
+  }, // Desktop only - system controls
+  {
+    id: "iot",
+    label: "Smart Home",
+    icon: Home,
+    platforms: ["desktop", "mobile"],
+  },
+  {
+    id: "connectors",
+    label: "Connectors",
+    icon: Link,
+    platforms: ["desktop", "mobile"],
+  },
+  {
+    id: "data",
+    label: "Data & Memory",
+    icon: Database,
+    platforms: ["desktop", "mobile"],
+  },
+  { id: "about", label: "About", icon: Info, platforms: ["desktop", "mobile"] },
 ];
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -73,31 +110,20 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [statusMsg, setStatusMsg] = useState("");
 
-  // Connectors State
-  const [connectors, setConnectors] = useState<
-    { site: string; username: string; linked: boolean }[]
-  >([]);
-
   // Memory Stats
   const [memoryStats, setMemoryStats] = useState({ count: 0 });
   const isMobile = useMobile();
 
+  // Filter tabs by platform
+  const currentPlatform = isMobile ? "mobile" : "desktop";
+  const visibleTabs = TABS.filter((tab) =>
+    tab.platforms.includes(currentPlatform)
+  );
+
   useEffect(() => {
     // Load initial data
-    loadConnectors();
     loadMemoryStats();
   }, []);
-
-  const loadConnectors = async () => {
-    const sites = ["spotify", "github", "brave", "klavis"]; // Supported Connectors
-    const list = await Promise.all(
-      sites.map(async (site) => {
-        const hasCreds = await vault.hasCredentials(site);
-        return { site, username: "API Key", linked: hasCreds };
-      })
-    );
-    setConnectors(list);
-  };
 
   const loadMemoryStats = () => {
     const mems = memoryService.getAllMemories();
@@ -110,15 +136,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       await settingsService.saveSettings(settings);
 
       // Apply System Settings (IPC)
-      // @ts-ignore
       if (window.luca?.applySystemSettings) {
-        // @ts-ignore
         window.luca.applySystemSettings(settings.general);
       }
 
       setStatusMsg("Settings Saved Successfully");
       setTimeout(() => setStatusMsg(""), 2000);
-    } catch (e) {
+    } catch {
       setStatusMsg("Error Saving Settings");
     }
     setLoading(false);
@@ -175,7 +199,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               </h2>
             </div>
             <div className="flex-1 p-3 space-y-1 overflow-y-auto">
-              {TABS.map((tab) => {
+              {visibleTabs.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
                 return (
@@ -222,7 +246,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
             {/* Horizontal Tab Bar */}
             <div className="flex overflow-x-auto no-scrollbar p-2 px-3 gap-2">
-              {TABS.map((tab) => {
+              {visibleTabs.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
                 return (
@@ -320,7 +344,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             {activeTab === "connectors" && (
               <SettingsConnectorsTab
                 settings={settings}
-                connectors={connectors}
                 theme={theme}
                 onClose={onClose}
                 setStatusMsg={setStatusMsg}
@@ -331,6 +354,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 settings={settings}
                 onUpdate={updateSetting}
                 theme={theme}
+              />
+            )}
+            {activeTab === "mcp" && (
+              <SettingsMCPTab
+                settings={settings}
+                theme={theme}
+                setStatusMsg={setStatusMsg}
               />
             )}
             {activeTab === "data" && (

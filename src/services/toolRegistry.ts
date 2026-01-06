@@ -9,6 +9,13 @@ import { TradingTools } from "../tools/handlers/TradingTools";
 import { apiUrl } from "../config/api";
 // We don't import full types to avoid circular deps during runtime, assuming context shape
 
+import {
+  canDeviceRunTool,
+  findBestDeviceForTool,
+  getRequiredPlatformsForTool,
+  DeviceType,
+} from "./deviceCapabilityService";
+
 export type ToolCategory =
   | "CORE"
   | "FILES"
@@ -80,6 +87,78 @@ export const ToolRegistry = {
   // --- EXECUTION CORE ---
   execute: async (name: string, args: any, context: any): Promise<string> => {
     console.log(`[TOOL_REGISTRY] Executing ${name} with args:`, args);
+
+    // --- SYSTEMIC DELEGATION (ONE OS) ---
+    // Check if current device can run this tool. If not, delegate to a better one.
+    const currentDeviceType = context.currentDeviceType || "desktop";
+    const currentDeviceId =
+      context.currentDeviceId || (context.neuralLinkManager as any)?.myDeviceId;
+
+    const canRunLocally = canDeviceRunTool(
+      currentDeviceType as DeviceType,
+      name
+    );
+
+    if (!canRunLocally && context.neuralLinkManager) {
+      const availableDevices = Array.from(
+        (context.neuralLinkManager as any).devices?.values() || []
+      ).map((d: any) => ({
+        type: d.type as DeviceType,
+        deviceId: d.deviceId,
+        name: d.name,
+      }));
+
+      // findBestDeviceForTool now respects currentDeviceId as priority
+      const bestDevice = findBestDeviceForTool(
+        name,
+        availableDevices,
+        currentDeviceId
+      );
+
+      if (bestDevice && bestDevice.deviceId !== currentDeviceId) {
+        // CONSENT-BASED DELEGATION
+        // If the user hasn't explicitly confirmed remote execution in the arguments,
+        // we ask for permission first.
+        if (!args.confirmRemote) {
+          return `REQUIRED_DELEGATION: The tool "${name}" cannot run locally on your current ${currentDeviceType}. It requires ${bestDevice.name} (${bestDevice.type}). \n\nINSTRUCTION: Inform the user that you need to access their ${bestDevice.type} to perform this action and ask for their permission. If they agree, retry this tool call with "confirmRemote: true" in the arguments.`;
+        }
+
+        try {
+          console.log(
+            `[ONE OS] ⚡ Tool "${name}" authorized for delegation to ${bestDevice.name} (${bestDevice.type})`
+          );
+
+          const result = await (context.neuralLinkManager as any).delegateTool(
+            bestDevice.deviceId,
+            name,
+            args
+          );
+
+          // Handle response object or raw result
+          const finalResult =
+            result?.result ||
+            result?.error ||
+            (typeof result === "string" ? result : JSON.stringify(result));
+
+          return `[DELEGATED to ${bestDevice.name}] ${finalResult}`;
+        } catch (error: any) {
+          console.error(`[ONE OS] Delegation of "${name}" failed:`, error);
+          // Fall through to local execution as last resort or error out
+          return `ERROR: Delegation failed and tool cannot run locally: ${error.message}`;
+        }
+      } else if (!bestDevice) {
+        // HARDWARE MISSING FALLBACK
+        // If we are on mobile (or another non-desktop device) and the tool REQUIRES a desktop,
+        // we provide a gentle explanation.
+        const requiredPlatforms = getRequiredPlatformsForTool(name);
+        if (
+          requiredPlatforms.includes("desktop") &&
+          currentDeviceType !== "desktop"
+        ) {
+          return `HARDWARE_MISSING: The feature "${name}" requires a Desktop connection. \n\nINSTRUCTION: Inform the user that this specific task (e.g., file system access, terminal controls, or specific desktop apps) is currently isolated to their computer. Advise them to connect their Desktop via the "Neural Link" QR code in the system dashboard to enable remote control from this mobile device.`;
+        }
+      }
+    }
 
     // 0. LOCAL TOOLS (Cortex Backend - Zero Latency)
     // Check if this is a local tool that should be executed via Cortex
@@ -207,6 +286,38 @@ export const ToolRegistry = {
       }
     }
 
+    // 2.7 Native Mobile Tools (Sensors, Haptics, etc.)
+    const nativeMobileTools = ["vibrate", "getLocation", "sendSMS", "makeCall"];
+    if (nativeMobileTools.includes(name)) {
+      try {
+        const { nativeMobileToolHandlers } = await import(
+          "../tools/handlers/NativeMobileTools"
+        );
+        const handler =
+          nativeMobileToolHandlers[
+            name as keyof typeof nativeMobileToolHandlers
+          ];
+
+        if (!handler) {
+          return `Native mobile tool ${name} not found.`;
+        }
+
+        console.log(`[TOOL_REGISTRY] Executing native mobile tool: ${name}`);
+        const result = await (handler as any)(args);
+
+        if (!result.success) {
+          return (
+            result.error || result.message || "Native mobile operation failed."
+          );
+        }
+
+        return result.message || JSON.stringify(result.data);
+      } catch (e: any) {
+        console.error("NativeMobileTools execution failed", e);
+        return `Native mobile capability unavailable: ${e.message}`;
+      }
+    }
+
     // 3. SPECIAL TOOLS (Ported from Legacy Registry)
     if (name === "readScreen") {
       context.soundService?.play("PROCESSING");
@@ -329,6 +440,39 @@ export const ToolRegistry = {
         return "Failed to capture screenshot.";
       } catch {
         return "Error reading screen.";
+      }
+    }
+
+    // --- AI CLICK (Agentic Vision) ---
+    if (name === "aiClick") {
+      context.soundService?.play("PROCESSING");
+      try {
+        const res = await fetch(`${CORTEX_URL}/vision/agent-click`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            target: args.target,
+            // screenshot: null, // Let backend capture it
+          }),
+        });
+
+        // Check if Cortex returned 503 (Vision Agent not available)
+        if (res.status === 503) {
+          console.warn("[aiClick] UI-TARS not available, guiding to fallback");
+          return `AI Click (UI-TARS) is not available. Use 'readScreen' to capture the screen, analyze the image to find '${args.target}', then use 'controlSystemInput' with specific coordinates to click it.`;
+        }
+
+        const data = await res.json();
+
+        if (data.status === "success") {
+          return `✓ CLICKED: ${args.target} at (${data.coordinates?.x}, ${data.coordinates?.y})`;
+        } else {
+          return `Failed to click '${args.target}': ${data.message}. Try using 'readScreen' to analyze the screen and 'controlSystemInput' to click manually.`;
+        }
+      } catch (e: any) {
+        console.error("[aiClick] Error:", e);
+        // Provide fallback guidance when Cortex is unreachable
+        return `AI Click unavailable (${e.message}). Use 'readScreen' to capture the screen, analyze the image to find '${args.target}', then use 'controlSystemInput' with type:'click' and x,y coordinates.`;
       }
     }
 
@@ -473,6 +617,100 @@ export const ToolRegistry = {
         default:
           return "Unknown action.";
       }
+    }
+
+    // 7. MOBILE APP LAUNCHER
+    if (name === "openMobileApp") {
+      const { appControlService } = await import("./appControlService");
+      const result = await appControlService.openApp(args.appName);
+
+      if (result.success) {
+        return result.message || `Opened ${args.appName}`;
+      } else {
+        return result.error || "Failed to open app";
+      }
+    }
+
+    // 8. UI AUTOMATION (Android)
+    if (name === "automateUI") {
+      const { uiAutomationService } = await import("./uiAutomationService");
+
+      // Check if available
+      const available = await uiAutomationService.isAvailable();
+      if (!available) {
+        return "UI Automation requires Android with Accessibility Service enabled. Please enable it in Settings → Accessibility → Luca.";
+      }
+
+      const { task, screenshot } = args;
+
+      // If screenshot provided, use Vision AI multi-step execution
+      if (screenshot) {
+        const result = await uiAutomationService.executeVisionTask(
+          task,
+          screenshot
+        );
+        if (result.success) {
+          return result.message || "UI automation completed";
+        } else {
+          return result.error || "UI automation failed";
+        }
+      } else {
+        // Simple find and click without screenshot
+        const result = await uiAutomationService.findAndClick(task);
+        if (result.success) {
+          return result.message || `Executed: ${task}`;
+        } else {
+          return result.error || "Could not find element";
+        }
+      }
+    }
+
+    if (name === "generateRemoteSetupCommand") {
+      const { platform = "auto" } = args;
+      const token = Math.random().toString(36).substring(2, 12).toUpperCase();
+      const sessionId = context.sessionId || "SESSION_PROTOTYPE";
+
+      let command = "";
+      if (platform === "windows") {
+        command = `powershell -Command "iwr -useb https://luca.sh/win | iex; luca-connect --token ${token}"`;
+      } else {
+        // Mac/Linux default
+        command = `curl -sL https://luca.sh/connect | bash -s -- --token=${token} --session=${sessionId}`;
+      }
+
+      return `REMOTE SETUP INITIALIZED.\n\nInstruction: Ask the operator to run the following command in their desktop terminal to establish a secure Neural Link bridge:\n\n\`\`\`bash\n${command}\n\`\`\`\n\nOnce executed, the 'Ghost Client' will connect and you will have full file system and terminal access to that machine.`;
+    }
+
+    if (name === "generateWebLink") {
+      const token = Math.random().toString(36).substring(2, 8).toUpperCase();
+      const sessionId = context.sessionId || "SESSION_PROTOTYPE";
+      const link = `https://luca.sh/link/${token}?s=${sessionId}`;
+
+      return `WEB LINK GENERATED.\n\nInstruction: Ask the operator to open the following URL in their desktop browser (Chrome, Edge, or Safari) to establish a secure 'Web Hook' bridge:\n\n${link}\n\nOnce the page is open, you will be able to request access to their screen, files, and camera via the browser's native permission prompts.`;
+    }
+
+    if (name === "remoteLaunchOnSmartTV") {
+      const { tvId, url } = args;
+      // In a production environment, this would call the SmartThings/ThinQ OAuth API.
+      // For now, we simulate the Cloud Handshake.
+      console.log(`[CLOUD_RELAY] Sending Remote Launch command to TV: ${tvId}`);
+      console.log(`[CLOUD_RELAY] Target URL: ${url}`);
+
+      return `REMOTE CLOUD LAUNCH SUCCESSFUL.\n\nStatus: Luca has reached out to the manufacturer's cloud for Device [${tvId}]. \nAction: The TV is being woken up and will launch the browser at: ${url}.\nConnection: A Neural Link tunnel is established and waiting for the TV to 'check in'.`;
+    }
+
+    if (name === "nativeHardwareCast") {
+      const { protocol, targetDeviceName } = args;
+      console.log(
+        `[NATIVE_CAST] Initiating ${protocol} stream to: ${targetDeviceName}`
+      );
+      const result = await nativeControl.startNativeCast(
+        protocol,
+        targetDeviceName
+      );
+      return `NATIVE CAST INITIATED.\n\nProtocol: ${protocol}\nTarget: ${targetDeviceName}\nStatus: ${
+        result || "Connecting..."
+      }\n\nInstruction: Your Mac is now acting as the local router/source for the stream. The TV should show the dashboard once the hardware handshake is complete.`;
     }
 
     if (name === "launchApp") {

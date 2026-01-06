@@ -2,7 +2,7 @@ import chokidar from 'chokidar';
 import fs from 'fs';
 import path from 'path';
 import { memoryStore } from './memoryStore.js';
-import { embeddingService } from './embeddingService.js'; // For embedding generation
+import { embeddingService } from './embeddingService.js';
 
 let watcher = null;
 
@@ -50,7 +50,8 @@ export const fileWatcher = {
                     const memoryKey = `File: ${relativePath}`;
 
                     // Generate Embedding
-                    const vector = await embeddingService.generateEmbedding(`${memoryKey}: ${content.substring(0, 1000)}`); // Embed summary/start
+                    const vector = await embeddingService.generateEmbedding(`${memoryKey}: ${content.substring(0, 1000)}`);
+
 
                     // Save to Vector DB
                     memoryStore.addVector({

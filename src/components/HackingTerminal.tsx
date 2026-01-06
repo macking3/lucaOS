@@ -186,7 +186,7 @@ const HackingTerminal: React.FC<Props> = ({ onClose, toolLogs, theme }) => {
               <h2
                 className={`text-sm sm:text-lg font-bold ${themePrimary} tracking-wider sm:tracking-[0.2em] truncate`}
               >
-                RED_TEAM
+                RED TEAM
               </h2>
               <div
                 className={`text-[9px] sm:text-[10px] ${themePrimary} flex gap-2 sm:gap-4 opacity-70 truncate`}
@@ -297,7 +297,7 @@ const HackingTerminal: React.FC<Props> = ({ onClose, toolLogs, theme }) => {
                 <div className="h-12 bg-red-950/20 border-b border-red-900/50 flex items-center justify-between px-4 text-red-500">
                   <div className="flex items-center gap-4">
                     <span className="font-bold flex items-center gap-2">
-                      <Users size={16} /> C2_SESSIONS (ZOMBIES)
+                      <Users size={16} /> C2 SESSIONS (ZOMBIES)
                     </span>
                     <span className="text-xs opacity-60">
                       {sessions.length} ONLINE
@@ -402,7 +402,7 @@ const HackingTerminal: React.FC<Props> = ({ onClose, toolLogs, theme }) => {
                   <span className="mr-4">
                     STATUS: {terminalOutput.length > 2 ? "ACTIVE" : "IDLE"}
                   </span>
-                  <span className="ml-auto">CORE_LINK: STABLE</span>
+                  <span className="ml-auto">CORE LINK: STABLE</span>
                 </div>
 
                 {/* Terminal Output */}

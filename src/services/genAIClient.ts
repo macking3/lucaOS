@@ -87,30 +87,52 @@ export const HARDCODED_API_KEY = getApiKey();
 
 // Start with initial key or dummy if missing (to prevent crash)
 let currentGenAI: GoogleGenAI | null = null;
-try {
-  const key = getApiKey();
-  if (key) {
-    currentGenAI = new GoogleGenAI({ apiKey: key }); // Ensure correct instantiation
-  } else {
-    console.warn("[LUCA] No API Key found. AI features will be disabled.");
+let currentKey: string | null = null;
+
+const initClient = (key: string): GoogleGenAI => {
+  if (!key) {
+    throw new Error("Cannot initialize GoogleGenAI with empty API key");
   }
-} catch (e) {
-  console.error("[LUCA] Failed to init GoogleGenAI:", e);
-}
+  console.log(
+    `[genAIClient] Initializing new GoogleGenAI client (Key: ${key.substring(
+      0,
+      4
+    )}...${key.substring(key.length - 4)})`
+  );
+  currentKey = key;
+  return new GoogleGenAI({ apiKey: key });
+};
+
+// Listen for settings changes to immediately invalidate the client
+settingsService.on("settings-changed", (settings) => {
+  const newKey = settings?.brain?.geminiApiKey;
+  if (newKey && newKey !== currentKey) {
+    console.log(
+      "[genAIClient] API Key changed in settings, re-initializing client..."
+    );
+    currentGenAI = initClient(newKey);
+  }
+});
 
 // Helper that throws if client is missing (handling the null)
-export const getGenClient = () => {
-  if (!currentGenAI) {
-    // Try one last time to get it (e.g. if env loaded late)
-    const key = getApiKey();
+export const getGenClient = (): GoogleGenAI => {
+  const key = getApiKey();
+
+  // If no client exists, or key has changed, re-init
+  if (!currentGenAI || key !== currentKey) {
     if (key) {
-      currentGenAI = new GoogleGenAI({ apiKey: key });
-      return currentGenAI;
+      currentGenAI = initClient(key);
+    } else {
+      throw new Error(
+        "Google GenAI not initialized. Please set VITE_API_KEY or configure settings."
+      );
     }
-    throw new Error(
-      "Google GenAI not initialized. Please set VITE_API_KEY or configure settings."
-    );
   }
+
+  if (!currentGenAI) {
+    throw new Error("Failed to initialize Google GenAI client.");
+  }
+
   return currentGenAI;
 };
 

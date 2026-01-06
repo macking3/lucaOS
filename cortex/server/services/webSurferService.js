@@ -1,5 +1,7 @@
 import { chromium } from "playwright";
 import * as cheerio from "cheerio";
+import { getSnapshotScript } from "./snapshotScript.js";
+import { getLucaBrowserProfilePath } from "./chromeProfileService.js";
 
 class WebSurferService {
   constructor() {
@@ -7,27 +9,60 @@ class WebSurferService {
     this.context = null;
     this.page = null;
     this.isInitialized = false;
+    this.usingUserProfile = false;
   }
 
-  async init() {
+  async init(options = {}) {
     if (this.isInitialized) return;
     
     console.log("[WebSurfer] Initializing Playwright...");
-    this.browser = await chromium.launch({ 
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'] 
-    });
-    this.context = await this.browser.newContext({
-      userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-      viewport: { width: 1280, height: 720 }
-    });
-    this.page = await this.context.newPage();
+    
+    // Check for imported Chrome profile
+    const userProfilePath = getLucaBrowserProfilePath();
+    const useUserProfile = options.useUserProfile !== false && userProfilePath;
+    
+    const launchOptions = { 
+      headless: options.headless !== undefined ? options.headless : true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    };
+    
+    // If user profile is available, use persistent context
+    if (useUserProfile) {
+      console.log(`[WebSurfer] Using Chrome profile from: ${userProfilePath}`);
+      this.context = await chromium.launchPersistentContext(userProfilePath, {
+        ...launchOptions,
+        userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        viewport: { width: 1280, height: 720 }
+      });
+      this.page = this.context.pages()[0] || await this.context.newPage();
+      this.browser = null; // Persistent context doesn't expose browser
+      this.usingUserProfile = true;
+    } else {
+      // Standard clean browser
+      this.browser = await chromium.launch(launchOptions);
+      this.context = await this.browser.newContext({
+        userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        viewport: { width: 1280, height: 720 }
+      });
+      this.page = await this.context.newPage();
+      this.usingUserProfile = false;
+    }
+    
     this.isInitialized = true;
-    console.log("[WebSurfer] Ready.");
+    console.log(`[WebSurfer] Ready. ${this.usingUserProfile ? '(Using your Chrome sessions)' : '(Clean browser)'}`);
   }
 
   async ensureReady() {
     if (!this.isInitialized) await this.init();
+  }
+
+  async _injectSnapshotScript() {
+      // Inject the AISnapshot script if not present
+      const isPresent = await this.page.evaluate(() => typeof window.__devBrowser_getAISnapshot === 'function');
+      if (!isPresent) {
+          const scriptContent = getSnapshotScript();
+          await this.page.evaluate(scriptContent);
+      }
   }
 
   async browse(url) {
@@ -35,11 +70,16 @@ class WebSurferService {
     console.log(`[WebSurfer] Navigating to ${url}`);
     try {
       await this.page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
-      const content = await this.page.content();
+      await this._injectSnapshotScript();
+
+      const snapshot = await this.page.evaluate(() => window.__devBrowser_getAISnapshot());
       const title = await this.page.title();
+      const content = await this.page.content();
+
       return { 
           title, 
           url: this.page.url(), 
+          snapshot, // The YAML Accessibility Tree
           content: this._cleanHtml(content) 
       };
     } catch (error) {
@@ -207,25 +247,69 @@ class WebSurferService {
     }
   }
   
-  async click(selector) {
+  async click(selectorOrRef) {
       await this.ensureReady();
-      console.log(`[WebSurfer] Clicking ${selector}`);
+      console.log(`[WebSurfer] Clicking ${selectorOrRef}`);
       try {
-          await this.page.click(selector, { timeout: 5000 });
+          await this._injectSnapshotScript();
+          
+          // Check if it looks like a ref (e.g. "e12", "e305")
+          const isRef = /^e\d+$/.test(selectorOrRef) || /^\[ref=e\d+\]$/.test(selectorOrRef);
+          
+          if (isRef) {
+              // Strip "[ref=...]" wrapper if present
+              const ref = selectorOrRef.replace(/^\[ref=|\]$/g, '');
+              console.log(`[WebSurfer] Resolving ref: ${ref}`);
+
+              // Use the injected function to select the element
+              const handle = await this.page.evaluateHandle((r) => window.__devBrowser_selectSnapshotRef(r), ref);
+              
+              if (handle && handle.asElement()) {
+                 await handle.asElement().click({ timeout: 5000 });
+              } else {
+                 throw new Error(`Element ref '${ref}' not found in current snapshot.`);
+              }
+          } else {
+              // Standard Selector Fallback
+              await this.page.click(selectorOrRef, { timeout: 5000 });
+          }
+
           // Return new state after click
           const title = await this.page.title();
           const content = await this.page.content();
-          return { title, url: this.page.url(), content: this._cleanHtml(content) };
+          
+          // Re-inject script if it was lost during navigation
+          await this._injectSnapshotScript();
+          
+          // Re-generate snapshot for the new state
+          const snapshot = await this.page.evaluate(() => window.__devBrowser_getAISnapshot());
+
+          return { title, url: this.page.url(), snapshot, content: this._cleanHtml(content) };
       } catch (e) {
           throw new Error(`Click failed: ${e.message}`);
       }
   }
 
-  async type(selector, text) {
+  async type(selectorOrRef, text) {
       await this.ensureReady();
-      console.log(`[WebSurfer] Typing "${text}" into ${selector}`);
+      console.log(`[WebSurfer] Typing "${text}" into ${selectorOrRef}`);
       try {
-          await this.page.fill(selector, text, { timeout: 5000 });
+          await this._injectSnapshotScript();
+          
+          const isRef = /^e\d+$/.test(selectorOrRef) || /^\[ref=e\d+\]$/.test(selectorOrRef); // Check for Ref format
+          
+          if (isRef) {
+              const ref = selectorOrRef.replace(/^\[ref=|\]$/g, '');
+              const handle = await this.page.evaluateHandle((r) => window.__devBrowser_selectSnapshotRef(r), ref);
+               if (handle && handle.asElement()) {
+                 await handle.asElement().fill(text, { timeout: 5000 });
+              } else {
+                 throw new Error(`Element ref '${ref}' not found in current snapshot.`);
+              }
+          } else {
+              await this.page.fill(selectorOrRef, text, { timeout: 5000 });
+          }
+          
           return { success: true };
       } catch (e) {
           throw new Error(`Type failed: ${e.message}`);

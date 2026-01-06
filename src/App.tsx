@@ -19,7 +19,7 @@ import { voiceCommandService } from "./services/voiceCommandService";
 import { soundService } from "./services/soundService";
 import { voiceService } from "./services/voiceService";
 import { settingsService } from "./services/settingsService";
-import { apiUrl, WS_PORT } from "./config/api";
+import { apiUrl, WS_PORT, cortexUrl } from "./config/api";
 import { ToolRegistry } from "./services/toolRegistry";
 import {
   Message,
@@ -79,6 +79,7 @@ import {
   findBestDeviceForTool,
 } from "./services/deviceCapabilityService";
 import { neuralLinkManager } from "./services/neuralLink/manager";
+import { neuralLink as neuralLinkService } from "./services/neuralLinkService"; // Guest handling
 
 // Helper for device capability check
 const hasCapability = (deviceType: string, capability: string): boolean => {
@@ -357,11 +358,8 @@ function AppContent() {
     setVoiceSearchResults,
     visualData,
     setVisualData,
-    isListening,
-    setIsListening,
     isSpeaking,
     setIsSpeaking,
-    toggleListening,
   } = voiceSystem;
 
   // --- QUERY PARAM MODE CHECK ---
@@ -601,6 +599,7 @@ function AppContent() {
     }
   }, [activeMobileTab, isMobile]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null); // Track chat request cancellation
 
   // LOCAL CORE STATE (REAL BACKEND)
   const [isLocalCoreConnected, setIsLocalCoreConnected] = useState(false);
@@ -1012,13 +1011,31 @@ function AppContent() {
               setBootSequence("READY");
               setMessages((prev) => {
                 if (prev.length === 0) {
-                  const statusReport = `LUCA OS ONLINE.\n\nDIAGNOSTICS:\n- SERVER: OK\n- CORE: OK\n- VISION: OK\n- AUDIO: OK`;
+                  // Dynamic time-of-day greeting
+                  const hour = new Date().getHours();
+                  let timeGreeting = "Good evening";
+                  if (hour >= 5 && hour < 12) timeGreeting = "Good morning";
+                  else if (hour >= 12 && hour < 17)
+                    timeGreeting = "Good afternoon";
+
+                  // Get user's name from profile
+                  const savedProfile =
+                    localStorage.getItem("LUCA_USER_PROFILE");
+                  let userName = "Commander";
+                  if (savedProfile) {
+                    try {
+                      const profile = JSON.parse(savedProfile);
+                      if (profile.name) userName = profile.name;
+                    } catch {
+                      // Ignore invalid JSON in profile
+                    }
+                  }
+
+                  const greeting = `${timeGreeting}, ${userName}.\n\nAll systems online. How may I assist?`;
                   return [
                     {
                       id: "0",
-                      text:
-                        statusReport +
-                        "\n\nHow can I allow you to assist today?",
+                      text: greeting,
                       sender: Sender.LUCA,
                       timestamp: Date.now(),
                     },
@@ -1161,34 +1178,8 @@ function AppContent() {
     }
   }, [voiceHubTranscript, voiceHubStatus, isPolyglotMode]);
 
-  // --- SENTINEL LOOP (AUTONOMY) ---
-  useEffect(() => {
-    if (bootSequence !== "READY") return;
-
-    const interval = setInterval(() => {
-      // 5% chance every 10s to perform a "background check"
-      if (Math.random() > 0.95) {
-        const events = [
-          "Background Scan: No thermal anomalies detected.",
-          "Optimization: Memory heap garbage collected.",
-          "Network: Encrypted heartbeat signal verified.",
-          "Security: Firewall rules updated from central database.",
-        ];
-        const event = events[Math.floor(Math.random() * events.length)];
-
-        setToolLogs((prev) => [
-          ...prev,
-          {
-            toolName: "SENTINEL_LOOP",
-            args: { type: "AUTO" },
-            result: event,
-            timestamp: Date.now(),
-          },
-        ]);
-      }
-    }, 10000);
-    return () => clearInterval(interval);
-  }, [bootSequence]);
+  // --- SENTINEL LOOP REMOVED ---
+  // Now showing only real logs (tool executions, system events, etc.)
 
   // --- SYSTEM AWARENESS (LIVE RELOAD LISTENER) ---
   // Only connect if Neural Link socket server is running (on-demand mode)
@@ -1820,20 +1811,18 @@ function AppContent() {
     if (confirm) {
       setMessages([]);
       localStorage.removeItem(CHAT_STORAGE_KEY);
-      // Re-initialize basic message
-      setMessages([
-        {
-          id: "0",
-          text: "LOGS PURGED. SYSTEM READY.",
-          sender: Sender.LUCA,
-          timestamp: Date.now(),
-        },
-      ]);
     }
   };
 
   const handleWipeMemory = () => {
-    executeTool("wipeMemory", {});
+    soundService.play("ALERT");
+    const confirm = window.confirm(
+      "WARNING: WIPE NEURAL ARCHIVE? This cannot be undone."
+    );
+    if (confirm) {
+      memoryService.wipeMemory();
+      setMemories([]);
+    }
   };
 
   const handleDeleteSingleMemory = (id: string) => {
@@ -2357,6 +2346,16 @@ function AppContent() {
     }
   };
 
+  const handleStop = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setIsProcessing(false);
+    setMessages((prev) => prev.filter((m) => m.id !== "typing"));
+    soundService.play("KEYSTROKE"); // Feedback
+  };
+
   const handleSend = async () => {
     if ((!input.trim() && !attachedImage) || isProcessing) return;
     soundService.play("KEYSTROKE");
@@ -2388,6 +2387,9 @@ function AppContent() {
     setAttachedImage(null);
     setIsProcessing(true);
 
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     try {
       setMessages((prev) => [
         ...prev,
@@ -2400,26 +2402,56 @@ function AppContent() {
         },
       ]);
 
+      // Create placeholder message immediately
+      const responseId = (Date.now() + 1).toString();
+      const initialResponse: Message = {
+        id: responseId,
+        text: "", // Start empty
+        sender: Sender.LUCA,
+        timestamp: Date.now(),
+        isTyping: false, // Not "typing" (dots), but "streaming" content
+        isStreaming: true,
+      };
+
+      setMessages((prev) =>
+        prev.filter((m) => m.id !== "typing").concat(initialResponse)
+      );
+
+      let streamedText = "";
+
       // Pass full history to service for context restoration
       // Pass image data if available
-      const agentResponse = await lucaService.sendMessage(
+      const agentResponse = await lucaService.sendMessageStream(
         userMsg.text,
         userMsg.attachment || null,
+        (chunk) => {
+          streamedText += chunk;
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === responseId ? { ...m, text: streamedText } : m
+            )
+          );
+        },
         executeTool,
         currentCwd
       );
 
+      if (controller.signal.aborted) {
+        console.log("Request aborted by user");
+        return;
+      }
+
+      // Finalize the message (ensure it has everything and turn off streaming)
       const lucaResponse = {
-        id: (Date.now() + 1).toString(),
-        text: agentResponse.text || "",
-        sender: Sender.LUCA,
-        timestamp: Date.now(),
+        ...initialResponse,
+        text: agentResponse.text || streamedText,
         groundingMetadata: agentResponse.groundingMetadata,
         generatedImage: agentResponse.generatedImage,
+        isStreaming: false, // Done streaming
       };
 
       setMessages((prev) =>
-        prev.filter((m) => !m.isTyping).concat(lucaResponse)
+        prev.map((m) => (m.id === responseId ? lucaResponse : m))
       );
 
       // Store LUCA response in Chroma DB (Phase 1: Memory)
@@ -2515,6 +2547,10 @@ function AppContent() {
       soundService.play("ALERT");
     } finally {
       setIsProcessing(false);
+      // Clean up controller reference
+      if (abortControllerRef.current === controller) {
+        abortControllerRef.current = null;
+      }
     }
   };
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -2604,12 +2640,19 @@ function AppContent() {
   // track previous persona to prevent loops when other deps change
   const prevPersonaRef = useRef(persona);
   const prevDictationRef = useRef(dictationActive);
+  const prevVoiceModeRef = useRef(isVoiceMode);
 
   useEffect(() => {
     const personaChanged = prevPersonaRef.current !== persona;
     const dictationChanged = prevDictationRef.current !== dictationActive;
+    const voiceModeJustActivated = isVoiceMode && !prevVoiceModeRef.current;
 
-    if (isVoiceMode && (personaChanged || dictationChanged)) {
+    // Connect on FIRST activation OR when persona/dictation changes while active
+    if (voiceModeJustActivated) {
+      console.log(`[APP] Voice mode activated. Connecting session...`);
+      const target = dictationActive ? "DICTATION" : persona;
+      connectVoiceSession(target);
+    } else if (isVoiceMode && (personaChanged || dictationChanged)) {
       console.log(
         `[App] Configuration changed (Persona: ${persona}, Dictation: ${dictationActive}) while voice active. Reconnecting...`
       );
@@ -2627,6 +2670,7 @@ function AppContent() {
     // Update refs
     prevPersonaRef.current = persona;
     prevDictationRef.current = dictationActive;
+    prevVoiceModeRef.current = isVoiceMode;
   }, [isVoiceMode, persona, dictationActive, connectVoiceSession]);
 
   // --- VOICE LIFECYCLE MANAGEMENT ---
@@ -2858,6 +2902,66 @@ function AppContent() {
       taskQueue.clear();
     };
   }, []); // Empty deps - handleSendMessage is stable
+
+  // Initialize Neural Link guest message handler
+  useEffect(() => {
+    // Wire up guest messages to Luca AI processing
+    const processGuestMessage = async (message: string): Promise<string> => {
+      // Add the guest message to chat history
+      const guestMessage: Message = {
+        id: Date.now().toString(),
+        text: message,
+        sender: Sender.USER,
+        timestamp: Date.now(), // Use number, not Date
+      };
+      setMessages((prev) => [...prev, guestMessage]);
+
+      // Process with handleSendMessage and return the response
+      try {
+        await handleSendMessage(message);
+        // Get the last assistant message as the response
+        const lastAssistant = messages
+          .filter((m) => m.sender === Sender.LUCA)
+          .pop();
+        return lastAssistant?.text || "I processed your request.";
+      } catch (e) {
+        console.error("[GuestHandler] Failed to process:", e);
+        throw e;
+      }
+    };
+
+    // Generate TTS audio for response
+    const generateAudio = async (text: string): Promise<string | null> => {
+      try {
+        // Use the voice service to generate audio
+        const settings = settingsService.getSettings();
+        if (settings.voice.provider === "local-neural") {
+          // Call Cortex TTS and get base64
+          const response = await fetch(cortexUrl("/tts"), {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              text,
+              voice: settings.voice.voiceId || "amy",
+            }),
+          });
+          if (response.ok) {
+            const data = await response.json();
+            if (data.type === "audio" && data.data) {
+              return data.data; // Already base64
+            }
+          }
+        }
+        return null;
+      } catch (e) {
+        console.warn("[GuestHandler] Audio generation failed:", e);
+        return null;
+      }
+    };
+
+    neuralLinkService.initGuestHandler(processGuestMessage, generateAudio);
+    console.log("[App] Neural Link guest handler initialized");
+  }, [handleSendMessage, messages]);
 
   // GLOBAL KEYBOARD LISTENERS (HOTKEYS)
   useEffect(() => {
@@ -3628,8 +3732,6 @@ function AppContent() {
           searchResults={voiceSearchResults}
           visualData={visualData}
           onClearVisualData={() => setVisualData(null)}
-          isListening={isVadActive}
-          onToggleListening={() => setIsVadActive(!isVadActive)}
           isSpeaking={voiceTranscriptSource === "model"}
           paused={showCamera}
           persona={persona}
@@ -3808,11 +3910,9 @@ function AppContent() {
 
         {showWirelessManager && (
           <WirelessManager
-            isOpen={showWirelessManager}
             onClose={() => setShowWirelessManager(false)}
             onConnect={handleWirelessConnect}
             activeTab={wirelessTab}
-            setActiveTab={setWirelessTab}
             theme={theme}
           />
         )}
@@ -4149,7 +4249,7 @@ function AppContent() {
                 }`}
               >
                 <ShieldAlert size={isMobile ? 10 : 12} />{" "}
-                {isMobile ? "ROOT" : "ROOT_ACCESS"}
+                {isMobile ? "ROOT" : "ROOT ACCESS"}
               </div>
             )}
 
@@ -4374,7 +4474,7 @@ function AppContent() {
                       TOPOLOGY
                     </span>
                     <span className="text-xs font-bold text-white">
-                      NET_MAP
+                      NET MAP
                     </span>
                     <div className="h-0.5 w-full bg-slate-800 mt-1 overflow-hidden">
                       <div
@@ -4611,7 +4711,7 @@ function AppContent() {
                         e.currentTarget.style.color = "";
                       }}
                     >
-                      <TrendingUp size={10} /> STOCK_MARKET_FEED
+                      <TrendingUp size={10} /> STOCK MARKET FEED
                     </button>
                     {/* AI TRADING TERMINAL BUTTON */}
                     <button
@@ -4637,7 +4737,7 @@ function AppContent() {
                         e.currentTarget.style.color = "";
                       }}
                     >
-                      <Brain size={10} /> AI_TRADING
+                      <Brain size={10} /> AI TRADING
                     </button>
                     {/* SUBSYSTEM DASHBOARD BUTTON */}
                     <button
@@ -5038,6 +5138,14 @@ function AppContent() {
                   generatedImage={msg.generatedImage}
                   groundingMetadata={msg.groundingMetadata}
                   wasPruned={(msg as any)._wasPruned}
+                  onEdit={(text) => {
+                    setInput(text);
+                    // Focus input after setting text
+                    setTimeout(() => {
+                      const textarea = document.querySelector("textarea");
+                      if (textarea) textarea.focus();
+                    }, 100);
+                  }}
                 />
               ))}
               <div ref={chatEndRef} />
@@ -5126,6 +5234,7 @@ function AppContent() {
                     onToggleEye={() => setShowCamera(!showCamera)}
                     onScreenShare={!isMobile ? handleScreenShare : undefined}
                     onClearChat={handleClearChat}
+                    onStop={handleStop}
                     isCompact={false}
                   />
                 </div>
@@ -5382,8 +5491,6 @@ function AppContent() {
           searchResults={voiceSearchResults}
           visualData={visualData}
           onClearVisualData={() => setVisualData(null)}
-          isListening={isListening}
-          onToggleListening={toggleListening}
           isSpeaking={isSpeaking}
           persona={persona}
           theme={theme}

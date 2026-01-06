@@ -4,7 +4,7 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// const __dirname = path.dirname(__filename);
 
 // Ensure the data directory exists
 const DATA_DIR = path.join(process.cwd(), 'data');
@@ -52,11 +52,31 @@ const initSchema = () => {
             target_id INTEGER NOT NULL,
             relation TEXT NOT NULL, -- 'knows', 'owns', 'located_in'
             strength REAL DEFAULT 1.0,
+            created_at INTEGER DEFAULT (strftime('%s', 'now') * 1000),
+            valid_until INTEGER, -- Null = Forever
+            context_event_id TEXT, -- Link to the "Event" that caused this
+            weight REAL DEFAULT 1.0,
             FOREIGN KEY(source_id) REFERENCES entities(id),
             FOREIGN KEY(target_id) REFERENCES entities(id),
             UNIQUE(source_id, target_id, relation)
         )
     `);
+
+    // Migration: Add Temporal Columns to relationships if missing
+    const migrations = [
+        'ALTER TABLE relationships ADD COLUMN created_at INTEGER DEFAULT (strftime(\'%s\', \'now\') * 1000)',
+        'ALTER TABLE relationships ADD COLUMN valid_until INTEGER',
+        'ALTER TABLE relationships ADD COLUMN context_event_id TEXT',
+        'ALTER TABLE relationships ADD COLUMN weight REAL DEFAULT 1.0'
+    ];
+
+    migrations.forEach(query => {
+        try {
+            db.prepare(query).run();
+        } catch {
+            // Ignore error if column already exists (common in SQLite migrations)
+        }
+    });
 
     // User Profile Table: Admin Identity
     db.exec(`
@@ -73,7 +93,7 @@ const initSchema = () => {
     // Migration: Add voice_reference_path if it doesn't exist (for existing DBs)
     try {
         db.prepare('ALTER TABLE user_profile ADD COLUMN voice_reference_path TEXT').run();
-    } catch (e) {
+    } catch {
         // Ignore error if column already exists
     }
 

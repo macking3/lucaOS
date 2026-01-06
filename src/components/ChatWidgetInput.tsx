@@ -8,6 +8,7 @@ import {
   MicOff,
   Monitor,
   MessageSquareX,
+  Square,
 } from "lucide-react";
 
 interface ChatWidgetInputProps {
@@ -28,6 +29,7 @@ interface ChatWidgetInputProps {
   onScreenShare?: () => void;
   onClearChat?: () => void;
   onHeightChange?: (height: number) => void;
+  onStop?: () => void;
 }
 
 const ChatWidgetInput: React.FC<ChatWidgetInputProps> = ({
@@ -36,18 +38,19 @@ const ChatWidgetInput: React.FC<ChatWidgetInputProps> = ({
   onSubmit,
   isProcessing,
   primaryColor,
-  onCapture,
+
   attachment,
   onClearAttachment,
   isEyeActive,
   onToggleEye,
-  isCompact,
+
   onToggleVoice,
   isVoiceActive,
   onAttachClick,
   onScreenShare,
   onClearChat,
   onHeightChange,
+  onStop,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -61,7 +64,7 @@ const ChatWidgetInput: React.FC<ChatWidgetInputProps> = ({
 
     // Calculate new height (min 60px to account for icons, max 200px)
     const scrollHeight = textarea.scrollHeight;
-    const newHeight = Math.max(60, Math.min(scrollHeight, 200));
+    const newHeight = Math.max(80, Math.min(scrollHeight, 200));
 
     textarea.style.height = `${newHeight}px`;
     textarea.style.overflowY = scrollHeight > 200 ? "auto" : "hidden";
@@ -136,8 +139,8 @@ const ChatWidgetInput: React.FC<ChatWidgetInputProps> = ({
             bg-transparent
             text-white placeholder-slate-500
             text-[13px]
-            px-4 sm:px-5
-            pb-3
+            px-3 sm:px-4
+            pb-7
             focus:outline-none
             resize-none
             font-mono
@@ -165,21 +168,21 @@ const ChatWidgetInput: React.FC<ChatWidgetInputProps> = ({
               <button
                 type="button"
                 onClick={onClearChat}
-                className="p-1.5 sm:p-2 hover:text-red-400 transition-all rounded-md border hover:bg-white/5 active:scale-90"
+                className="p-1 sm:p-1.5 hover:text-red-400 transition-all rounded-md border hover:bg-white/5 active:scale-90"
                 style={{
                   borderColor: `${primaryColor}60`,
                   color: `${primaryColor}99`,
                 }}
                 title="Clear Chat"
               >
-                <MessageSquareX size={14} className="sm:w-[15px] sm:h-[15px]" />
+                <MessageSquareX size={15} className="sm:w-[13px] sm:h-[13px]" />
               </button>
             )}
 
             {/* Attachment Button */}
             <button
               type="button"
-              className="p-1.5 sm:p-2 hover:text-slate-300 transition-all rounded-md border hover:bg-white/5 active:scale-90"
+              className="p-1 sm:p-1.5 hover:text-slate-300 transition-all rounded-md border hover:bg-white/5 active:scale-90"
               style={{
                 borderColor: `${primaryColor}60`,
                 color: `${primaryColor}99`,
@@ -187,7 +190,7 @@ const ChatWidgetInput: React.FC<ChatWidgetInputProps> = ({
               title="Attach file"
               onClick={onAttachClick}
             >
-              <Paperclip size={14} className="sm:w-[15px] sm:h-[15px]" />
+              <Paperclip size={15} className="sm:w-[13px] sm:h-[13px]" />
             </button>
 
             {/* Camera/Vision Toggle */}
@@ -195,7 +198,7 @@ const ChatWidgetInput: React.FC<ChatWidgetInputProps> = ({
               type="button"
               onClick={onToggleEye}
               className={`
-                p-1.5 sm:p-2 rounded-md border transition-all
+                p-1 sm:p-1.5 rounded-md border transition-all
                 ${
                   isEyeActive
                     ? "text-white bg-white/10 shadow-lg"
@@ -215,8 +218,8 @@ const ChatWidgetInput: React.FC<ChatWidgetInputProps> = ({
               }
             >
               <Camera
-                size={14}
-                className={`sm:w-[15px] sm:h-[15px] ${
+                size={15}
+                className={`sm:w-[13px] sm:h-[13px] ${
                   isEyeActive ? "animate-pulse" : ""
                 }`}
               />
@@ -234,14 +237,14 @@ const ChatWidgetInput: React.FC<ChatWidgetInputProps> = ({
               <button
                 type="button"
                 onClick={onScreenShare}
-                className="p-1.5 sm:p-2 hover:text-slate-300 transition-all rounded-md border hover:bg-white/5 active:scale-90"
+                className="p-1 sm:p-1.5 hover:text-slate-300 transition-all rounded-md border hover:bg-white/5 active:scale-90"
                 style={{
                   borderColor: `${primaryColor}60`,
                   color: `${primaryColor}99`,
                 }}
                 title="Share Screen"
               >
-                <Monitor size={14} className="sm:w-[15px] sm:h-[15px]" />
+                <Monitor size={15} className="sm:w-[13px] sm:h-[13px]" />
               </button>
             )}
           </div>
@@ -256,7 +259,7 @@ const ChatWidgetInput: React.FC<ChatWidgetInputProps> = ({
               type="button"
               onClick={onToggleVoice}
               className={`
-                 p-1.5 sm:p-2 rounded-md border transition-all
+                 p-1 sm:p-1.5 rounded-md border transition-all
                  ${
                    isVoiceActive
                      ? "text-white bg-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.3)]"
@@ -274,53 +277,70 @@ const ChatWidgetInput: React.FC<ChatWidgetInputProps> = ({
             >
               {isVoiceActive ? (
                 <Mic
-                  size={14}
-                  className="sm:w-[15px] sm:h-[15px] animate-pulse text-red-400"
+                  size={15}
+                  className="sm:w-[13px] sm:h-[13px] animate-pulse text-red-400"
                 />
               ) : (
-                <MicOff size={14} className="sm:w-[15px] sm:h-[15px]" />
+                <MicOff size={15} className="sm:w-[13px] sm:h-[13px]" />
               )}
             </button>
 
-            {/* Send Button */}
+            {/* Send / Stop Button */}
             <button
               type="button"
               onClick={(e) => {
-                if (!isProcessing && (input.trim() || attachment)) {
+                if (isProcessing) {
+                  onStop?.();
+                  return;
+                }
+                if (input.trim() || attachment) {
                   onSubmit(e as any);
                 }
               }}
-              disabled={(!input.trim() && !attachment) || isProcessing}
+              disabled={!input.trim() && !attachment && !isProcessing}
               className={`
               pointer-events-auto
-              p-1.5 sm:p-2
+              p-1 sm:p-1.5
               rounded-md border
               transition-all duration-200
               ${
-                input.trim() || attachment
+                isProcessing
+                  ? "bg-red-500 border-red-500 text-red-100 shadow-[0_0_20px_rgba(239,68,68,0.6)] animate-pulse hover:bg-red-600 active:scale-95"
+                  : input.trim() || attachment
                   ? "text-white hover:text-white/80 hover:bg-white/5 active:scale-90"
                   : "text-slate-600 cursor-not-allowed"
               }
             `}
               style={
-                {
-                  WebkitAppRegion: "no-drag",
-                  borderColor: `${primaryColor}${
-                    input.trim() || attachment ? "90" : "60"
-                  }`,
-                  color:
-                    input.trim() || attachment
-                      ? primaryColor
-                      : `${primaryColor}99`,
-                } as any
+                (!isProcessing
+                  ? {
+                      WebkitAppRegion: "no-drag",
+                      borderColor: `${primaryColor}${
+                        input.trim() || attachment ? "90" : "60"
+                      }`,
+                      color:
+                        input.trim() || attachment
+                          ? primaryColor
+                          : `${primaryColor}99`,
+                    }
+                  : { WebkitAppRegion: "no-drag" }) as any
               }
               title={
-                input.trim() || attachment
+                isProcessing
+                  ? "Stop generation"
+                  : input.trim() || attachment
                   ? "Send message (Enter)"
                   : "Type a message"
               }
             >
-              <Send size={14} className="sm:w-[15px] sm:h-[15px]" />
+              {isProcessing ? (
+                <Square
+                  size={15}
+                  className="sm:w-[13px] sm:h-[13px] fill-current"
+                />
+              ) : (
+                <Send size={15} className="sm:w-[13px] sm:h-[13px]" />
+              )}
             </button>
           </div>
         </div>

@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Luca - Guest Access</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        background: linear-gradient(
+          135deg,
+          #0f0f23 0%,
+          #1a1a2e 50%,
+          #16213e 100%
+        );
+        min-height: 100vh;
+        color: white;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .header {
+        padding: 1rem 2rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .header h1 {
+        font-size: 1.5rem;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .status {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: #888;
+      }
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #888;
+      }
+
+      .status-dot.connected {
+        background: #4ade80;
+        box-shadow: 0 0 10px #4ade80;
+      }
+
+      .chat-container {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .message {
+        max-width: 80%;
+        padding: 1rem;
+        border-radius: 1rem;
+        animation: fadeIn 0.3s ease;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .message.user {
+        align-self: flex-end;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+      }
+
+      .message.assistant {
+        align-self: flex-start;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .input-area {
+        padding: 1rem 2rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        gap: 1rem;
+      }
+
+      .input-area input {
+        flex: 1;
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 2rem;
+        padding: 0.75rem 1.5rem;
+        color: white;
+        font-size: 1rem;
+        outline: none;
+      }
+
+      .input-area input:focus {
+        border-color: #667eea;
+      }
+
+      .voice-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+      }
+
+      .voice-btn:hover {
+        transform: scale(1.1);
+      }
+
+      .voice-btn.listening {
+        animation: pulse 1s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7);
+        }
+        50% {
+          box-shadow: 0 0 0 15px rgba(102, 126, 234, 0);
+        }
+      }
+
+      .voice-btn svg {
+        width: 24px;
+        height: 24px;
+        fill: white;
+      }
+
+      .send-btn {
+        padding: 0.75rem 1.5rem;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        border-radius: 2rem;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .send-btn:hover {
+        transform: scale(1.05);
+      }
+
+      .connecting {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+      }
+
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(255, 255, 255, 0.1);
+        border-top-color: #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      .error-msg {
+        color: #f87171;
+        text-align: center;
+        padding: 2rem;
+      }
+
+      /* PIN Modal Styles */
+      .pin-modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 15, 35, 0.98);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        z-index: 2000;
+        animation: fadeIn 0.3s ease;
+      }
+
+      .pin-input-group {
+        display: flex;
+        gap: 1rem;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .pin-input {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 1rem;
+        border-radius: 0.5rem;
+        color: white;
+        font-size: 2rem;
+        letter-spacing: 0.5rem;
+        text-align: center;
+        width: 240px;
+        outline: none;
+        font-family: monospace;
+        transition: all 0.3s;
+      }
+
+      .pin-input:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+      }
+
+      .pin-submit {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        padding: 0.75rem 3rem;
+        color: white;
+        font-weight: bold;
+        border-radius: 2rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 1rem;
+      }
+
+      .pin-submit:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Connecting Overlay -->
+    <div class="connecting" id="connectingOverlay">
+      <div class="spinner"></div>
+      <p>Connecting to Luca...</p>
+    </div>
+
+    <!-- PIN Auth Modal -->
+    <div class="pin-modal hidden" id="pinModal">
+      <div
+        class="header"
+        style="background: transparent; border: none; padding: 0"
+      >
+        <h1>🔒 Security Check</h1>
+      </div>
+      <p style="color: #aaa; text-align: center; max-width: 300px">
+        This Luca instance is protected. Please enter the PIN to continue.
+      </p>
+      <div class="pin-input-group">
+        <input
+          type="password"
+          id="pinInput"
+          class="pin-input"
+          maxlength="6"
+          placeholder="PIN"
+          inputmode="numeric"
+        />
+        <p
+          id="pinError"
+          class="error-msg hidden"
+          style="padding: 0.5rem; font-size: 0.875rem"
+        >
+          Incorrect PIN
+        </p>
+      </div>
+      <button class="pin-submit" id="pinSubmitBtn">Unlock</button>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+      <h1>🌟 Luca</h1>
+      <span style="color: #888; font-size: 0.875rem">Guest Access</span>
+      <div class="status">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText">Disconnected</span>
+      </div>
+    </header>
+
+    <!-- Chat Messages -->
+    <div class="chat-container" id="chatContainer">
+      <div class="message assistant">
+        <p>Hello! I'm Luca, your AI assistant. How can I help you today?</p>
+      </div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="input-area">
+      <button class="voice-btn" id="voiceBtn" title="Hold to speak">
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1 1.93c-3.94-.49-7-3.85-7-7.93V7h2v1c0 2.76 2.24 5 5 5s5-2.24 5-5V7h2v1c0 4.08-3.06 7.44-7 7.93V19h3v2H9v-2h3v-3.07z"
+          />
+        </svg>
+      </button>
+      <input type="text" id="messageInput" placeholder="Type a message..." />
+      <button class="send-btn" id="sendBtn">Send</button>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      // Get session ID from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const sessionId = urlParams.get("session");
+
+      if (!sessionId) {
+        document.getElementById("connectingOverlay").innerHTML =
+          '<p class="error-msg">No session ID provided. Please scan the QR code from Luca Desktop.</p>';
+      }
+
+      // Elements
+      const chatContainer = document.getElementById("chatContainer");
+      const messageInput = document.getElementById("messageInput");
+      const sendBtn = document.getElementById("sendBtn");
+      const voiceBtn = document.getElementById("voiceBtn");
+      const statusDot = document.getElementById("statusDot");
+      const statusText = document.getElementById("statusText");
+      const connectingOverlay = document.getElementById("connectingOverlay");
+
+      // Socket.IO connection
+      const socket = io();
+      let isConnected = false;
+
+      // WebRTC
+      let peerConnection = null;
+      let localStream = null;
+      let remoteAudio = new Audio();
+
+      // Speech Recognition
+      const SpeechRecognition =
+        window.SpeechRecognition || window.webkitSpeechRecognition;
+      let recognition = SpeechRecognition ? new SpeechRecognition() : null;
+
+      if (recognition) {
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = "en-US";
+
+        recognition.onresult = (event) => {
+          const text = event.results[0][0].transcript;
+          messageInput.value = text;
+          sendMessage();
+        };
+
+        recognition.onend = () => {
+          voiceBtn.classList.remove("listening");
+        };
+      }
+
+      // Connect to relay
+      socket.on("connect", () => {
+        console.log("[GUEST] Connected to relay, joining session...");
+        socket.emit("guest-join", { sessionId });
+      });
+
+      socket.on("joined", (data) => {
+        console.log("[GUEST] Joined session:", data);
+        isConnected = true;
+        statusDot.classList.add("connected");
+        statusText.textContent = data.desktopConnected
+          ? "Connected"
+          : "Waiting for Desktop...";
+        connectingOverlay.classList.add("hidden");
+
+        // Initialize WebRTC if desktop is connected
+        if (data.desktopConnected) {
+          initWebRTC();
+        }
+      });
+
+      socket.on("error", (error) => {
+        console.error("[GUEST] Error:", error);
+        connectingOverlay.innerHTML = `<p class="error-msg">${error.message}</p>`;
+      });
+
+      // Desktop message received
+      socket.on("desktop-message", (data) => {
+        // [AUTH PROTOCOL] Try to parse as control header
+        try {
+          if (
+            data.message &&
+            typeof data.message === "string" &&
+            data.message.startsWith("{")
+          ) {
+            const payload = JSON.parse(data.message);
+
+            if (payload.type === "auth-challenge") {
+              console.log("[GUEST] Received auth challenge");
+              document.getElementById("pinModal").classList.remove("hidden");
+              document
+                .getElementById("connectingOverlay")
+                .classList.add("hidden");
+              document.getElementById("pinInput").focus();
+              return;
+            }
+
+            if (payload.type === "auth-success") {
+              console.log("[GUEST] Auth success");
+              document.getElementById("pinModal").classList.add("hidden");
+              return;
+            }
+
+            if (payload.type === "auth-failed") {
+              console.log("[GUEST] Auth failed");
+              const err = document.getElementById("pinError");
+              err.classList.remove("hidden");
+              // Shake animation
+              const input = document.getElementById("pinInput");
+              input.style.borderColor = "#f87171";
+              setTimeout(() => (input.style.borderColor = ""), 500);
+              return;
+            }
+          }
+        } catch (e) {
+          // Ignore parse errors, treat as normal message
+        }
+
+        console.log("[GUEST] Message from desktop:", data);
+        addMessage(data.message, "assistant");
+
+        // Play audio if provided
+        if (data.audio) {
+          playAudioBase64(data.audio);
+        }
+      });
+
+      // PIN Submission
+      const pinSubmitBtn = document.getElementById("pinSubmitBtn");
+      const pinInput = document.getElementById("pinInput");
+
+      function submitPin() {
+        const pin = pinInput.value;
+        if (!pin || pin.length < 4) return;
+
+        document.getElementById("pinError").classList.add("hidden");
+        const payload = JSON.stringify({ type: "auth-response", pin });
+        socket.emit("guest-message", { sessionId, message: payload });
+      }
+
+      pinSubmitBtn.addEventListener("click", submitPin);
+      pinInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") submitPin();
+      });
+
+      // WebRTC signaling
+      socket.on("webrtc-offer", async (data) => {
+        console.log("[GUEST] Received WebRTC offer");
+        await handleWebRTCOffer(data.offer);
+      });
+
+      socket.on("webrtc-ice-candidate", async (data) => {
+        if (peerConnection && data.candidate) {
+          await peerConnection.addIceCandidate(
+            new RTCIceCandidate(data.candidate)
+          );
+        }
+      });
+
+      // Initialize WebRTC
+      async function initWebRTC() {
+        try {
+          // Get microphone access
+          localStream = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+          });
+
+          const config = {
+            iceServers: [
+              { urls: "stun:stun.l.google.com:19302" },
+              { urls: "stun:stun1.l.google.com:19302" },
+            ],
+          };
+
+          peerConnection = new RTCPeerConnection(config);
+
+          // Add local audio track
+          localStream.getTracks().forEach((track) => {
+            peerConnection.addTrack(track, localStream);
+          });
+
+          // Handle remote audio
+          peerConnection.ontrack = (event) => {
+            console.log("[GUEST] Received remote audio track");
+            remoteAudio.srcObject = event.streams[0];
+            remoteAudio.play();
+          };
+
+          // ICE candidates
+          peerConnection.onicecandidate = (event) => {
+            if (event.candidate) {
+              socket.emit("webrtc-ice-candidate", {
+                sessionId,
+                candidate: event.candidate,
+                fromDesktop: false,
+              });
+            }
+          };
+
+          console.log("[GUEST] WebRTC initialized");
+        } catch (e) {
+          console.error("[GUEST] WebRTC init failed:", e);
+        }
+      }
+
+      async function handleWebRTCOffer(offer) {
+        if (!peerConnection) await initWebRTC();
+
+        await peerConnection.setRemoteDescription(
+          new RTCSessionDescription(offer)
+        );
+        const answer = await peerConnection.createAnswer();
+        await peerConnection.setLocalDescription(answer);
+
+        socket.emit("webrtc-answer", { sessionId, answer });
+      }
+
+      // Send message
+      function sendMessage() {
+        const text = messageInput.value.trim();
+        if (!text || !isConnected) return;
+
+        addMessage(text, "user");
+        socket.emit("guest-message", { sessionId, message: text });
+        messageInput.value = "";
+      }
+
+      // Add message to chat
+      function addMessage(text, type) {
+        const msg = document.createElement("div");
+        msg.className = `message ${type}`;
+        msg.innerHTML = `<p>${text}</p>`;
+        chatContainer.appendChild(msg);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      }
+
+      // Play audio from base64
+      function playAudioBase64(base64) {
+        const audio = new Audio(`data:audio/wav;base64,${base64}`);
+        audio.play();
+      }
+
+      // Event listeners
+      sendBtn.addEventListener("click", sendMessage);
+      messageInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") sendMessage();
+      });
+
+      voiceBtn.addEventListener("mousedown", () => {
+        if (recognition) {
+          voiceBtn.classList.add("listening");
+          recognition.start();
+        }
+      });
+
+      voiceBtn.addEventListener("mouseup", () => {
+        if (recognition) {
+          recognition.stop();
+        }
+      });
+    </script>
+  </body>
+</html>

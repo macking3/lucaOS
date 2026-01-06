@@ -9,7 +9,7 @@ try {
     neuralLinkManager = module.neuralLinkManager;
     console.log("[AndroidAgent] Neural Link Manager loaded.");
   });
-} catch (e) {
+} catch {
   console.warn("[AndroidAgent] Neural Link Manager not available.");
 }
 
@@ -114,12 +114,48 @@ export class AndroidAgentService {
   public getConnectedMobileDevice() {
     if (!neuralLinkManager) return null;
     // Find the first device that is 'android'
-    for (const [id, device] of neuralLinkManager.devices) {
+    for (const [, device] of neuralLinkManager.devices) {
       if (device.type === "android" || device.type === "mobile") {
         return device;
       }
     }
     return null;
+  }
+
+  /**
+   * Reads a file from the Android device.
+   */
+  async readFile(filePath: string): Promise<string> {
+    const res = await fetch(`${SERVER_URL}/command`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ command: `pull ${filePath}` }),
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error || "Failed to read file");
+    return data.result;
+  }
+
+  /**
+   * Writes a file to the Android device.
+   */
+  async writeFile(
+    filePath: string,
+    content: string,
+    isBase64: boolean = false
+  ): Promise<boolean> {
+    const res = await fetch(`${SERVER_URL}/command`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        command: `push ${filePath}`,
+        content,
+        isBase64,
+      }),
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error || "Failed to write file");
+    return true;
   }
 
   public async getUiTree() {
@@ -242,6 +278,53 @@ export class AndroidAgentService {
     screenshotBase64: string,
     history: string[]
   ): Promise<AgentStep> {
+    // Priority 1: Try Mobile Offline Brain if available
+    try {
+      const { mobileOfflineBrain } = await import(
+        "./mobile/MobileOfflineBrain"
+      );
+      if (mobileOfflineBrain.isReady()) {
+        console.log(
+          "[AndroidAgent] Using Mobile Offline Brain for decision..."
+        );
+        const prompt = `
+          You are an Android Automation Agent (Vision Mode).
+          GOAL: "${goal}"
+          
+          HISTORY:
+          ${history.join("\n")}
+
+          INSTRUCTIONS:
+          1. Analyze the user's goal and history.
+          2. Estimate the best next action.
+          3. Return JSON:
+          - "action": "TAP", "TYPE", "HOME", "BACK", "SCROLL", "DONE", "FAIL"
+          - "x": number (Tap X, estimate 540 for center on most phones)
+          - "y": number (Tap Y)
+          - "text": string (for TYPE)
+          - "reasoning": string
+          
+          If unsure, choose FAIL.
+        `;
+
+        const response = await mobileOfflineBrain.generateContent(prompt);
+        try {
+          return JSON.parse(response) as AgentStep;
+        } catch {
+          // If parsing fails, return FAIL
+          return {
+            action: "FAIL",
+            reasoning: "Offline brain response parsing failed",
+          };
+        }
+      }
+    } catch {
+      console.warn(
+        "[AndroidAgent] Mobile Offline Brain not available, falling back to Cloud"
+      );
+    }
+
+    // Priority 2: Cloud Brain (Gemini)
     const genAI = getGenClient();
 
     const prompt = `

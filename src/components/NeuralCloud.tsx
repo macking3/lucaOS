@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { MemoryNode, GraphNode, GraphEdge } from "../types";
 import { memoryService } from "../services/memoryService";
-import { Share2, RefreshCw, Clock, MousePointer2 } from "lucide-react";
+import { RefreshCw, Clock, MousePointer2 } from "lucide-react";
 
 interface Props {
   memories: MemoryNode[]; // Keep for fallback if graph unavailable
@@ -32,16 +32,18 @@ const NeuralCloud: React.FC<Props> = ({ memories }) => {
         graphNodes.map((n) => [n.id, n])
       );
 
-      const nodesArr: GraphNode[] = Object.values(data.nodes).map((n) => {
-        const existing = currentNodesMap.get(n.id);
-        return {
-          ...n,
-          x: existing ? existing.x : Math.random() * dimensions.width, // Preserve or random
-          y: existing ? existing.y : Math.random() * dimensions.height,
-          vx: existing ? existing.vx : 0,
-          vy: existing ? existing.vy : 0,
-        };
-      });
+      const nodesArr: GraphNode[] = (Object.values(data.nodes) as any[]).map(
+        (n) => {
+          const existing = currentNodesMap.get(n.id);
+          return {
+            ...n,
+            x: existing ? existing.x : Math.random() * dimensions.width, // Preserve or random
+            y: existing ? existing.y : Math.random() * dimensions.height,
+            vx: existing ? existing.vx : 0,
+            vy: existing ? existing.vy : 0,
+          };
+        }
+      );
 
       setGraphNodes(nodesArr);
       setGraphEdges(data.edges);
@@ -105,7 +107,6 @@ const NeuralCloud: React.FC<Props> = ({ memories }) => {
 
     // GRAPH MODE: FORCE DIRECTED GRAPH
     const renderGraph = () => {
-      const dpr = window.devicePixelRatio || 1;
       // Clear rect needs to account for scaled context or reset transform
       ctx.save();
       ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transform to clear full buffer
@@ -466,8 +467,8 @@ const NeuralCloud: React.FC<Props> = ({ memories }) => {
         <div className="flex items-center gap-2">
           {loading && <RefreshCw size={10} className="animate-spin" />}
           {isGraphMode
-            ? "PROJECT_SYNAPSE_V2 (TEMPORAL)"
-            : "NEURAL_MEM0_CLUSTERS"}
+            ? "PROJECT SYNAPSE V2 (TEMPORAL)"
+            : "NEURAL MEM0 CLUSTERS"}
         </div>
         {isGraphMode && (
           <div className="text-[9px] opacity-60">

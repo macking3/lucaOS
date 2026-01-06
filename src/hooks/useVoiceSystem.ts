@@ -13,10 +13,7 @@ export function useVoiceSystem() {
     null
   );
   const [visualData, setVisualData] = useState<any | null>(null);
-  const [isListening, setIsListening] = useState(true);
   const [isSpeaking, setIsSpeaking] = useState(false);
-
-  const toggleListening = () => setIsListening((prev) => !prev);
 
   return {
     isVoiceMode,
@@ -35,10 +32,7 @@ export function useVoiceSystem() {
     setVoiceSearchResults,
     visualData,
     setVisualData,
-    isListening,
-    setIsListening,
     isSpeaking,
     setIsSpeaking,
-    toggleListening,
   };
 }

@@ -20,6 +20,7 @@ export interface Message {
   attachment?: string; // Base64 image string (User uploaded)
   generatedImage?: string; // Base64 image string (AI generated)
   _wasPruned?: boolean;
+  isStreaming?: boolean;
 }
 
 export interface UserProfile {

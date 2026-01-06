@@ -41,3 +41,30 @@ if (fs.existsSync(mobileIndexHtml)) {
     console.error('[MOBILE BUILD] Error: mobile/index.html not found in dist');
     process.exit(1);
 }
+
+// 3. Handle Capacitor Commands
+const args = process.argv.slice(2);
+const command = args[0];
+const platform = args[1]; // e.g., 'android' or 'ios'
+
+try {
+    if (command === 'sync') {
+        console.log('[MOBILE BUILD] Running Capacitor Sync...');
+        execSync('npx cap sync', { stdio: 'inherit' });
+    } else if (command === 'open') {
+        if (!platform) {
+            console.error('[MOBILE BUILD] Error: Platform required for open command');
+            process.exit(1);
+        }
+        console.log(`[MOBILE BUILD] Opening ${platform}...`);
+        execSync(`npx cap open ${platform}`, { stdio: 'inherit' });
+    } else if (command === 'init') {
+        console.log('[MOBILE BUILD] Initializing Capacitor...');
+        const appName = "Luca";
+        const appId = "com.luca.ai";
+        execSync(`npx cap init "${appName}" "${appId}" --web-dir dist`, { stdio: 'inherit' });
+    }
+} catch (error) {
+    console.error(`[MOBILE BUILD] Error executing command: ${command}`);
+    process.exit(1);
+}

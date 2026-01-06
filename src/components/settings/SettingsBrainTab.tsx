@@ -1,6 +1,7 @@
 import React from "react";
 import { Shield } from "lucide-react";
 import { LucaSettings } from "../../services/settingsService";
+import { ModelManager } from "../ModelManager";
 
 interface SettingsBrainTabProps {
   settings: LucaSettings;
@@ -297,6 +298,11 @@ const SettingsBrainTab: React.FC<SettingsBrainTabProps> = ({
           className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer"
           style={{ accentColor: theme.hex }}
         />
+      </div>
+
+      {/* Local Models Manager */}
+      <div className="pt-4 border-t border-white/10">
+        <ModelManager />
       </div>
     </div>
   );

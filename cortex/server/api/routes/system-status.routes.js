@@ -29,4 +29,17 @@ router.post('/check-dependencies', async (req, res) => {
     }
 });
 
+/**
+ * REAL-TIME MONITOR ENDPOINT
+ * Used by SecurityHUD to show CPU/RAM/Proc stats.
+ */
+router.get('/monitor', async (req, res) => {
+    try {
+        const stats = await systemControlService.getRealtimeStats();
+        res.json({ success: true, ...stats });
+    } catch (error) {
+        res.status(500).json({ success: false, result: error.message });
+    }
+});
+
 export default router;

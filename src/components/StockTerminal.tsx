@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   X,
   TrendingUp,
@@ -6,10 +6,14 @@ import {
   Activity,
   RefreshCw,
   Newspaper,
-  DollarSign,
-  PieChart,
 } from "lucide-react";
 import { apiUrl } from "../config/api";
+import {
+  createChart,
+  ColorType,
+  CandlestickSeries,
+  HistogramSeries,
+} from "lightweight-charts";
 
 interface Props {
   onClose: () => void;
@@ -113,7 +117,6 @@ const StockTerminal: React.FC<Props> = ({ onClose, initialSymbol, theme }) => {
 
         <div className="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden">
           {/* Left: Ticker & Stats */}
-          {/* Left: Ticker & Stats */}
           <div
             className={`w-full lg:w-80 border-b lg:border-b-0 lg:border-r ${themeBorder}/30 bg-black/40 flex flex-col p-4 sm:p-6`}
           >
@@ -195,34 +198,12 @@ const StockTerminal: React.FC<Props> = ({ onClose, initialSymbol, theme }) => {
             )}
           </div>
 
-          {/* Center: Chart (Simulated) */}
+          {/* Center: Real Chart (Lightweight Charts) */}
           <div className="flex-1 bg-black relative flex flex-col min-h-[300px] lg:min-h-0">
-            <div className="absolute inset-0 opacity-10 bg-[linear-gradient(rgba(16,185,129,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.1)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none"></div>
-
-            <div className="flex-1 flex items-end px-4 sm:px-10 pb-10 gap-1">
-              {Array.from({ length: 60 }).map((_, i) => {
-                const h = Math.random() * 60 + 10;
-                const isGreen = Math.random() > 0.45;
-                return (
-                  <div
-                    key={i}
-                    className="flex-1 flex flex-col justify-end group relative"
-                  >
-                    <div
-                      className={`w-1 mx-auto h-full ${
-                        isGreen ? "bg-emerald-800" : "bg-red-900"
-                      } opacity-30 group-hover:opacity-100`}
-                    ></div>
-                    <div
-                      className={`w-full ${
-                        isGreen ? "bg-emerald-500" : "bg-red-500"
-                      } hover:brightness-125 transition-all`}
-                      style={{ height: `${h}%` }}
-                    ></div>
-                  </div>
-                );
-              })}
-            </div>
+            <ChartContainer
+              symbol={symbol}
+              theme={themeBg ? theme : undefined}
+            />
           </div>
 
           {/* Right: News Feed */}
@@ -262,3 +243,125 @@ const StockTerminal: React.FC<Props> = ({ onClose, initialSymbol, theme }) => {
 };
 
 export default StockTerminal;
+
+// --- REAL CHART COMPONENT ---
+
+const ChartContainer: React.FC<{ symbol: string; theme?: any }> = ({
+  symbol,
+}) => {
+  const chartContainerRef = useRef<HTMLDivElement>(null);
+  const chartRef = useRef<any>(null); // IChartApi
+  const seriesRef = useRef<any>(null); // ISeriesApi
+
+  // Fetch History
+  useEffect(() => {
+    const initChart = async () => {
+      if (!chartContainerRef.current) return;
+
+      // Create Chart
+      const chart = createChart(chartContainerRef.current, {
+        layout: {
+          background: { type: ColorType.Solid, color: "#000000" },
+          textColor: "#999",
+        },
+        grid: {
+          vertLines: { color: "#111" },
+          horzLines: { color: "#111" },
+        },
+        width: chartContainerRef.current.clientWidth,
+        height: chartContainerRef.current.clientHeight,
+        timeScale: {
+          timeVisible: true,
+          secondsVisible: false,
+        },
+      });
+      chartRef.current = chart;
+
+      // Add Series
+      // V5 Migration: Use addSeries(SeriesClass, options)
+      const candleSeries = chart.addSeries(CandlestickSeries, {
+        upColor: "#10b981",
+        downColor: "#ef4444",
+        borderVisible: false,
+        wickUpColor: "#10b981",
+        wickDownColor: "#ef4444",
+      });
+      seriesRef.current = candleSeries;
+
+      chart.timeScale().fitContent();
+
+      // Fetch Data
+      try {
+        const res = await fetch(
+          apiUrl(`/api/finance/market/history/${symbol}`)
+        );
+        const data = await res.json();
+        if (data.success && data.data) {
+          candleSeries.setData(data.data);
+
+          // Add Volume (Histogram)
+          const volumeSeries = chart.addSeries(HistogramSeries, {
+            color: "#26a69a",
+            priceFormat: {
+              type: "volume",
+            },
+            priceScaleId: "", // set as an overlay by setting a blank priceScaleId
+          });
+          volumeSeries.priceScale().applyOptions({
+            scaleMargins: {
+              top: 0.8, // highest point of the series will be 70% away from the top
+              bottom: 0,
+            },
+          });
+          volumeSeries.setData(
+            data.data.map((d: any) => ({
+              time: d.time,
+              value: d.volume,
+              color: d.close >= d.open ? "#26a69a40" : "#ef535040",
+            }))
+          );
+        }
+      } catch (err) {
+        console.error("Chart Data Error", err);
+      }
+
+      // Resize Handler
+      const handleResize = () => {
+        if (chartContainerRef.current) {
+          chart.applyOptions({
+            width: chartContainerRef.current.clientWidth,
+            height: chartContainerRef.current.clientHeight,
+          });
+        }
+      };
+      window.addEventListener("resize", handleResize);
+
+      // Cleanup function returned from initChart
+      return () => {
+        window.removeEventListener("resize", handleResize);
+        try {
+          chart.remove();
+        } catch {
+          /* ignore */
+        }
+      };
+    };
+
+    // Execute init
+    initChart();
+
+    return () => {
+      // Best effort cleanup
+      if (chartRef.current) {
+        try {
+          chartRef.current.remove();
+        } catch {
+          /* ignore */
+        }
+        chartRef.current = null;
+      }
+    };
+  }, [symbol]);
+
+  return <div ref={chartContainerRef} className="w-full h-full relative" />;
+};

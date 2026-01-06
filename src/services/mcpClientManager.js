@@ -1,4 +1,6 @@
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { EventSource } from "eventsource";
 
 global.EventSource = EventSource;
@@ -93,7 +95,7 @@ export class MCPClientManager {
             const tools = toolsList.tools || [];
 
             // Store client info with metadata
-            this.clients.set(url, {
+            this.clients.set(identifier, {
                 client,
                 tools,
                 transport,
@@ -102,20 +104,20 @@ export class MCPClientManager {
                 connectedAt: Date.now()
             });
 
-            console.log(`[MCP] ✓ Connected to ${url}. Found ${tools.length} tools.`);
+            console.log(`[MCP] ✓ Connected to ${identifier}. Found ${tools.length} tools.`);
             return { status: 'connected', tools, metadata: { toolCount: tools.length, transport: transportType } };
         } catch (error) {
-            console.error(`[MCP] ✗ Failed to connect to ${url} (attempt ${retryCount + 1}/${this.maxRetries}):`, error.message);
+            console.error(`[MCP] ✗ Failed to connect to ${identifier} (attempt ${retryCount + 1}/${this.maxRetries}):`, error.message);
             
             // Retry logic with exponential backoff
             if (retryCount < this.maxRetries - 1) {
                 const delay = this.retryDelay * Math.pow(2, retryCount);
                 console.log(`[MCP] Retrying in ${delay}ms...`);
                 await new Promise(resolve => setTimeout(resolve, delay));
-                return this.connect(urlOrConfig, retryCount + 1);
+                return this.connect(config, retryCount + 1);
             }
             
-            throw new Error(`Failed to connect to MCP server at ${url} after ${this.maxRetries} attempts: ${error.message}`);
+            throw new Error(`Failed to connect to MCP server at ${identifier} after ${this.maxRetries} attempts: ${error.message}`);
         }
     }
 
@@ -144,12 +146,21 @@ export class MCPClientManager {
 
     /**
      * Execute a tool with better error handling and response formatting
+     * @param toolName - Name of the tool to execute
+     * @param args - Arguments to pass to the tool
+     * @param timeout - Optional timeout in ms
+     * @param targetServer - Optional server name/ID to target (for when multiple servers have same tool name)
      */
-    async executeTool(toolName, args, timeout = null) {
+    async executeTool(toolName, args, timeout = null, targetServer = null) {
         const toolTimeout = timeout || this.defaultTimeout;
         
         // Find which client has this tool
         for (const [url, data] of this.clients.entries()) {
+            // If targetServer is specified, only check that server
+            if (targetServer && url !== targetServer && !url.includes(targetServer)) {
+                continue;
+            }
+            
             const tool = data.tools.find(t => t.name === toolName);
             if (tool) {
                 try {
@@ -186,7 +197,13 @@ export class MCPClientManager {
                 }
             }
         }
-        throw new Error(`Tool "${toolName}" not found in any connected MCP server. Available tools: ${this.getAllTools().map(t => t.name).join(', ')}`);
+        
+        // Build helpful error message
+        const availableTools = this.getAllTools().map(t => `${t.serverInfo?.name || t.sourceUrl}:${t.name}`).join(', ');
+        if (targetServer) {
+            throw new Error(`Tool "${toolName}" not found on server "${targetServer}". Available tools: ${availableTools}`);
+        }
+        throw new Error(`Tool "${toolName}" not found in any connected MCP server. Available tools: ${availableTools}`);
     }
 
     /**
@@ -304,4 +321,106 @@ export class MCPClientManager {
         const urls = Array.from(this.clients.keys());
         await Promise.all(urls.map(url => this.disconnect(url)));
     }
+
+    /**
+     * Get built-in MCP servers that come with Luca
+     */
+    getBuiltInServers() {
+        // Path to Chrome MCP server - resolve from project root
+        const projectRoot = process.cwd();
+        const chromeMCPPath = `${projectRoot}/mcp-servers/luca-chrome-mcp/dist/index.js`;
+        
+        return [
+            {
+                id: 'luca-chrome-mcp',
+                name: 'Luca Chrome Browser',
+                type: 'stdio',
+                command: 'node',
+                args: [chromeMCPPath],
+                autoConnect: true,
+                isBuiltIn: true,
+                description: 'AI-powered Chrome browser control'
+            }
+        ];
+    }
+
+    /**
+     * Load servers from settings and auto-connect
+     */
+    async loadFromSettings(settings) {
+        // Load built-in servers first
+        const builtInServers = this.getBuiltInServers();
+        const userServers = settings?.mcp?.servers || [];
+        const allServers = [...builtInServers, ...userServers];
+        
+        console.log(`[MCP] Loading ${allServers.length} server(s) (${builtInServers.length} built-in, ${userServers.length} user)...`);
+        
+        for (const server of allServers) {
+            if (server.autoConnect) {
+                try {
+                    const config = {
+                        id: server.id,
+                        transport: server.type,
+                        command: server.command,
+                        args: server.args || [],
+                        url: server.url,
+                        env: server.env || {}
+                    };
+                    await this.connect(config);
+                } catch (e) {
+                    console.error(`[MCP] Failed to auto-connect to ${server.name}:`, e.message);
+                }
+            }
+        }
+    }
+
+    /**
+     * Add a new server and persist to settings
+     * @param {Object} serverConfig - Server configuration
+     * @param {Function} saveSettings - Settings save function
+     */
+    async addServer(serverConfig, currentSettings, saveSettings) {
+        const id = serverConfig.id || `mcp-${Date.now()}`;
+        const server = {
+            id,
+            name: serverConfig.name || id,
+            type: serverConfig.type || 'stdio',
+            command: serverConfig.command,
+            args: serverConfig.args || [],
+            url: serverConfig.url,
+            env: serverConfig.env || {},
+            autoConnect: serverConfig.autoConnect !== false
+        };
+
+        // Persist to settings
+        const servers = currentSettings?.mcp?.servers || [];
+        servers.push(server);
+        await saveSettings({ mcp: { servers } });
+
+        // Connect
+        const config = {
+            id: server.id,
+            transport: server.type,
+            command: server.command,
+            args: server.args,
+            url: server.url,
+            env: server.env
+        };
+        return this.connect(config);
+    }
+
+    /**
+     * Remove a server by ID
+     */
+    async removeServer(serverId, currentSettings, saveSettings) {
+        await this.disconnect(serverId);
+        
+        const servers = (currentSettings?.mcp?.servers || []).filter(s => s.id !== serverId);
+        await saveSettings({ mcp: { servers } });
+        
+        return { success: true, removed: serverId };
+    }
 }
+
+// Singleton export
+export const mcpClientManager = new MCPClientManager();

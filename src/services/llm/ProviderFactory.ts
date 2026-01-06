@@ -2,6 +2,7 @@ import { LLMProvider } from "./LLMProvider";
 import { GeminiAdapter } from "./GeminiAdapter";
 import { AnthropicAdapter } from "./AnthropicAdapter";
 import { OpenAIAdapter } from "./OpenAIAdapter";
+import { LocalLLMAdapter } from "./LocalLLMAdapter";
 import { LucaSettings } from "../settingsService";
 import { HARDCODED_API_KEY } from "../genAIClient";
 
@@ -45,6 +46,10 @@ export class ProviderFactory {
 
     if (model.startsWith("grok")) {
       return new OpenAIAdapter(xaiApiKey || "", model, "https://api.x.ai/v1");
+    }
+
+    if (model.startsWith("local")) {
+      return new LocalLLMAdapter(model);
     }
 
     // Default to Gemini if unknown

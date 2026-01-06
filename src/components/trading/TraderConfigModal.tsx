@@ -82,7 +82,7 @@ export default function TraderConfigModal({
                 {initialData ? "Edit Configuration" : "Deploy AI Trader"}
               </h3>
               <p className="text-[10px] text-slate-500 font-mono">
-                {initialData ? initialData.id : "NEW_INSTANCE"}
+                {initialData ? initialData.id : "NEW INSTANCE"}
               </p>
             </div>
           </div>

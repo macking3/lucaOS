@@ -1,16 +1,17 @@
-import { GoogleGenAI, LiveServerMessage, Modality, Type } from "@google/genai";
+import { GoogleGenAI, LiveServerMessage, Modality } from "@google/genai";
 import {
   allTools,
-  HARDCODED_API_KEY,
   PERSONA_CONFIG,
   PersonaType,
   getToolsForPersona,
+  getGenClient,
 } from "./lucaService";
 import { UserProfile } from "../types";
 import { memoryService } from "./memoryService";
 import { taskService } from "./taskService";
 import { settingsService } from "./settingsService";
 import { SystemHealth } from "./introspectionService";
+import { eventBus } from "./eventBus";
 
 interface LiveConfig {
   onToolCall: (name: string, args: any) => Promise<any>;
@@ -84,31 +85,12 @@ class LucaLiveService {
     config.onConnectionChange?.(false); // Initial state
 
     // 1. Get Fresh API Key
-    let client: GoogleGenAI;
     try {
-      // Try shared client first (preferred)
-      // We import getGenClient from genAIClient if possible, but here we imported strict types only?
-      // Ah, we can reuse the logic:
-      // Use settingsService to get the correct key (matching Chat)
-      const settingsKey = settingsService.get("brain")?.geminiApiKey;
-
-      if (!settingsKey && !HARDCODED_API_KEY) {
-        console.error("[LIVE] No API Key available for Voice!");
-        config.onStatusUpdate?.("Error: Missing API Key");
-        return;
-      }
-
-      // Validate key similar to genAIClient
-      let finalKey = settingsKey;
-      if (!finalKey || finalKey.trim().length < 10) {
-        console.warn("[LIVE] Invalid/Empty Settings Key. Using Fallback.");
-        finalKey = HARDCODED_API_KEY;
-      }
-
-      // Always create a fresh instance for the websocket session to avoid stale state
-      this.ai = new GoogleGenAI({ apiKey: finalKey });
-    } catch (e) {
-      console.error("[LIVE] Failed to init GoogleGenAI", e);
+      this.ai = getGenClient();
+    } catch {
+      console.error("[LIVE] Failed to get GenAI client");
+      config.onStatusUpdate?.("Error: Missing API Key");
+      this.isConnecting = false;
       return;
     }
 
@@ -176,7 +158,7 @@ class LucaLiveService {
           }, Port=${details.port || "N/A"}, Connected=${
             details.connected !== false ? "Yes" : "No"
           }\n`;
-        } catch (e) {
+        } catch {
           systemInstruction += `Connection Details: ${connectionDetails.value}\n`;
         }
       }
@@ -273,8 +255,8 @@ class LucaLiveService {
       });
 
       this.activeSession = sessionPromise;
-    } catch (e) {
-      console.error("Failed to initialize voice session", e);
+    } catch {
+      console.error("Failed to initialize voice session");
       this.isConnecting = false; // Reset guard on error
       config.onStatusUpdate?.("Connection Failed");
       config.onConnectionChange?.(false);
@@ -283,6 +265,12 @@ class LucaLiveService {
   }
 
   private handleReconnect(config: LiveConfig) {
+    // Guard: If shouldReconnect is already false, don't even start the timer
+    if (!this.shouldReconnect) {
+      console.log("[LIVE] handleReconnect aborted: shouldReconnect is false");
+      return;
+    }
+
     if (this.retryCount >= this.MAX_RETRIES) {
       console.error(
         `[LIVE] Max retries (${this.MAX_RETRIES}) reached. Giving up.`
@@ -299,10 +287,22 @@ class LucaLiveService {
 
     this.retryTimeout = setTimeout(() => {
       this.retryTimeout = null;
+
+      // Double-check: User may have intentionally disconnected while timer was running
+      if (!this.shouldReconnect) {
+        console.log(
+          "[LIVE] Reconnect timer fired but shouldReconnect is false. Aborting."
+        );
+        return;
+      }
+
       // Disconnect first to clean up, then reconnect
       this.disconnect();
       setTimeout(() => {
-        this.connect(config);
+        // Triple-check after inner delay
+        if (this.shouldReconnect) {
+          this.connect(config);
+        }
       }, 100);
     }, delay);
   }
@@ -404,8 +404,8 @@ class LucaLiveService {
           timestamp: Date.now(),
         },
       ]);
-    } catch (e) {
-      console.warn("[AWARENESS] Failed to inject sensation:", e);
+    } catch {
+      console.warn("[AWARENESS] Failed to inject sensation");
     }
   }
 
@@ -421,6 +421,31 @@ class LucaLiveService {
     this.activeSession.then((session: any) => {
       session.sendRealtimeInput({
         audioStreamEnd: true,
+      });
+    });
+  }
+
+  /**
+   * Send a text message to Gemini Live (as user input)
+   */
+  sendText(text: string) {
+    if (!this.isConnected || !this.activeSession) {
+      console.warn("[LIVE] Cannot send text: No active session");
+      return;
+    }
+
+    console.log("[LIVE] Sending text message:", text.substring(0, 50) + "...");
+
+    this.activeSession.then((session: any) => {
+      // Use sendClientContent for text turns (not sendRealtimeInput which is for media)
+      session.sendClientContent({
+        turns: [
+          {
+            role: "user",
+            parts: [{ text }],
+          },
+        ],
+        turnComplete: true, // Signal that user turn is done, model should respond
       });
     });
   }
@@ -444,9 +469,17 @@ class LucaLiveService {
     this.inputNode.connect(this.inputAudioContext.destination);
 
     this.inputNode.onaudioprocess = (e) => {
+      // Guard: If we've disconnected mid-process, abort immediately
+      if (!this.isConnected || !this.stream) {
+        return;
+      }
+
       const inputData = e.inputBuffer.getChannelData(0);
       const rms = this.calculateRMS(inputData);
       config.onAudioData(rms);
+
+      // Global broadcast for audio-reactive components (Hologram)
+      eventBus.emit("audio-amplitude", { amplitude: rms, source: "user" });
 
       // --- ADAPTIVE NOISE FLOOR CALCULATION ---
       // Slowly adapt noise floor towards current RMS if RMS is low (likely background noise)
@@ -474,8 +507,12 @@ class LucaLiveService {
             ).toFixed(2)})`
           );
 
-          // Simple interruption - no complex guards
-          this.interrupt();
+          // Guard: Don't interrupt if model is still speaking (prevents echo-triggered interrupts)
+          if (this.sources.size === 0) {
+            this.interrupt();
+          } else {
+            console.log(`[VAD] Skipping interrupt - model is speaking (${this.sources.size} sources active)`);
+          }
         }
       } else {
         if (this.vadHangover > 0) {
@@ -499,7 +536,7 @@ class LucaLiveService {
           if (!this.isConnected || !this.isSpeaking) return;
           try {
             session.sendRealtimeInput({ media: pcmBlob });
-          } catch (e) {
+          } catch {
             // Silent catch for "WebSocket closing" race condition
           }
         });
@@ -518,36 +555,70 @@ class LucaLiveService {
     config: LiveConfig,
     sessionPromise: Promise<any>
   ) {
-    // Handle Audio Output
-    const audioData =
-      msg.serverContent?.modelTurn?.parts?.[0]?.inlineData?.data;
-    if (audioData) {
-      // If Dictation mode OR suppressOutput is true, we MUTE the model output
-      if (config.persona !== "DICTATION" && !config.suppressOutput) {
-        this.playAudio(audioData, config.onAudioData);
+    const modelTurn = msg.serverContent?.modelTurn;
+    if (modelTurn?.parts) {
+      console.log(
+        "[LIVE] Model Turn Parts:",
+        modelTurn.parts.map((p) => ({
+          text: p.text
+            ? p.text.length > 50
+              ? p.text.substring(0, 50) + "..."
+              : p.text
+            : null,
+          hasAudio: !!p.inlineData?.data,
+          thought: (p as any).thought,
+        }))
+      );
+
+      // 1. Process Audio Data
+      for (const part of modelTurn.parts) {
+        if (part.inlineData?.data) {
+          // If Dictation mode OR suppressOutput is true, we MUTE the model output
+          if (config.persona !== "DICTATION" && !config.suppressOutput) {
+            this.playAudio(part.inlineData.data, (amp) => {
+              config.onAudioData(amp);
+              // Global broadcast for audio-reactive components (Hologram)
+              eventBus.emit("audio-amplitude", {
+                amplitude: amp,
+                source: "model",
+              });
+            });
+          }
+          break; // Usually first audio part is what we want
+        }
       }
-    }
 
-    // Handle Transcripts
-    if (msg.serverContent?.modelTurn?.parts?.[0]?.text) {
-      // If suppressOutput is true, we treat the model's text response as a TRANSCRIPT of the user
-      // (STT Mode) instead of a reply. We send it as type 'user'.
-      if (!config.suppressOutput) {
-        config.onTranscript(msg.serverContent.modelTurn.parts[0].text, "model");
-      } else {
-        // Reroute as user input (Silent/STT Mode)
-        // DEFENSIVE: Strip any potential Chain of Thought or Internal Monologue
-        // Sometimes reasoning models output **Understanding..** or thought blocks.
-        const rawText = msg.serverContent.modelTurn.parts[0].text;
+      // 2. Process Transcripts
+      for (const part of modelTurn.parts) {
+        if (part.text) {
+          // Check if this is explicitly a "thought" part (supported by some reasoning models)
+          if ((part as any).thought === true) {
+            console.log(
+              "[LIVE] Filtered out explicit thought part:",
+              part.text
+            );
+            continue;
+          }
 
-        // Remove text between ** **, and trim
-        let cleanText = rawText.replace(/\*\*.*?\*\*/g, "").trim();
+          const rawText = part.text;
+          // Filter out text between ** ** (common internal monologue format)
+          const cleanText = rawText.replace(/\*\*.*?\*\*/g, "").trim();
 
-        // If the entire text was just thought (cleanText is empty), ignore it
-        if (cleanText) {
-          config.onTranscript(cleanText, "user");
-        } else {
-          console.log("[LIVE] Ignored internal monologue:", rawText);
+          // If the text is empty after filtering, it was all monologue
+          if (!cleanText) continue;
+
+          if (!config.suppressOutput) {
+            // NORMAL VOICE MODE: Show model response
+            config.onTranscript(cleanText, "model");
+          } else {
+            // STT MODE: Reroute as user input
+            config.onTranscript(cleanText, "user");
+          }
+
+          // Usually we want the first valid text part as the transcript
+          // unless there are multiple legit response parts.
+          // For Gemini Live, it's typically one text part per response message.
+          break;
         }
       }
     }
@@ -652,7 +723,7 @@ class LucaLiveService {
       try {
         this.inputNode.disconnect();
         this.inputNode.onaudioprocess = null; // CRITICAL: Stop the loop!
-      } catch (e) {
+      } catch {
         // Ignore disconnect errors
       }
       this.inputNode = null;
@@ -662,8 +733,8 @@ class LucaLiveService {
     // Cleanup input audio context
     if (this.inputAudioContext) {
       if (this.inputAudioContext.state !== "closed") {
-        this.inputAudioContext.close().catch((err) => {
-          console.warn("[LIVE] Input audio context close error:", err);
+        this.inputAudioContext.close().catch(() => {
+          console.warn("[LIVE] Input audio context close error");
         });
       }
       this.inputAudioContext = null;
@@ -683,7 +754,7 @@ class LucaLiveService {
     if (this.outputNode) {
       try {
         this.outputNode.disconnect();
-      } catch (e) {
+      } catch {
         // Ignore disconnect errors
       }
       this.outputNode = null;
@@ -697,8 +768,8 @@ class LucaLiveService {
         try {
           track.stop();
           track.enabled = false;
-        } catch (e) {
-          console.error("[LIVE] Error stopping track:", e);
+        } catch {
+          console.error("[LIVE] Error stopping track");
         }
       });
       // Explicitly set to null
@@ -711,7 +782,7 @@ class LucaLiveService {
     this.sources.forEach((source) => {
       try {
         source.stop();
-      } catch (e) {
+      } catch {
         // Ignore stop errors
       }
     });
@@ -729,7 +800,9 @@ class LucaLiveService {
       this.sources.forEach((source) => {
         try {
           source.stop();
-        } catch (e) {}
+        } catch {
+          // Ignore stop errors during interrupt
+        }
       });
       this.sources.clear();
       // Reset timing cursor to current time to avoid silence gap on next utterance

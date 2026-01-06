@@ -6,6 +6,7 @@ import {
   Globe,
   ExternalLink,
   Sparkles,
+  Pencil,
 } from "lucide-react";
 import { renderMarkdown } from "../utils/markdownUtils";
 import { PersonaType } from "../services/lucaService";
@@ -21,6 +22,8 @@ interface ChatMessageBubbleProps {
   generatedImage?: string | null;
   groundingMetadata?: any;
   wasPruned?: boolean;
+  isStreaming?: boolean;
+  onEdit?: (text: string) => void;
 }
 
 const ChatMessageBubble: React.FC<ChatMessageBubbleProps> = ({
@@ -34,8 +37,11 @@ const ChatMessageBubble: React.FC<ChatMessageBubbleProps> = ({
   generatedImage,
   groundingMetadata,
   wasPruned,
+  isStreaming,
+  onEdit,
 }) => {
   const isUser = sender === "user";
+
   const isSystem = sender === "system";
 
   // System messages (errors, status updates)
@@ -72,16 +78,7 @@ const ChatMessageBubble: React.FC<ChatMessageBubbleProps> = ({
             </div>
           )}
 
-          <div
-            className="rounded-2xl rounded-tr-sm px-3.5 py-2.5 text-white shadow-lg backdrop-blur-sm transition-all text-[13px] leading-relaxed relative overflow-hidden"
-            style={{
-              backgroundColor: `${primaryColor}1A`, // 10% opacity
-              border: `1px solid ${primaryColor}33`, // 20% opacity
-            }}
-          >
-            {/* Subtle gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
-
+          <div className="rounded-2xl rounded-tr-sm px-1 py-1 text-white text-[13px] leading-relaxed relative overflow-hidden">
             <div
               className="whitespace-pre-wrap font-mono relative z-10"
               dangerouslySetInnerHTML={{
@@ -90,11 +87,32 @@ const ChatMessageBubble: React.FC<ChatMessageBubbleProps> = ({
             />
           </div>
 
-          <div className="text-[10px] text-slate-500 text-right mt-1 mr-1 opacity-0 group-hover:opacity-100 transition-opacity select-none font-medium">
-            {new Date(timestamp).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
+          {/* Footer Actions for user message */}
+          <div className="flex items-center justify-between mt-1 mr-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] text-slate-500 select-none font-medium">
+                {new Date(timestamp).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </span>
+              <button
+                onClick={() => navigator.clipboard.writeText(text)}
+                className="text-slate-500 hover:text-slate-300 transition-colors p-1 rounded-md hover:bg-white/5 active:bg-white/10"
+                title="Copy to clipboard"
+              >
+                <Copy size={12} />
+              </button>
+            </div>
+            {onEdit && (
+              <button
+                onClick={() => onEdit(text)}
+                className="text-slate-500 hover:text-slate-300 transition-colors p-1 rounded-md hover:bg-white/5 active:bg-white/10"
+                title="Edit message"
+              >
+                <Pencil size={12} />
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -147,13 +165,7 @@ const ChatMessageBubble: React.FC<ChatMessageBubbleProps> = ({
         {/* Content area - only shown when NOT in loading state */}
         {!isLoadingState && (
           <div className="flex-1 min-w-0 w-full">
-            <div
-              className="rounded-2xl rounded-tl-sm px-3.5 py-2.5 shadow-xl backdrop-blur-md transition-all relative overflow-hidden"
-              style={{
-                backgroundColor: `${primaryColor}1A`, // 10% opacity primary color
-                border: `1px solid ${primaryColor}33`, // 20% opacity primary color
-              }}
-            >
+            <div className="rounded-2xl rounded-tl-sm px-0 py-1 transition-all relative overflow-hidden">
               {/* Generated Image inside bubble */}
               {generatedImage && (
                 <div className="mb-4 overflow-hidden rounded-xl border border-slate-700/50 bg-black/20 shadow-lg inline-block max-w-full">
@@ -185,7 +197,11 @@ const ChatMessageBubble: React.FC<ChatMessageBubbleProps> = ({
               >
                 <div
                   dangerouslySetInnerHTML={{
-                    __html: renderMarkdown(text, persona),
+                    __html:
+                      renderMarkdown(text, persona) +
+                      (isStreaming
+                        ? `<span class="inline-block w-1.5 h-3.5 ml-1 bg-${primaryColor} animate-pulse rounded-sm align-middle" style="background-color: ${primaryColor}"></span>`
+                        : ""),
                   }}
                 />
               </div>
@@ -193,7 +209,7 @@ const ChatMessageBubble: React.FC<ChatMessageBubbleProps> = ({
               {/* Grounding / Sources inside bubble */}
               {groundingMetadata?.groundingChunks &&
                 groundingMetadata.groundingChunks.length > 0 && (
-                  <div className="mt-4 flex flex-wrap gap-2 pt-3 border-t border-slate-700/30">
+                  <div className="mt-2 flex flex-wrap gap-2 pt-1">
                     {groundingMetadata.groundingChunks.map(
                       (chunk: any, i: number) => {
                         if (!chunk.web?.uri) return null;
@@ -219,20 +235,20 @@ const ChatMessageBubble: React.FC<ChatMessageBubbleProps> = ({
 
               {/* Footer Actions inside bubble */}
               {!isProcessing && (
-                <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-700/20">
-                  <span className="text-[10px] text-slate-500 select-none font-medium">
-                    {new Date(timestamp).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </span>
+                <div className="flex items-center justify-between mt-1 pt-0">
                   <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-slate-500 select-none font-medium">
+                      {new Date(timestamp).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
                     <button
                       onClick={() => navigator.clipboard.writeText(text)}
-                      className="text-slate-500 hover:text-slate-300 transition-colors p-1.5 rounded-md hover:bg-white/5 active:bg-white/10"
+                      className="text-slate-500 hover:text-slate-300 transition-colors p-1 rounded-md hover:bg-white/5 active:bg-white/10"
                       title="Copy to clipboard"
                     >
-                      <Copy size={13} />
+                      <Copy size={12} />
                     </button>
                   </div>
                 </div>

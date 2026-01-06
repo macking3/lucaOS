@@ -15,19 +15,63 @@ import {
   Wifi,
 } from "lucide-react";
 import { apiUrl } from "../config/api";
+import { getGlassStyle } from "../utils/glassStyles";
 
 interface Props {
   onClose: () => void;
+  theme?: { hex: string; primary: string; border: string; bg: string };
 }
 
-const NetworkMap: React.FC<Props> = ({ onClose }) => {
+const NetworkMap: React.FC<Props> = ({ onClose, theme }) => {
   const [nodes, setNodes] = useState<NetworkNode[]>([]);
   const [loading, setLoading] = useState(true);
   const [isReal, setIsReal] = useState(false);
 
+  // Extract theme color from theme object
+  const themeColor = theme?.hex || "#10b981";
+
   useEffect(() => {
     const fetchNetwork = async () => {
       try {
+        // Try Electron IPC first (desktop app)
+        if (window.electron?.ipcRenderer) {
+          console.log("[NETWORK_MAP] Using Electron IPC for network scan");
+          const devices = await window.electron.ipcRenderer.invoke(
+            "scan-network"
+          );
+
+          if (devices && Array.isArray(devices) && devices.length > 0) {
+            const realNodes: NetworkNode[] = devices.map((d: any) => ({
+              id: d.id,
+              label: d.label,
+              type: d.type, // Type already detected by IPC handler
+              ip: d.ip,
+              status: "ONLINE",
+            }));
+
+            // Ensure Gateway exists for visual structure
+            if (!realNodes.find((n) => n.type === "ROUTER")) {
+              realNodes.unshift({
+                id: "GATEWAY_INF",
+                label: "Gateway",
+                type: "ROUTER",
+                ip: "192.168.1.1",
+                status: "ONLINE",
+              });
+            }
+
+            setNodes(realNodes);
+            setIsReal(true);
+            setLoading(false);
+            console.log(
+              `[NETWORK_MAP] Found ${realNodes.length} devices via IPC`
+            );
+            return;
+          }
+        }
+
+        // Fallback to HTTP API (web version or if IPC fails)
+        console.log("[NETWORK_MAP] Falling back to HTTP API");
         const res = await fetch(apiUrl("/api/network/scan"));
         if (res.ok) {
           const devices = await res.json();
@@ -183,19 +227,52 @@ const NetworkMap: React.FC<Props> = ({ onClose }) => {
 
   const getStatusColor = (status: string) => {
     if (status === "COMPROMISED")
-      return "text-red-500 border-red-500 bg-red-500/10 shadow-red-500/20";
+      return {
+        color: "#ef4444",
+        border: "#ef4444",
+        bg: "rgba(239, 68, 68, 0.1)",
+        shadow: "rgba(239, 68, 68, 0.2)",
+      };
     if (status === "OFFLINE")
-      return "text-slate-500 border-slate-500 bg-slate-900";
-    return "text-rq-blue border-rq-blue bg-rq-blue/10 shadow-rq-blue/20";
+      return {
+        color: "#64748b",
+        border: "#64748b",
+        bg: "#0f172a",
+        shadow: "none",
+      };
+    return {
+      color: themeColor,
+      border: themeColor,
+      bg: `${themeColor}1a`,
+      shadow: `${themeColor}33`,
+    };
   };
 
   return (
     <div className="fixed inset-0 z-[160] flex items-center justify-center bg-black/95 backdrop-blur-lg animate-in fade-in duration-300">
-      <div className="relative w-[95%] max-w-5xl h-[85vh] bg-[#050505] border border-rq-blue/30 rounded-lg flex flex-col overflow-hidden shadow-2xl">
+      <div
+        className="relative w-[95%] max-w-5xl h-[85vh] rounded-lg flex flex-col overflow-hidden shadow-2xl"
+        style={{
+          ...getGlassStyle({ themeColor }),
+          background: "rgba(0, 0, 0, 0.4)",
+          backdropFilter: "blur(20px)",
+          boxShadow: `0 0 60px ${themeColor}1a, inset 0 1px 0 rgba(255, 255, 255, 0.05)`,
+        }}
+      >
         {/* Header */}
-        <div className="h-16 border-b border-rq-border bg-rq-panel flex items-center justify-between px-6">
+        <div
+          className="h-16 flex items-center justify-between px-6"
+          style={{
+            borderBottom: `1px solid ${themeColor}33`,
+            background: "rgba(0, 0, 0, 0.2)",
+          }}
+        >
           <div className="flex items-center gap-4">
-            <Activity className="text-rq-blue animate-pulse" size={24} />
+            <Activity
+              className="animate-pulse"
+              size={24}
+              style={{ color: themeColor }}
+            />
             <div>
               <h2 className="font-display text-xl font-bold text-white tracking-widest">
                 NETWORK TOPOLOGY MAPPER
@@ -203,9 +280,8 @@ const NetworkMap: React.FC<Props> = ({ onClose }) => {
               <div className="text-[10px] font-mono text-slate-500 flex gap-2">
                 <span>PROTOCOL: ARP_CACHE_ANALYSIS</span>
                 <span
-                  className={`font-bold ${
-                    isReal ? "text-green-500" : "text-yellow-500"
-                  }`}
+                  className="font-bold"
+                  style={{ color: isReal ? "#10b981" : "#eab308" }}
                 >
                   {isReal
                     ? `LIVE SCAN (${nodes.length} NODES)`
@@ -224,10 +300,19 @@ const NetworkMap: React.FC<Props> = ({ onClose }) => {
 
         {/* Visualization Area */}
         <div className="flex-1 relative bg-[#020202] overflow-hidden p-10">
-          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:16px_16px]"></div>
+          <div
+            className="absolute inset-0 opacity-10"
+            style={{
+              backgroundImage: `radial-gradient(${themeColor} 1px, transparent 1px)`,
+              backgroundSize: "16px 16px",
+            }}
+          />
 
           {loading ? (
-            <div className="flex h-full items-center justify-center text-rq-blue font-mono text-xs gap-2">
+            <div
+              className="flex h-full items-center justify-center font-mono text-xs gap-2"
+              style={{ color: themeColor }}
+            >
               <RefreshCw className="animate-spin" size={16} /> MAPPING LOCAL
               SUBNET...
             </div>
@@ -243,9 +328,15 @@ const NetworkMap: React.FC<Props> = ({ onClose }) => {
                       className="flex flex-col items-center gap-2"
                     >
                       <div
-                        className={`p-4 rounded-full border-2 ${getStatusColor(
-                          node.status
-                        )} shadow-[0_0_30px_rgba(59,130,246,0.5)] bg-black relative z-10`}
+                        className="p-4 rounded-full border-2 bg-black relative z-10"
+                        style={{
+                          color: getStatusColor(node.status).color,
+                          borderColor: getStatusColor(node.status).border,
+                          background: getStatusColor(node.status).bg,
+                          boxShadow: `0 0 30px ${
+                            getStatusColor(node.status).shadow
+                          }`,
+                        }}
                       >
                         {getIcon(node.type)}
                       </div>
@@ -284,9 +375,12 @@ const NetworkMap: React.FC<Props> = ({ onClose }) => {
                         }}
                       >
                         <div
-                          className={`p-3 rounded-full border ${getStatusColor(
-                            node.status
-                          )} bg-black`}
+                          className="p-3 rounded-full border bg-black"
+                          style={{
+                            color: getStatusColor(node.status).color,
+                            borderColor: getStatusColor(node.status).border,
+                            background: getStatusColor(node.status).bg,
+                          }}
                         >
                           {getIcon(node.type)}
                         </div>

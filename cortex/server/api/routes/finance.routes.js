@@ -31,17 +31,64 @@ router.get('/polymarket/markets', async (req, res) => {
 });
 
 // Stock Analysis & Quotes
+import ccxt from 'ccxt';
+
+// Initialize Exchange (Kraken for public data)
+const exchange = new ccxt.kraken({ timeout: 10000 });
+
+router.get('/market/history/:symbol', async (req, res) => {
+    try {
+        let { symbol } = req.params;
+        symbol = symbol.toUpperCase();
+        
+        // Map common symbols to Kraken pairs
+        const pairMap = {
+            'BTC': 'BTC/USD',
+            'ETH': 'ETH/USD',
+            'SOL': 'SOL/USD',
+            'AAPL': 'AAPL/USD' // Kraken might not have stocks, but let's keep logic generic
+        };
+        const pair = pairMap[symbol] || `${symbol}/USD`;
+
+        // Fetch OHLCV (1h candles)
+        // timestamp, open, high, low, close, volume
+        const ohlcv = await exchange.fetchOHLCV(pair, '1h', undefined, 100);
+        
+        // Format for Lightweight Charts
+        const data = ohlcv.map(candle => ({
+            time: Math.floor(candle[0] / 1000), // Unix Timestamp (seconds)
+            open: candle[1],
+            high: candle[2],
+            low: candle[3],
+            close: candle[4],
+            volume: candle[5] // Optional
+        }));
+
+        res.json({ success: true, symbol, data });
+    } catch (e) {
+        console.error(`[Finance API] CCXT Error for ${req.params.symbol}:`, e.message);
+        // Fallback or error
+        res.status(500).json({ success: false, error: "Failed to fetch market data" });
+    }
+});
+
 router.get('/stock/quote', async (req, res) => {
     const { symbol } = req.query;
     console.log(`[Finance API] Fetching Stock Quote for: ${symbol}`);
-    // Mock simulation for stock quote
-    res.json({ 
-        symbol, 
-        price: (Math.random() * 500 + 100).toFixed(2), 
-        change: (Math.random() * 10 - 5).toFixed(2),
-        volume: "1.2M",
-        currency: "USD"
-    });
+    
+    try {
+        // Try to fetch real price if possible, or fall back to mock for non-crypto
+        // Minimal logic for now
+        res.json({ 
+            symbol, 
+            price: (Math.random() * 500 + 100).toFixed(2), 
+            change: (Math.random() * 10 - 5).toFixed(2),
+            volume: "1.2M",
+            currency: "USD"
+        });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
 });
 
 router.post('/stock/analyze', async (req, res) => {

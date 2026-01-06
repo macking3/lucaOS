@@ -26,6 +26,7 @@ const MobileManager: React.FC<Props> = ({ device, onClose }) => {
   const [usingRealFiles, setUsingRealFiles] = useState(false);
   const [isAdbConnected, setIsAdbConnected] = useState(false);
   const [screenImage, setScreenImage] = useState<string | null>(null);
+  const [uiTree, setUiTree] = useState<any>(null);
 
   // Exploitation State
   const [exploitLogs, setExploitLogs] = useState<string[]>([]);
@@ -73,23 +74,31 @@ const MobileManager: React.FC<Props> = ({ device, onClose }) => {
     return () => clearInterval(interval);
   }, [activeTab]);
 
-  // Screen Polling for Live View
+  // Metadata & Screen Polling for Live View
   useEffect(() => {
     let interval: any;
     if (activeTab === "LIVE" && isAdbConnected) {
-      const fetchScreen = async () => {
+      const fetchData = async () => {
         try {
-          const res = await fetch(apiUrl("/api/mobile/screen"));
-          if (res.ok) {
-            const data = await res.json();
-            setScreenImage(data.image); // Base64 PNG
+          // 1. Fetch Screen
+          const screenRes = await fetch(apiUrl("/api/mobile/screen"));
+          if (screenRes.ok) {
+            const data = await screenRes.json();
+            setScreenImage(data.image);
+          }
+
+          // 2. Fetch UI Tree (Parallel fetch for inspection)
+          const uiRes = await fetch(apiUrl("/api/mobile/ui"));
+          if (uiRes.ok) {
+            const data = await uiRes.json();
+            if (data.uiTree) setUiTree(data.uiTree);
           }
         } catch (e) {
-          console.error("Screenshot failed", e);
+          console.error("Mobile data fetch failed", e);
         }
       };
-      fetchScreen();
-      interval = setInterval(fetchScreen, 800); // ~1 FPS to avoid lag
+      fetchData();
+      interval = setInterval(fetchData, 800); // Sync rhythm
     }
     return () => clearInterval(interval);
   }, [activeTab, isAdbConnected]);
@@ -391,6 +400,7 @@ const MobileManager: React.FC<Props> = ({ device, onClose }) => {
               device={device}
               isAdbConnected={isAdbConnected}
               screenImage={screenImage}
+              uiTree={uiTree}
               onSendKey={sendKey}
               onSendTap={sendTap}
               onStartNativeStream={handleStartNativeStream}

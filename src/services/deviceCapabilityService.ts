@@ -23,7 +23,7 @@ export interface DeviceCapabilities {
  * Tool-to-Capability Mapping
  * Defines which device types can run which tools
  */
-const TOOL_CAPABILITY_MAP: Record<string, DeviceType[]> = {
+export const TOOL_CAPABILITY_MAP: Record<string, DeviceType[]> = {
   // Desktop-only tools (require full OS access)
   executeTerminalCommand: ["desktop"],
   controlSystem: ["desktop"],
@@ -41,6 +41,7 @@ const TOOL_CAPABILITY_MAP: Record<string, DeviceType[]> = {
   writeClipboard: ["desktop"],
   readScreen: ["desktop"],
   controlSystemInput: ["desktop"],
+  nativeHardwareCast: ["desktop"],
   runNmapScan: ["desktop"],
   runMetasploitExploit: ["desktop"],
   generatePayload: ["desktop"],
@@ -226,9 +227,25 @@ export function canDeviceRunTool(
  */
 export function findBestDeviceForTool(
   toolName: string,
-  availableDevices: Array<{ type: DeviceType; deviceId: string; name?: string }>
+  availableDevices: Array<{
+    type: DeviceType;
+    deviceId: string;
+    name?: string;
+  }>,
+  preferredDeviceId?: string | null
 ): { type: DeviceType; deviceId: string; name?: string } | null {
   const capabilities = TOOL_CAPABILITY_MAP[toolName];
+
+  // 1. If we have a preferred device (usually local), and it can run this tool, USE IT IMMEDIATELY.
+  if (preferredDeviceId) {
+    const preferredDevice = availableDevices.find(
+      (d) => d.deviceId === preferredDeviceId
+    );
+    if (preferredDevice && capabilities?.includes(preferredDevice.type)) {
+      return preferredDevice;
+    }
+  }
+
   if (!capabilities) {
     // Unknown tool - try desktop first
     const desktop = availableDevices.find((d) => d.type === "desktop");
@@ -279,4 +296,11 @@ export function filterToolsByDevice(
   allTools: string[]
 ): string[] {
   return allTools.filter((tool) => canDeviceRunTool(deviceType, tool));
+}
+
+/**
+ * Get the list of platforms that can execute a specific tool
+ */
+export function getRequiredPlatformsForTool(toolName: string): DeviceType[] {
+  return TOOL_CAPABILITY_MAP[toolName] || ["desktop"]; // Default to desktop for unknown tools
 }

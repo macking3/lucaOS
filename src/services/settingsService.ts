@@ -36,9 +36,14 @@ export interface LucaSettings {
   // Connectors managed via CredentialVault, but UI state (e.g. "show in dashboard") could be here
   connectors: {
     whatsapp: boolean;
+    telegram: boolean;
     linkedin: boolean;
     google: boolean;
     youtube: boolean;
+    twitter: boolean;
+    instagram: boolean;
+    discord: boolean;
+    signal: boolean;
   };
   telegram: {
     apiId: string;
@@ -55,6 +60,22 @@ export interface LucaSettings {
     faceData?: string;
     faceEnabled: boolean;
     faceCreated?: Date;
+  };
+  mcp: {
+    servers: Array<{
+      id: string;
+      name: string;
+      type: "stdio" | "sse";
+      command?: string;
+      args?: string[];
+      url?: string;
+      env?: Record<string, string>;
+      autoConnect: boolean;
+    }>;
+  };
+  mobile: {
+    offlineModel: "none" | "gemma-2b";
+    offlineModelDownloaded: boolean;
   };
 }
 
@@ -97,7 +118,7 @@ const DEFAULT_SETTINGS: LucaSettings = {
     openaiApiKey:
       getEnvVar("VITE_OPENAI_API_KEY") || getEnvVar("OPENAI_API_KEY") || "",
     xaiApiKey: getEnvVar("VITE_XAI_API_KEY") || getEnvVar("XAI_API_KEY") || "",
-    model: "gemini-3-flash-preview",
+    model: "gemini-3-flash-preview", // or "local-gemma-2b"
     voiceModel: "models/gemini-2.5-flash-native-audio-latest",
     memoryModel: "gemini-3-pro-preview",
     temperature: 0.7,
@@ -117,11 +138,20 @@ const DEFAULT_SETTINGS: LucaSettings = {
     haUrl: "",
     haToken: "",
   },
+  mobile: {
+    offlineModel: "none",
+    offlineModelDownloaded: false,
+  },
   connectors: {
     whatsapp: false,
+    telegram: false,
     linkedin: false,
     google: false,
     youtube: false,
+    twitter: false,
+    instagram: false,
+    discord: false,
+    signal: false,
   },
   telegram: {
     apiId: "",
@@ -133,6 +163,9 @@ const DEFAULT_SETTINGS: LucaSettings = {
     connectionMode: "auto",
     relayServerUrl: "https://relay-server-eight.vercel.app", // Production relay server
     vpnServerUrl: "",
+  },
+  mcp: {
+    servers: [], // No default MCP servers
   },
 };
 

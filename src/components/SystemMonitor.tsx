@@ -35,34 +35,40 @@ const SystemMonitor: React.FC<Props> = ({
 
   // Data Fetch Loop
   useEffect(() => {
+    const controller = new AbortController();
+
     const interval = setInterval(async () => {
       if (connected) {
         try {
+          // Use timeout signal for fetch requests
+          const timeoutSignal = (timeout: number) =>
+            AbortSignal.timeout(timeout);
+
           // 1. Resource Pulse
           const res = await fetch(apiUrl("/api/monitor"), {
-            signal: AbortSignal.timeout(800),
+            signal: timeoutSignal(2000), // Increased from 800ms
           });
           const monitorData = res.ok ? await res.json() : null;
+          if (monitorData) console.log("[MONITOR] Data Received:", monitorData);
 
-          // 2. Hardware Pulse (Battery)
           // 2. Hardware Pulse (Battery)
           const battRes = await fetch(cortexUrl("/api/system/control"), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ action: "GET_BATTERY" }),
-            signal: AbortSignal.timeout(2000),
+            signal: timeoutSignal(2000),
           });
           const battData = battRes.ok ? await battRes.json() : null;
 
           // 3. Permission Pulse
           const permRes = await fetch(cortexUrl("/api/system/permissions"), {
-            signal: AbortSignal.timeout(2000),
+            signal: timeoutSignal(2000),
           });
           const permData = permRes.ok ? await permRes.json() : null;
 
           // 4. Dependency Pulse
           const readyRes = await fetch(apiUrl("/api/system-status/status"), {
-            signal: AbortSignal.timeout(800),
+            signal: timeoutSignal(2000), // Increased from 800ms
           });
           const readyData = readyRes.ok ? await readyRes.json() : null;
 
@@ -72,19 +78,30 @@ const SystemMonitor: React.FC<Props> = ({
             const memTotal = monitorData.memory?.total || 1;
             const memPerc = Math.min(100, (memUsed / memTotal) * 100);
 
+            // Fix CPU calculation: Load average should be divided by CPU count, not multiplied
+            // Load average represents number of processes waiting, normalize to 0-100%
+            const cpuCores = monitorData.cpuCores || 1;
+            const cpuLoad = monitorData.cpu || 0;
+            const cpuPerc = Math.min(100, (cpuLoad / cpuCores) * 100);
+
             setMetrics({
-              cpu: monitorData.cpu * 10 || 0, // Normalize load avg to %
+              cpu: cpuPerc,
               mem: memPerc,
               net: monitorData.net || 0,
-              battery: battData?.percentage || 100,
-              isCharging: battData?.isCharging || false,
+              battery: battData?.data?.percentage || 100,
+              isCharging: battData?.data?.isCharging || false,
               permissions: permData?.success ? "OK" : "DENIED",
               readiness: readyData?.status?.toUpperCase() || "READY",
               uptime: `${Math.floor(monitorData.uptime || 0)}s`,
             });
           }
-        } catch (e) {
-          console.warn("[HEARTBEAT] Aggregate fetch failed", e);
+        } catch (e: any) {
+          // Silence aborted requests (unmount) or timeouts to keep logs clean
+          if (e.name === "AbortError" || e.name === "TimeoutError") {
+            // Ignore - expected behavior
+          } else {
+            console.warn("[HEARTBEAT] Aggregate fetch failed", e);
+          }
         }
       } else {
         // Simulation Mode
@@ -102,7 +119,11 @@ const SystemMonitor: React.FC<Props> = ({
         }));
       }
     }, 2000); // Slower interval for aggregate pulse
-    return () => clearInterval(interval);
+
+    return () => {
+      clearInterval(interval);
+      controller.abort();
+    };
   }, [connected]);
 
   // Canvas Render Loop
@@ -221,11 +242,11 @@ const SystemMonitor: React.FC<Props> = ({
       ctx.textAlign = "left";
 
       const logs = [
-        `PWR_SRC: ${metrics.battery}% ${metrics.isCharging ? "(AC)" : "(BAT)"}`,
-        `SEC_LVL: ${metrics.permissions}`,
-        `DEP_RDY: ${metrics.readiness}`,
-        `SYS_UPT: ${metrics.uptime}`,
-        `ADM_MODE: ACTIVE`,
+        `POWER: ${metrics.battery}% ${metrics.isCharging ? "(AC)" : "(BAT)"}`,
+        `ACCESS: ${metrics.permissions}`,
+        `READY: ${metrics.readiness}`,
+        `UPTIME: ${metrics.uptime}`,
+        `MODE: ACTIVE (ADMIN)`,
       ];
 
       logs.forEach((l, i) => {
@@ -237,10 +258,10 @@ const SystemMonitor: React.FC<Props> = ({
       ctx.font = 'bold 12px "Rajdhani"';
       ctx.fillText(
         audioListenMode
-          ? "AUDIO_ANALYSIS_ACTIVE"
+          ? "AUDIO ANALYSIS ACTIVE"
           : connected
-          ? "REALTIME_TELEMETRY"
-          : "SIMULATION_MODE",
+          ? "REALTIME TELEMETRY"
+          : "SIMULATION MODE",
         20,
         125
       );

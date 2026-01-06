@@ -13,12 +13,12 @@ import { SERVER_PORT, MANIFEST_FILE } from './cortex/server/config/constants.js'
 // Services
 import { socketService } from './cortex/server/services/socketService.js';
 import './cortex/server/services/whatsappService.js';
-import { fileWatcher } from './src/services/fileWatcherService.js';
+// import { fileWatcher } from './src/services/fileWatcherService.js'; // DISABLED: causes EMFILE error
 import { memoryStore } from './src/services/memoryStore.js';
 import './src/services/relayService.js';
 import iotManager from './src/services/iot/IoTManager.js';
 import { DlnaProvider } from './src/services/iot/providers/DlnaProvider.js';
-import { MCPClientManager } from './src/services/mcpClientManager.js';
+import { mcpClientManager } from './src/services/mcpClientManager.js';
 
 // Admin Imports (Database initialization side-effect)
 import './src/services/db.js';
@@ -73,8 +73,9 @@ import windowsControlRoutes from './cortex/server/api/routes/windows-control.rou
 import mobileControlRoutes from './cortex/server/api/routes/mobile-control.routes.js';
 import unifiedControlRoutes from './cortex/server/api/routes/unified-control.routes.js';
 import visionRoutes from './cortex/server/api/routes/vision.routes.js';
-import visionTestRoutes from './cortex/server/api/routes/vision-test.routes.js';
 import systemStatusRoutes from './cortex/server/api/routes/system-status.routes.js';
+import mcpRoutes from './cortex/server/api/routes/mcp.routes.js';
+import chromeProfileRoutes from './cortex/server/api/routes/chromeProfile.routes.js';
 
 const app = express();
 const server = http.createServer(app);
@@ -88,13 +89,34 @@ try {
     console.warn('[MEMORY] Migration warning:', e.message);
 }
 
+// DISABLED: File watcher causes EMFILE error on large projects
+// try {
+//     fileWatcher.start(process.cwd());
+// } catch (e) {
+//     console.warn('[WATCHER] Start warning:', e.message);
+// }
+
+// MCP Auto-Connect (reads from ~/.luca/mcp-settings.json)
+import os from 'os';
+const mcpSettingsFile = path.join(os.homedir(), '.luca', 'mcp-settings.json');
 try {
-    fileWatcher.start(process.cwd());
+    if (fs.existsSync(mcpSettingsFile)) {
+        const mcpSettings = JSON.parse(fs.readFileSync(mcpSettingsFile, 'utf8'));
+        mcpClientManager.loadFromSettings(mcpSettings);
+    }
 } catch (e) {
-    console.warn('[WATCHER] Start warning:', e.message);
+    console.warn('[MCP] Auto-connect warning:', e.message);
 }
 
-new MCPClientManager();
+// Goal Scheduler Auto-Start
+import { goalScheduler } from './cortex/server/services/goalScheduler.js';
+try {
+    console.log('[GOAL_SCHEDULER] Initializing recurring goals...');
+    goalScheduler.initialize();
+} catch (e) {
+    console.warn('[GOAL_SCHEDULER] Initialization warning:', e.message);
+}
+
 // Socket service is now ON-DEMAND. Do NOT auto-initialize.
 // It will be started when user clicks "Link Device" via /api/neural-link/start
 app.set('socketService', socketService);
@@ -161,8 +183,9 @@ app.use('/api/windows-control', windowsControlRoutes);
 app.use('/api/mobile-control', mobileControlRoutes);
 app.use('/api/control', unifiedControlRoutes);
 app.use('/api/vision', visionRoutes);
-app.use('/api/vision-test', visionTestRoutes);
 app.use('/api/system-status', systemStatusRoutes);
+app.use('/api/mcp', mcpRoutes);
+app.use('/api/chrome-profile', chromeProfileRoutes);
 
 // --- ROOT ---
 app.get('/', (req, res) => {

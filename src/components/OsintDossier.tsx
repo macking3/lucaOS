@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { OsintProfile, OsintHit } from "../types";
+import { OsintProfile } from "../types";
 import {
   X,
   User,
@@ -7,7 +7,6 @@ import {
   ShieldAlert,
   Search,
   Lock,
-  FileText,
   AlertTriangle,
   UserSearch,
   Share2,
@@ -126,11 +125,11 @@ const OsintDossier: React.FC<Props> = ({ profile, onClose, theme }) => {
             </div>
             <div>
               <h2 className="font-display text-2xl font-bold text-white tracking-[0.2em]">
-                INTEL_DOSSIER_V2
+                INTEL DOSSIER V2
               </h2>
               <div className="text-[10px] font-mono text-slate-500 flex gap-4 uppercase tracking-tighter">
                 <span>[REF: {profile.target}]</span>
-                <span>[SOURCE: NEURAL_LINK_NODE_X7]</span>
+                <span>SOURCE: NEURAL LINK NODE X7</span>
                 <span>[STATUS: ENCRYPTED]</span>
               </div>
             </div>
@@ -174,7 +173,7 @@ const OsintDossier: React.FC<Props> = ({ profile, onClose, theme }) => {
               <div
                 className={`absolute top-3 right-3 text-[9px] font-mono ${themePrimary} bg-black/60 px-1 py-0.5 border border-current/20`}
               >
-                99.8%_MATCH
+                99.8% MATCH
               </div>
 
               <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black to-transparent h-12 flex items-end justify-center pb-2">
@@ -187,7 +186,7 @@ const OsintDossier: React.FC<Props> = ({ profile, onClose, theme }) => {
             <div className="space-y-5">
               <div>
                 <div className="text-[9px] font-bold text-slate-500 tracking-[0.2em] mb-1.5 uppercase opacity-70">
-                  TARGET_PROFILE
+                  TARGET PROFILE
                 </div>
                 <div
                   className={`font-mono text-xl text-white font-bold border-b-2 ${themeBorder}/40 pb-2 tracking-wide uppercase italic`}
@@ -198,7 +197,7 @@ const OsintDossier: React.FC<Props> = ({ profile, onClose, theme }) => {
 
               <div>
                 <div className="text-[9px] font-bold text-slate-500 tracking-[0.2em] mb-2 uppercase opacity-70">
-                  THREAT_LEVEL_INDEX
+                  THREAT LEVEL INDEX
                 </div>
                 <div className="flex items-center gap-4 mb-3">
                   <div
@@ -211,7 +210,7 @@ const OsintDossier: React.FC<Props> = ({ profile, onClose, theme }) => {
                   <div className="text-[8px] text-slate-500 leading-tight font-mono">
                     [AGGREGATED]
                     <br />
-                    [SYSTEM_RISK]
+                    [SYSTEM RISK]
                   </div>
                 </div>
                 {/* Mini Risk Bars */}
@@ -234,7 +233,7 @@ const OsintDossier: React.FC<Props> = ({ profile, onClose, theme }) => {
 
                   <div className="space-y-1">
                     <div className="flex justify-between text-[9px] font-mono text-slate-400">
-                      <span>LEAK_GRAVITY</span>
+                      <span>LEAK GRAVITY</span>
                       <span>{Math.min(100, darkCount * 30)}%</span>
                     </div>
                     <div className="h-1 bg-slate-900 w-full overflow-hidden">
@@ -262,7 +261,7 @@ const OsintDossier: React.FC<Props> = ({ profile, onClose, theme }) => {
                       profile.riskScore > 70 ? "text-rq-red" : themePrimary
                     }
                   />{" "}
-                  ANALYST_VERDICT
+                  ANALYST VERDICT
                 </div>
                 <p className="text-[10px] text-slate-400 leading-normal font-mono">
                   Target displays significant digital footprint patterns.{" "}
@@ -285,15 +284,15 @@ const OsintDossier: React.FC<Props> = ({ profile, onClose, theme }) => {
             <div className="h-12 border-b border-rq-border flex divide-x divide-rq-border bg-white/5 relative z-10">
               <div className="flex-1 flex items-center justify-center gap-2 text-[10px] font-mono text-slate-400 uppercase tracking-widest">
                 <Globe size={14} className={themePrimary} />
-                <span>SOCIAL_{socialCount}</span>
+                <span>SOCIAL {socialCount}</span>
               </div>
               <div className="flex-1 flex items-center justify-center gap-2 text-[10px] font-mono text-slate-400 uppercase tracking-widest">
                 <Lock size={14} className="text-rq-red" />
-                <span>LEAKS_{darkCount}</span>
+                <span>LEAKS {darkCount}</span>
               </div>
               <div className="flex-1 flex items-center justify-center gap-2 text-[10px] font-mono text-slate-400 uppercase tracking-widest">
                 <Network size={14} className="text-emerald-500" />
-                <span>NODES_{domainCount}</span>
+                <span>NODES {domainCount}</span>
               </div>
             </div>
 
@@ -308,14 +307,14 @@ const OsintDossier: React.FC<Props> = ({ profile, onClose, theme }) => {
                   {profile.intel.dns && (
                     <div className="bg-emerald-950/10 border border-emerald-500/20 p-4 rounded-sm">
                       <div className="text-[10px] font-bold text-emerald-500 tracking-widest mb-3 uppercase flex items-center gap-2">
-                        <Network size={14} /> [DNS_ANALYSIS]
+                        <Network size={14} /> [DNS ANALYSIS]
                       </div>
                       <div className="grid grid-cols-1 gap-3 font-mono text-[10px]">
                         {profile.intel.dns.A &&
                           profile.intel.dns.A.length > 0 && (
                             <div className="flex gap-4">
                               <span className="text-slate-500 w-12">
-                                A_RECORDS:
+                                A RECORDS:
                               </span>
                               <span className="text-white">
                                 {profile.intel.dns.A.join(", ")}
@@ -326,7 +325,7 @@ const OsintDossier: React.FC<Props> = ({ profile, onClose, theme }) => {
                           profile.intel.dns.MX.length > 0 && (
                             <div className="flex gap-4">
                               <span className="text-slate-500 w-12">
-                                MX_NODES:
+                                MX NODES:
                               </span>
                               <span className="text-white">
                                 {profile.intel.dns.MX.join(", ")}
@@ -351,7 +350,7 @@ const OsintDossier: React.FC<Props> = ({ profile, onClose, theme }) => {
 
               {profile.hits.length === 0 && !profile.intel && (
                 <div className="text-slate-600 italic text-sm font-mono text-center mt-10">
-                  [NO_RECORDS_FOUND_IN_BUFFER]
+                  [NO RECORDS FOUND IN BUFFER]
                 </div>
               )}
 
@@ -437,8 +436,8 @@ const OsintDossier: React.FC<Props> = ({ profile, onClose, theme }) => {
               <h3
                 className={`text-[10px] font-bold ${themePrimary} tracking-[0.2em] flex items-center gap-2 uppercase`}
               >
-                <Share2 size={14} className="animate-pulse" />{" "}
-                [RELATIONSHIP_MATRIX]
+                <Share2 size={14} className="animate-pulse" /> [RELATIONSHIP
+                MATRIX]
               </h3>
             </div>
 
@@ -515,12 +514,12 @@ const OsintDossier: React.FC<Props> = ({ profile, onClose, theme }) => {
 
             <div className="h-1/3 border-t border-rq-border p-4 bg-white/5 relative z-10">
               <h3 className="text-[10px] font-bold text-slate-500 tracking-[0.2em] mb-4 flex items-center gap-2 uppercase">
-                <PieChart size={12} /> [DATA_ALLOCATION]
+                <PieChart size={12} /> [DATA ALLOCATION]
               </h3>
               <div className="space-y-3 font-mono">
                 <div className="space-y-1">
                   <div className="flex justify-between text-[9px] text-slate-400">
-                    <span>SOCIAL_OSINT</span>
+                    <span>SOCIAL OSINT</span>
                     <span className={themePrimary}>
                       {((socialCount / totalCount) * 100).toFixed(0)}%
                     </span>
@@ -540,7 +539,7 @@ const OsintDossier: React.FC<Props> = ({ profile, onClose, theme }) => {
                 </div>
                 <div className="space-y-1">
                   <div className="flex justify-between text-[9px] text-slate-400">
-                    <span>LEAK_DETECTED</span>
+                    <span>LEAK DETECTED</span>
                     <span className="text-rq-red">
                       {((darkCount / totalCount) * 100).toFixed(0)}%
                     </span>
@@ -554,7 +553,7 @@ const OsintDossier: React.FC<Props> = ({ profile, onClose, theme }) => {
                 </div>
                 <div className="space-y-1">
                   <div className="flex justify-between text-[9px] text-slate-400">
-                    <span>NET_INFRA</span>
+                    <span>NET INFRA</span>
                     <span className="text-emerald-500">
                       {((domainCount / totalCount) * 100).toFixed(0)}%
                     </span>

@@ -3,8 +3,6 @@ import { Volume2, Radio, Zap, Eye, ShieldAlert, Terminal } from "lucide-react";
 import { VoiceSettings } from "./VoiceSettings";
 
 import { FULL_TOOL_SET, PersonaType } from "../services/lucaService";
-import IntelligenceFeed from "./IntelligenceFeed";
-import VisualDataPresenter from "./VisualDataPresenter";
 
 // Import Refactored Components
 import VoiceVisualizer from "./voice/VoiceVisualizer";
@@ -19,14 +17,14 @@ const TypewriterText = ({ text }: { text: string }) => {
     setDisplayedText(""); // Reset on new text
     let i = 0;
     const interval = setInterval(() => {
-      setDisplayedText((prev) => text.substring(0, i + 1));
+      setDisplayedText(text.substring(0, i + 1));
       i++;
       if (i > text.length) clearInterval(interval);
     }, 45); // ~45ms per char = typewriter speed
     return () => clearInterval(interval);
   }, [text]);
 
-  return <span>"{displayedText}"</span>;
+  return <span>&quot;{displayedText}&quot;</span>;
 };
 
 // --- CANVAS THEME COLORS ---
@@ -56,8 +54,6 @@ interface VoiceHudProps {
   onClearVisualData?: () => void;
   onTranscriptChange?: (text: string) => void;
   onTranscriptComplete?: (text: string) => void;
-  isListening: boolean;
-  onToggleListening: () => void;
   isSpeaking: boolean;
   persona: PersonaType;
   theme: {
@@ -70,30 +66,23 @@ interface VoiceHudProps {
   statusMessage?: string | null;
   hideDebugPanels?: boolean; // Hide ACTIVE PROTOCOLS and TELEMETRY panels
   hideControls?: boolean; // Hide settings and camera buttons (for onboarding)
+  transparentTranscript?: boolean; // Hide the box container background and border
 }
 
 const VoiceHud: React.FC<VoiceHudProps> = ({
-  isListening, // Used dynamically by parent hooks
-  onToggleListening, // Retained for prop compatibility
   transcript,
-  isSpeaking,
   isActive,
   isVisible = true, // Default to true
   onClose,
   amplitude,
   transcriptSource,
   isVadActive,
-  paused,
-  searchResults,
-  onTranscriptChange,
-  onTranscriptComplete,
   persona,
   theme,
   statusMessage,
-  visualData,
-  onClearVisualData,
   hideDebugPanels = false, // Default to false (show panels in main app)
   hideControls = false, // Default to false (show controls in main app)
+  transparentTranscript = false, // Default to false (show box container)
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const captureCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -103,84 +92,8 @@ const VoiceHud: React.FC<VoiceHudProps> = ({
   const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-  // Audio Analysis Logic for Microphone Input (Visualizer)
-  // Note: Actual speech recognition is handled by LiveService (parent)
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const analyserRef = useRef<AnalyserNode | null>(null);
-  const dataArrayRef = useRef<Uint8Array | null>(null);
-  const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
-  const [localAmplitude, setLocalAmplitude] = useState(0);
-
-  // Initialize Audio Analysis
-  useEffect(() => {
-    // Only run visualizer if active AND visible
-    if (!isActive || !isVisible) {
-      if (audioContextRef.current) {
-        audioContextRef.current.close().catch(() => {});
-        audioContextRef.current = null;
-      }
-      return;
-    }
-
-    let stream: MediaStream | null = null;
-    let animationFrameId: number | null = null;
-
-    navigator.mediaDevices
-      .getUserMedia({ audio: true, video: false })
-      .then((audioStream) => {
-        stream = audioStream;
-        const AudioContextClass =
-          window.AudioContext || (window as any).webkitAudioContext;
-        const audioContext = new AudioContextClass();
-        const analyser = audioContext.createAnalyser();
-        analyser.fftSize = 256;
-        const source = audioContext.createMediaStreamSource(audioStream);
-        source.connect(analyser);
-
-        audioContextRef.current = audioContext;
-        analyserRef.current = analyser;
-        sourceRef.current = source;
-        dataArrayRef.current = new Uint8Array(
-          analyser.frequencyBinCount
-        ) as any;
-
-        const updateAmplitude = () => {
-          if (
-            !isActive ||
-            !isVisible ||
-            !analyserRef.current ||
-            !dataArrayRef.current
-          ) {
-            animationFrameId = null;
-            return;
-          }
-          analyserRef.current.getByteFrequencyData(dataArrayRef.current as any);
-
-          let sum = 0;
-          for (let i = 0; i < dataArrayRef.current.length; i++) {
-            sum += dataArrayRef.current[i];
-          }
-          const average = sum / dataArrayRef.current.length;
-          const amp = average / 128; // Normalize 0-2 (approx)
-          setLocalAmplitude(amp);
-
-          animationFrameId = requestAnimationFrame(updateAmplitude);
-        };
-        updateAmplitude();
-      })
-      .catch((err) => {
-        console.error("Audio Visualizer Error:", err);
-      });
-
-    return () => {
-      if (animationFrameId !== null) cancelAnimationFrame(animationFrameId);
-      if (audioContextRef.current) {
-        audioContextRef.current.close().catch(() => {});
-        audioContextRef.current = null;
-      }
-      if (stream) stream.getTracks().forEach((track) => track.stop());
-    };
-  }, [isActive, isVisible]);
+  // Audio Analysis removed - we now use the amplitude prop from liveService
+  // This eliminates a redundant mic stream acquisition
 
   // Initialize dynamic tool list
   useEffect(() => {
@@ -231,7 +144,9 @@ const VoiceHud: React.FC<VoiceHudProps> = ({
   if (!isActive || !isVisible) return null;
 
   return (
-    <div className="fixed inset-0 z-[200] bg-[#020617]/95 backdrop-blur-xl flex flex-col items-center justify-center animate-in fade-in duration-500">
+    <div
+      className={`fixed inset-0 z-[200] bg-slate-950/90 ${theme.bg} backdrop-blur-xl flex flex-col items-center justify-center animate-in fade-in duration-500`}
+    >
       {/* Video Stream Element */}
       <div
         className={`absolute top-0 left-0 w-full h-full pointer-events-none transition-opacity duration-500 ${
@@ -279,9 +194,8 @@ const VoiceHud: React.FC<VoiceHudProps> = ({
 
       <canvas ref={captureCanvasRef} className="hidden" />
 
-      {/* Main Visualizer Area */}
       <VoiceVisualizer
-        amplitude={localAmplitude}
+        amplitude={amplitude}
         isVadActive={isVadActive}
         transcriptSource={transcriptSource}
         persona={persona}
@@ -298,25 +212,7 @@ const VoiceHud: React.FC<VoiceHudProps> = ({
       {/* CENTRAL DISPLAY      {/* Transcript Display (Center Bottom) */}
       <div className="absolute bottom-20 sm:bottom-32 w-full px-4 sm:px-8 md:max-w-4xl flex flex-col items-center justify-center z-30">
         {/* Main Transcript */}
-        <div
-          className="
-            text-center 
-            px-4 sm:px-6 md:px-8 
-            py-3 sm:py-4
-            bg-black/40 
-            backdrop-blur-md 
-            rounded-2xl 
-            border 
-            border-white/10
-            min-h-[60px] sm:min-h-[80px]
-            w-full
-            max-w-[90vw] sm:max-w-full
-          "
-          style={{
-            borderColor: `${theme.primary}30`,
-            boxShadow: `0 0 20px ${theme.glow}`,
-          }}
-        >
+        <div className="text-center px-4 sm:px-6 md:px-8 py-3 sm:py-4 min-h-[60px] sm:min-h-[80px] w-full max-w-[90vw] sm:max-w-full">
           <div className="mb-2 sm:mb-3 flex items-center justify-center gap-2">
             <Radio
               size={14}
@@ -395,7 +291,7 @@ const VoiceHud: React.FC<VoiceHudProps> = ({
                     backgroundColor: CANVAS_THEME_COLORS[persona].primary,
                   }}
                 ></div>
-                <span>"{proto}"</span>
+                <span>&quot;{proto}&quot;</span>
               </div>
             ))}
             <div className="text-[8px] opacity-30 pt-2">

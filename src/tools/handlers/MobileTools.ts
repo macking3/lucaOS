@@ -149,10 +149,55 @@ export async function android_check_connection(): Promise<MobileToolResult> {
   }
 }
 
+/**
+ * Read a file from the Android device
+ */
+export async function readAndroidFile(args: {
+  filePath: string;
+}): Promise<MobileToolResult> {
+  try {
+    const content = await androidAgent.readFile(args.filePath);
+    return {
+      success: true,
+      message: `File read successfully: ${args.filePath}`,
+      data: { content },
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error.message || "Failed to read file from Android device",
+    };
+  }
+}
+
+/**
+ * Write a file to the Android device
+ */
+export async function writeAndroidFile(args: {
+  filePath: string;
+  content: string;
+  isBase64?: boolean;
+}): Promise<MobileToolResult> {
+  try {
+    await androidAgent.writeFile(args.filePath, args.content, args.isBase64);
+    return {
+      success: true,
+      message: `File written successfully: ${args.filePath}`,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error.message || "Failed to write file to Android device",
+    };
+  }
+}
+
 // Export all mobile tool handlers
 export const mobileToolHandlers = {
   android_execute_goal,
   android_screenshot,
   android_get_ui,
   android_check_connection,
+  readAndroidFile,
+  writeAndroidFile,
 };

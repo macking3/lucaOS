@@ -5,7 +5,13 @@ import { settingsService } from "../services/settingsService";
 // Configuration
 // In production, this should come from env or config
 const WS_URL = `${CORTEX_URL.replace("http", "ws")}/ws/audio`;
-const SILENCE_THRESHOLD = 0.02; // 2% volume threshold
+
+// Wake Word Configuration (Sentry Mode)
+const WAKE_WORDS = ["hey luca", "hieluca", "hey lucca", "luca", "hello luca"];
+const SILENCE_TIMEOUT_MS = 5000; // 5 seconds to return to IDLE
+
+// Voice State for Sentry Mode
+type SentryState = "SENTRY" | "ACTIVE";
 
 interface VoiceInputState {
   isListening: boolean;
@@ -13,6 +19,8 @@ interface VoiceInputState {
   status: "IDLE" | "LISTENING" | "THINKING" | "SPEAKING";
   error: string | null;
   volume: number; // Expose volume for UI
+  isVadActive: boolean; // Expose VAD state for UI
+  sentryState: SentryState; // New: Sentry Mode state
 }
 
 export const useVoiceInput = () => {
@@ -22,8 +30,12 @@ export const useVoiceInput = () => {
     status: "IDLE",
     error: null,
     volume: 0,
+    isVadActive: false,
+    sentryState: "SENTRY", // Start in Sentry Mode (waiting for wake word)
   });
 
+  // NEW: Ref to expose stream for WakeWordListener
+  const sharedStreamRef = useRef<MediaStream | null>(null);
   const ws = useRef<WebSocket | null>(null);
   const mediaRecorder = useRef<MediaRecorder | null>(null);
   const audioContext = useRef<AudioContext | null>(null);
@@ -31,6 +43,124 @@ export const useVoiceInput = () => {
   const source = useRef<MediaStreamAudioSourceNode | null>(null);
   const animationFrame = useRef<number | null>(null);
   const intentToListen = useRef(false); // RACE CONDITION GUARD
+
+  // --- SENTRY MODE STATE ---
+  const silenceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const sentryStateRef = useRef<SentryState>("SENTRY");
+  const wakeWordRecognizer = useRef<any>(null); // Web Speech API for local wake word detection
+
+  // --- ADAPTIVE VAD STATE ---
+  const vadState = useRef({
+    noiseFloor: 0.002,
+    vadHangover: 0,
+    isSpeaking: false,
+    speechDetectedInChunk: false, // Tracks if *any* speech occurred in current chunk
+  });
+
+  // VAD Constants (Matched to LiveService)
+  const NOISE_ALPHA = 0.05; // Fast adaptation
+  const SNR_THRESHOLD = 1.3;
+  const ABSOLUTE_THRESHOLD = 0.005;
+  const HANGOVER_FRAMES = 10; // ~600ms at 60fps
+
+  // --- WAKE WORD DETECTION (Web Speech API) ---
+  const startWakeWordDetection = useCallback(() => {
+    if (
+      !("webkitSpeechRecognition" in window) &&
+      !("SpeechRecognition" in window)
+    ) {
+      console.warn(
+        "[VoiceInput] Web Speech API not available - Sentry Mode disabled"
+      );
+      // Fallback: Set to ACTIVE immediately (no wake word filtering)
+      sentryStateRef.current = "ACTIVE";
+      setState((prev) => ({ ...prev, sentryState: "ACTIVE" }));
+      return;
+    }
+
+    const SpeechRecognition =
+      (window as any).webkitSpeechRecognition ||
+      (window as any).SpeechRecognition;
+    wakeWordRecognizer.current = new SpeechRecognition();
+    wakeWordRecognizer.current.continuous = true;
+    wakeWordRecognizer.current.interimResults = true;
+    wakeWordRecognizer.current.lang = "en-US";
+
+    wakeWordRecognizer.current.onresult = (event: any) => {
+      // Check all results for wake word
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript.toLowerCase();
+        const hasWakeWord = WAKE_WORDS.some((word) =>
+          transcript.includes(word)
+        );
+
+        if (hasWakeWord && sentryStateRef.current === "SENTRY") {
+          console.log(`[VoiceInput] Wake word detected: "${transcript}"`);
+          sentryStateRef.current = "ACTIVE";
+          setState((prev) => ({ ...prev, sentryState: "ACTIVE" }));
+
+          // Reset silence timer
+          if (silenceTimer.current) {
+            clearTimeout(silenceTimer.current);
+          }
+          silenceTimer.current = setTimeout(() => {
+            console.log(
+              "[VoiceInput] Silence timeout - returning to SENTRY mode"
+            );
+            sentryStateRef.current = "SENTRY";
+            setState((prev) => ({ ...prev, sentryState: "SENTRY" }));
+          }, SILENCE_TIMEOUT_MS);
+        }
+      }
+    };
+
+    wakeWordRecognizer.current.onerror = (event: any) => {
+      if (event.error !== "no-speech") {
+        console.warn("[VoiceInput] Wake word recognition error:", event.error);
+      }
+      // Restart on most errors
+      if (event.error === "network" || event.error === "aborted") {
+        setTimeout(() => {
+          if (wakeWordRecognizer.current && state.isListening) {
+            wakeWordRecognizer.current.start();
+          }
+        }, 1000);
+      }
+    };
+
+    wakeWordRecognizer.current.onend = () => {
+      // Restart if still listening (continuous mode)
+      if (state.isListening && wakeWordRecognizer.current) {
+        try {
+          wakeWordRecognizer.current.start();
+        } catch (e) {
+          // Ignore - already running
+        }
+      }
+    };
+
+    try {
+      wakeWordRecognizer.current.start();
+      console.log("[VoiceInput] Wake word detection started (SENTRY mode)");
+    } catch (e) {
+      console.error("[VoiceInput] Failed to start wake word detection:", e);
+    }
+  }, [state.isListening]);
+
+  const stopWakeWordDetection = useCallback(() => {
+    if (wakeWordRecognizer.current) {
+      try {
+        wakeWordRecognizer.current.stop();
+        wakeWordRecognizer.current = null;
+      } catch (e) {
+        // Ignore
+      }
+    }
+    if (silenceTimer.current) {
+      clearTimeout(silenceTimer.current);
+      silenceTimer.current = null;
+    }
+  }, []);
 
   const connect = useCallback(() => {
     if (ws.current?.readyState === WebSocket.OPEN) return;
@@ -73,12 +203,14 @@ export const useVoiceInput = () => {
     };
   }, []);
 
-  const calculateVolume = (dataArray: Uint8Array) => {
+  // Root Mean Square (RMS) Calculation
+  const calculateRMS = (dataArray: Uint8Array) => {
     let sum = 0;
     for (let i = 0; i < dataArray.length; i++) {
-      sum += dataArray[i];
+      const float = (dataArray[i] - 128) / 128; // Center around 0
+      sum += float * float;
     }
-    return sum / dataArray.length / 255; // Normalize 0-1
+    return Math.sqrt(sum / dataArray.length);
   };
 
   const startListening = useCallback(async () => {
@@ -100,6 +232,9 @@ export const useVoiceInput = () => {
           autoGainControl: true,
         },
       });
+
+      // Store in shared ref for App.tsx access
+      sharedStreamRef.current = stream;
 
       // CRITICAL: Check if user stopped while we were waiting based on intent
       if (!intentToListen.current) {
@@ -125,11 +260,50 @@ export const useVoiceInput = () => {
       // Real-time volume monitoring loop
       const updateVolume = () => {
         if (analyser.current) {
-          analyser.current.getByteFrequencyData(dataArray);
-          currentVolume = calculateVolume(dataArray);
-          // Only update React state if change is significant to avoid re-renders
-          if (currentVolume > 0.01) {
-            // We can optionally expose this, but let's keep it checking
+          analyser.current.getByteTimeDomainData(dataArray); // Use Time Domain for RMS
+          const rms = calculateRMS(dataArray);
+          currentVolume = rms; // Update for closure access
+
+          // --- ADAPTIVE VAD LOGIC ---
+          const s = vadState.current;
+
+          // 1. Adaptive Noise Floor
+          if (rms < s.noiseFloor * 1.5) {
+            s.noiseFloor = s.noiseFloor * (1 - NOISE_ALPHA) + rms * NOISE_ALPHA;
+          } else {
+            // Slowly drift up if constantly loud
+            s.noiseFloor = s.noiseFloor * 0.999 + rms * 0.001;
+          }
+
+          // 2. Signal Detection (SNR Check)
+          const isSignal =
+            rms > ABSOLUTE_THRESHOLD && rms > s.noiseFloor * SNR_THRESHOLD;
+
+          if (isSignal) {
+            s.vadHangover = HANGOVER_FRAMES;
+            if (!s.isSpeaking) {
+              s.isSpeaking = true;
+              console.log(
+                `[VAD] Speech Start (SNR: ${(rms / s.noiseFloor).toFixed(1)})`
+              );
+            }
+            s.speechDetectedInChunk = true; // Mark chunk as containing speech
+          } else {
+            if (s.vadHangover > 0) {
+              s.vadHangover--;
+            } else {
+              if (s.isSpeaking) {
+                s.isSpeaking = false;
+                // console.log("[VAD] Speech End");
+              }
+            }
+          }
+
+          // Update React state for UI components
+          if (rms > 0.005) {
+            setState((prev) => ({ ...prev, volume: rms }));
+          } else if (currentVolume > 0) {
+            setState((prev) => ({ ...prev, volume: 0 }));
           }
         }
         animationFrame.current = requestAnimationFrame(updateVolume);
@@ -144,42 +318,80 @@ export const useVoiceInput = () => {
 
       mediaRecorder.current.ondataavailable = (event) => {
         if (event.data.size > 0 && ws.current?.readyState === WebSocket.OPEN) {
-          // GATING CHECK: only send if recent volume was > threshold
-          if (currentVolume > SILENCE_THRESHOLD) {
+          // GATING CHECK 1: Check if ANY speech occurred in this chunk (VAD)
+          const hasSpeech =
+            vadState.current.speechDetectedInChunk ||
+            vadState.current.isSpeaking;
+
+          // GATING CHECK 2: Check Sentry Mode state (Wake Word)
+          const isActive = sentryStateRef.current === "ACTIVE";
+
+          if (hasSpeech && isActive) {
             console.log(
-              `[VoiceInput] Sending Audio (Vol: ${currentVolume.toFixed(2)})`
+              `[VoiceInput] Sending Audio Chunk (${event.data.size} bytes)`
             );
+
+            // Reset silence timer on voice activity
+            if (silenceTimer.current) {
+              clearTimeout(silenceTimer.current);
+            }
+            silenceTimer.current = setTimeout(() => {
+              console.log(
+                "[VoiceInput] Silence timeout - returning to SENTRY mode"
+              );
+              sentryStateRef.current = "SENTRY";
+              setState((prev) => ({ ...prev, sentryState: "SENTRY" }));
+            }, SILENCE_TIMEOUT_MS);
+
+            // Send to Gemini
             const reader = new FileReader();
             reader.onloadend = () => {
-              const base64Audio = (reader.result as string).split(",")[1];
-              const settings = settingsService.get("brain");
-              ws.current?.send(
-                JSON.stringify({
-                  type: "audio_input",
-                  data: base64Audio,
-                  model: settings?.voiceModel || "gemini-2.0-flash",
-                })
-              );
+              const result = reader.result as string;
+              if (result.includes(",")) {
+                const base64Audio = result.split(",")[1];
+                const settings = settingsService.get("brain");
+                ws.current?.send(
+                  JSON.stringify({
+                    type: "audio_input",
+                    data: base64Audio,
+                    model: settings?.voiceModel || "gemini-2.0-flash",
+                  })
+                );
+              }
             };
             reader.readAsDataURL(event.data);
-          } else {
-            // console.log("Silence ignored.");
+
+            // RESET CHUNK STATE if currently silent
+            if (!vadState.current.isSpeaking) {
+              vadState.current.speechDetectedInChunk = false;
+            }
+          } else if (hasSpeech && !isActive) {
+            // Speech detected but in SENTRY mode - Log for debugging
+            console.debug(
+              "[VoiceInput] Speech ignored (SENTRY mode - waiting for wake word)"
+            );
           }
         }
       };
 
-      mediaRecorder.current.start(1000); // Chunk every second (streaming-like)
+      mediaRecorder.current.start(3000); // Chunk every 3 seconds (was 1s) for better context
+
+      // Reset sentry state and start wake word detection
+      sentryStateRef.current = "SENTRY";
+      startWakeWordDetection();
+
       setState((prev) => ({
         ...prev,
         isListening: true,
         status: "LISTENING",
         error: null,
+        sentryState: "SENTRY",
       }));
     } catch (e) {
       console.error("[VoiceInput] Mic Error", e);
       setState((prev) => ({ ...prev, error: "Microphone Access Denied" }));
     }
-  }, [connect]);
+  }, [connect, startWakeWordDetection]);
 
   const stopListening = useCallback(() => {
     intentToListen.current = false; // CANCEL ANY PENDING START
@@ -211,14 +423,18 @@ export const useVoiceInput = () => {
       animationFrame.current = null;
     }
 
+    // 3. Stop wake word detection
+    stopWakeWordDetection();
+    sentryStateRef.current = "SENTRY";
+
     setState((prev) => ({
       ...prev,
       isListening: false,
-      isVadActive: false,
       status: "IDLE",
       transcript: "",
+      sentryState: "SENTRY",
     }));
-  }, []);
+  }, [stopWakeWordDetection]);
 
   const playAudio = (base64Data: string) => {
     try {
@@ -243,5 +459,7 @@ export const useVoiceInput = () => {
     connect,
     startListening,
     stopListening,
+    // Expose stream via a getter function to ensure we get current ref
+    getSharedStream: () => sharedStreamRef.current,
   };
 };

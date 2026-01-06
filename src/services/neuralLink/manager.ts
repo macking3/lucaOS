@@ -251,21 +251,91 @@ export class NeuralLinkManager {
   }
 
   /**
-   * Delegate tool execution to best available device
+   * Delegate tool execution to best available device or a specific device
+   * Supports:
+   * - delegateTool(tool: string, args?: any) -> Automatically selects best device
+   * - delegateTool(deviceId: string, tool: string, args?: any) -> Delegates to specific device
    */
-  async delegateTool(tool: string, args?: any): Promise<void> {
-    const device = this.deviceRegistry.selectBestDevice(tool);
+  async delegateTool(
+    deviceIdOrTool: string,
+    toolOrArgs?: any,
+    maybeArgs?: any
+  ): Promise<any> {
+    let deviceId: string | null = null;
+    let tool: string;
+    let args: any;
+
+    // Determine which signature is being used
+    if (typeof toolOrArgs === "string") {
+      // (deviceId, tool, args)
+      deviceId = deviceIdOrTool;
+      tool = toolOrArgs;
+      args = maybeArgs;
+    } else {
+      // (tool, args)
+      tool = deviceIdOrTool;
+      args = toolOrArgs;
+    }
+
+    let device;
+    if (deviceId) {
+      device = this.deviceRegistry.getDevice(deviceId);
+    } else {
+      device = this.deviceRegistry.selectBestDevice(tool);
+    }
 
     if (!device) {
       const nlError = this.errorHandler.createError(
         "NL_401",
-        `No device found with capability: ${tool}`
+        `No device found with capability: ${tool}${
+          deviceId ? ` (Device ID: ${deviceId})` : ""
+        }`
       );
       await this.errorHandler.handleError(nlError);
       throw new Error(`No device available for ${tool}`);
     }
 
-    await this.sendCommand(device.id, tool, args);
+    // Wrap in a promise to wait for response
+    return new Promise(async (resolve, reject) => {
+      const commandId = this.generateCommandId();
+
+      // Setup temporary listener for the response
+      const responseHandler = (event: NeuralLinkEvent) => {
+        if (event.data.message?.commandId === commandId) {
+          this.off("response:received", responseHandler);
+          resolve(event.data.message.payload);
+        }
+      };
+
+      this.on("response:received", responseHandler);
+
+      try {
+        const message: NeuralLinkMessage = {
+          type: "command",
+          payload: { command: tool, args },
+          target: device.id,
+          source: this.myDeviceId || undefined,
+          timestamp: Date.now(),
+          commandId,
+        };
+
+        if (!this.socket?.isConnected()) {
+          throw new Error("Neural Link not connected");
+        }
+
+        await this.socket.send(message);
+
+        // Timeout handling
+        setTimeout(() => {
+          this.off("response:received", responseHandler);
+          // Don't reject yet as some commands are fire-and-forget or taking long
+          // But resolve with a status if needed
+        }, 30000);
+      } catch (error) {
+        this.off("response:received", responseHandler);
+        reject(error);
+      }
+    });
   }
 
   /**

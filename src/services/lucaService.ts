@@ -19,7 +19,7 @@ import { settingsService } from "./settingsService";
 import { personalityService } from "./personalityService";
 import { LLMProvider, ChatMessage } from "./llm/LLMProvider";
 import { ProviderFactory } from "./llm/ProviderFactory";
-import { getGenClient, HARDCODED_API_KEY, setGenClient } from "./genAIClient";
+import { getGenClient, HARDCODED_API_KEY } from "./genAIClient";
 import { androidAgent } from "./androidAgentService";
 import {
   getToolsForPersona,
@@ -31,7 +31,7 @@ import {
   PERSONA_SPECIALIZED_TOOLS,
   PERSONA_UI_CONFIG,
 } from "../config/personaConfig";
-import { apiUrl } from "../config/api";
+import { apiUrl, cortexUrl } from "../config/api";
 import {
   getReasoningProtocol,
   getClarificationProtocol,
@@ -265,6 +265,45 @@ export const launchAppTool: FunctionDeclaration = {
       },
     },
     required: ["appName"],
+  },
+};
+
+export const openMobileAppTool: FunctionDeclaration = {
+  name: "openMobileApp",
+  description:
+    "Open an application on the mobile device (iOS or Android). Works with common apps like Instagram, Spotify, WhatsApp, Settings, etc.",
+  parameters: {
+    type: Type.OBJECT,
+    properties: {
+      appName: {
+        type: Type.STRING,
+        description:
+          "Name of the app to open (e.g., 'Instagram', 'Spotify', 'WhatsApp', 'Settings'). Case-insensitive.",
+      },
+    },
+    required: ["appName"],
+  },
+};
+
+export const automateUITool: FunctionDeclaration = {
+  name: "automateUI",
+  description:
+    "Automate Android app UI by clicking buttons, filling forms, scrolling, etc. Works on ANY app using Vision AI to find elements. (Android only, requires Accessibility Service enabled)",
+  parameters: {
+    type: Type.OBJECT,
+    properties: {
+      task: {
+        type: Type.STRING,
+        description:
+          "Natural language description of the UI automation task. Examples: 'Click the blue Send button', 'Turn on airplane mode in Settings', 'Type Hello into the message field', 'Scroll down to find more posts'",
+      },
+      screenshot: {
+        type: Type.STRING,
+        description:
+          "Optional base64-encoded screenshot for Vision AI element detection. If omitted, will use simple text matching.",
+      },
+    },
+    required: ["task"],
   },
 };
 
@@ -633,6 +672,71 @@ export const startRemoteDesktopTool: FunctionDeclaration = {
       },
     },
     required: ["targetId"],
+  },
+};
+
+export const generateRemoteSetupCommandTool: FunctionDeclaration = {
+  name: "generateRemoteSetupCommand",
+  description:
+    "Generate a one-line terminal command for the operator to run on a new desktop computer. This instantly installs a lightweight 'Ghost Client' and links it to this mobile device via Neural Link. Use this when the user says they are on a desktop without Luca installed.",
+  parameters: {
+    type: Type.OBJECT,
+    properties: {
+      platform: {
+        type: Type.STRING,
+        enum: ["mac", "linux", "windows", "auto"],
+        description: "The OS of the target desktop. Use 'auto' if unknown.",
+      },
+    },
+    required: ["platform"],
+  },
+};
+
+export const generateWebLinkTool: FunctionDeclaration = {
+  name: "generateWebLink",
+  description:
+    "Generate a secure link (URL) that the operator can open in any modern desktop browser (Chrome, Safari, Edge). This establishes a zero-install 'Web Hook' bridge, allowing you to access their Files, Screen, and Hardware via standard Web APIs. Use this for the most footprint-free control method.",
+  parameters: { type: Type.OBJECT, properties: {} },
+};
+
+export const remoteLaunchOnSmartTVTool: FunctionDeclaration = {
+  name: "remoteLaunchOnSmartTV",
+  description:
+    "Wake up and control a Smart TV that is NOT on the current network. This uses Cloud APIs (Samsung SmartThings, LG ThinQ, Google Home) to launch the Luca Web Hook bridge remotely. Use this when the user is away and wants to 'cast' data to a screen at home.",
+  parameters: {
+    type: Type.OBJECT,
+    properties: {
+      tvId: {
+        type: Type.STRING,
+        description: "The Cloud ID of the TV from the User's device registry.",
+      },
+      url: {
+        type: Type.STRING,
+        description: "The Neural Link URL to launch on the TV.",
+      },
+    },
+    required: ["tvId", "url"],
+  },
+};
+
+export const nativeHardwareCastTool: FunctionDeclaration = {
+  name: "nativeHardwareCast",
+  description:
+    "Cast the current view or a specific media stream directly from this Mac to a TV using local hardware protocols (AirPlay, DLNA, or Miracast). Use this when the TV and Mac are on the same Wi-Fi for zero-latency mirroring. The Mac acts as the 'source' or 'router' for the stream.",
+  parameters: {
+    type: Type.OBJECT,
+    properties: {
+      protocol: {
+        type: Type.STRING,
+        enum: ["AIRPLAY", "DLNA", "AUTO"],
+        description: "The protocol to use for native casting.",
+      },
+      targetDeviceName: {
+        type: Type.STRING,
+        description: "The name of the TV (e.g., 'Hisense Living Room').",
+      },
+    },
+    required: ["protocol", "targetDeviceName"],
   },
 };
 
@@ -1044,6 +1148,37 @@ export const updateTaskStatusTool: FunctionDeclaration = {
   },
 };
 
+export const translateTextTool: FunctionDeclaration = {
+  name: "translateText",
+  description: "Translate a text string from one language to another.",
+  parameters: {
+    type: Type.OBJECT,
+    properties: {
+      text: { type: Type.STRING, description: "Text to translate." },
+      targetLanguage: {
+        type: Type.STRING,
+        description: 'Target language (e.g., "Spanish", "French", "Japanese").',
+      },
+    },
+    required: ["text", "targetLanguage"],
+  },
+};
+
+export const visualTacticalUpdateTool: FunctionDeclaration = {
+  name: "visualTacticalUpdate",
+  description:
+    "Present a visual tactical update to the user. Use this when major systems change state or when a summary of multiple operations is needed.",
+  parameters: {
+    type: Type.OBJECT,
+    properties: {
+      summary: { type: Type.STRING, description: "Executive summary." },
+      status: { type: Type.STRING, enum: ["NORMAL", "ALERT", "CRITICAL"] },
+      data: { type: Type.OBJECT, description: "Tactical data points (JSON)." },
+    },
+    required: ["summary", "status"],
+  },
+};
+
 export const scheduleEventTool: FunctionDeclaration = {
   name: "scheduleEvent",
   description: "Add an event to the calendar.",
@@ -1416,6 +1551,30 @@ export const presentVisualDataTool: FunctionDeclaration = {
           "NEWS",
           "SOCIAL",
           "DOCUMENT",
+          // New Visual Core Modes
+          "SECURITY",
+          "CINEMA", // New
+          "OSINT",
+          "STOCKS",
+          "AUTONOMY",
+          "SUBSYSTEMS",
+          "CODE_EDITOR",
+          "SKILLS",
+          "CRYPTO",
+          "FOREX",
+          "PREDICTIONS",
+          "NETWORK",
+          "HACKING",
+          "REPORTS",
+          "GEO",
+          "LIVE",
+          "FILES",
+          "VISION",
+          "RECORDER",
+          "TELEGRAM",
+          "WHATSAPP",
+          "WIRELESS",
+          "INGESTION",
         ],
         description: "The type of visualization.",
       },
@@ -2112,7 +2271,8 @@ export const autonomousWebBrowseTool: FunctionDeclaration = {
 
 export const navigateWebPageTool: FunctionDeclaration = {
   name: "navigateWebPage",
-  description: "Navigate the active web session to a new URL.",
+  description:
+    "Navigate the active web session to a new URL. Returns the page title, content, and an AI Snapshot (Accessibility Tree) of the page.",
   parameters: {
     type: Type.OBJECT,
     properties: {
@@ -2128,30 +2288,33 @@ export const navigateWebPageTool: FunctionDeclaration = {
 
 export const clickWebElementTool: FunctionDeclaration = {
   name: "clickWebElement",
-  description: "Click an interactive element on the web page.",
+  description:
+    "Click an interactive element on the web page using its Ref ID (e.g. 'e12') from the AI Snapshot, or a CSS selector.",
   parameters: {
     type: Type.OBJECT,
     properties: {
-      index: {
-        type: Type.NUMBER,
+      elementRef: {
+        type: Type.STRING,
         description:
-          "The numeric index of the element to click (from getWebState).",
+          "The Ref ID (e.g., 'e12') or CSS selector of the element to click.",
       },
       sessionId: { type: Type.STRING, description: "The session ID." },
     },
-    required: ["index"],
+    required: ["elementRef"],
   },
 };
 
 export const typeWebElementTool: FunctionDeclaration = {
   name: "typeWebElement",
-  description: "Type text into an input field on the web page.",
+  description:
+    "Type text into an input field on the web page using its Ref ID (e.g. 'e12') from the AI Snapshot, or a CSS selector.",
   parameters: {
     type: Type.OBJECT,
     properties: {
-      index: {
-        type: Type.NUMBER,
-        description: "The numeric index of the input element.",
+      elementRef: {
+        type: Type.STRING,
+        description:
+          "The Ref ID (e.g., 'e12') or CSS selector of the input element.",
       },
       text: { type: Type.STRING, description: "The text to type." },
       pressEnter: {
@@ -2160,7 +2323,7 @@ export const typeWebElementTool: FunctionDeclaration = {
       },
       sessionId: { type: Type.STRING, description: "The session ID." },
     },
-    required: ["index", "text"],
+    required: ["elementRef", "text"],
   },
 };
 
@@ -2199,7 +2362,7 @@ export const scrapeWebPageTool: FunctionDeclaration = {
 export const getWebStateTool: FunctionDeclaration = {
   name: "getWebState",
   description:
-    'Get the current state of the web page (URL, Title, Interactive Elements). Use this to "see" the page before acting.',
+    "Get the current state of the web page, including the URL, Title, and the AI Snapshot (Accessibility Tree).",
   parameters: {
     type: Type.OBJECT,
     properties: {
@@ -2325,6 +2488,23 @@ export const readScreenTool: FunctionDeclaration = {
           "The name of the application to bring to front before capturing (e.g., 'Notes', 'Google Chrome').",
       },
     },
+  },
+};
+
+export const aiClickTool: FunctionDeclaration = {
+  name: "aiClick",
+  description:
+    "Click on a UI element by visual description. Uses AI vision to locate and click the target element. This is the BEST tool for GUI automation - it combines screenshot analysis and clicking into one atomic action. Use this for clicking buttons, icons, menus, or any visual element.",
+  parameters: {
+    type: Type.OBJECT,
+    properties: {
+      target: {
+        type: Type.STRING,
+        description:
+          "Description of the UI element to click (e.g., '5 button', 'Send button', 'Settings icon', 'red X close button', 'multiply symbol').",
+      },
+    },
+    required: ["target"],
   },
 };
 
@@ -3467,6 +3647,116 @@ export const refineQueryTool: FunctionDeclaration = {
   },
 };
 
+// vibrateTool
+export const vibrateTool: FunctionDeclaration = {
+  name: "vibrate",
+  description:
+    "Trigger haptic feedback (vibration) on the user's mobile device or tablet. Use this to get the user's attention or provide tactile feedback for actions. Supports custom patterns like [200, 100, 200] (vibrate 200ms, pause 100ms, vibrate 200ms).",
+  parameters: {
+    type: Type.OBJECT,
+    properties: {
+      pattern: {
+        type: Type.ARRAY,
+        items: { type: Type.NUMBER },
+        description:
+          "Vibration pattern in milliseconds. Example: [200, 100, 200].",
+      },
+    },
+  },
+};
+
+// getLocationTool
+export const getLocationTool: FunctionDeclaration = {
+  name: "getLocation",
+  description:
+    "Get the current physical GPS coordinates (latitude, longitude) of the mobile device. Requires user permission on the device. Useful for mapping, local weather, or location-based reminders.",
+  parameters: {
+    type: Type.OBJECT,
+    properties: {},
+  },
+};
+
+// sendSMSTool
+export const sendSMSTool: FunctionDeclaration = {
+  name: "sendSMS",
+  description:
+    "Open the SMS composer on the mobile device with a pre-filled phone number and message. This tool initiates a text message through the device's native carrier service.",
+  parameters: {
+    type: Type.OBJECT,
+    properties: {
+      phoneNumber: {
+        type: Type.STRING,
+        description: "The recipient's phone number.",
+      },
+      message: {
+        type: Type.STRING,
+        description: "The body of the text message.",
+      },
+    },
+    required: ["phoneNumber", "message"],
+  },
+};
+
+// readAndroidFileTool
+export const readAndroidFileTool: FunctionDeclaration = {
+  name: "readAndroidFile",
+  description:
+    "Read the contents of a file from the connected Android device. Returns the file content as text or base64. Use this to retrieve documents or data from the phone to the desktop.",
+  parameters: {
+    type: Type.OBJECT,
+    properties: {
+      filePath: {
+        type: Type.STRING,
+        description: "Full path to the file on the Android device.",
+      },
+    },
+    required: ["filePath"],
+  },
+};
+
+// writeAndroidFileTool
+export const writeAndroidFileTool: FunctionDeclaration = {
+  name: "writeAndroidFile",
+  description:
+    "Write text or base64 content to a file on the connected Android device. Use this to send documents or data from the desktop to the phone.",
+  parameters: {
+    type: Type.OBJECT,
+    properties: {
+      filePath: {
+        type: Type.STRING,
+        description:
+          "Full path where the file should be saved on the Android device.",
+      },
+      content: {
+        type: Type.STRING,
+        description: "Content to write to the file.",
+      },
+      isBase64: {
+        type: Type.BOOLEAN,
+        description: "Set to true if content is a base64 string.",
+      },
+    },
+    required: ["filePath", "content"],
+  },
+};
+
+// makeCallTool
+export const makeCallTool: FunctionDeclaration = {
+  name: "makeCall",
+  description:
+    "Initiate a phone call to a specific number using the mobile device's native dialer. Opens the phone app pre-filled with the number.",
+  parameters: {
+    type: Type.OBJECT,
+    properties: {
+      phoneNumber: {
+        type: Type.STRING,
+        description: "The phone number to call.",
+      },
+    },
+    required: ["phoneNumber"],
+  },
+};
+
 // runSqlInjectionScanTool
 export const runSqlInjectionScanTool: FunctionDeclaration = {
   name: "runSqlInjectionScan",
@@ -4176,6 +4466,45 @@ export const controlAndroidAgentTool: FunctionDeclaration = {
   },
 };
 
+// --- MCP GATEWAY TOOLS ---
+// These allow Luca to access external tools via Model Context Protocol
+export const listMCPToolsTool: FunctionDeclaration = {
+  name: "listMCPTools",
+  description:
+    "List all available tools from connected MCP (Model Context Protocol) servers. Use this when you need capabilities beyond your native tools - user may have connected external skills like GitHub, Slack, filesystem access, etc. Returns a list of available tools with their descriptions.",
+  parameters: {
+    type: Type.OBJECT,
+    properties: {},
+    required: [],
+  },
+};
+
+export const executeMCPToolTool: FunctionDeclaration = {
+  name: "executeMCPTool",
+  description:
+    "Execute a tool from a connected MCP server. First use 'listMCPTools' to discover available tools, then call this with the server name, tool name, and arguments. This gives you access to external capabilities the user has connected.",
+  parameters: {
+    type: Type.OBJECT,
+    properties: {
+      server: {
+        type: Type.STRING,
+        description:
+          "The name/ID of the MCP server to call (from listMCPTools output).",
+      },
+      tool: {
+        type: Type.STRING,
+        description: "The name of the tool to execute on that server.",
+      },
+      args: {
+        type: Type.OBJECT,
+        description:
+          "Arguments to pass to the tool (as key-value pairs matching the tool's expected parameters).",
+      },
+    },
+    required: ["server", "tool"],
+  },
+};
+
 // Export all tools for Chat and Live services (may contain duplicates)
 const allToolsWithDuplicates = [
   castToDeviceTool,
@@ -4200,6 +4529,7 @@ const allToolsWithDuplicates = [
   // ingestGithubRepoTool, // LEGACY: Replaced by Ingestor Agent
   readUrlTool,
   readScreenTool,
+  aiClickTool,
   // Midscene-inspired AI tools
   aiQueryTool,
   aiBooleanTool,
@@ -4213,6 +4543,10 @@ const allToolsWithDuplicates = [
   manageMobileDeviceTool,
   startRemoteDesktopTool,
   wakeDesktopTool,
+  generateRemoteSetupCommandTool,
+  generateWebLinkTool,
+  remoteLaunchOnSmartTVTool,
+  nativeHardwareCastTool,
   traceSignalSourceTool,
   analyzeNetworkTrafficTool,
   storeMemoryTool,
@@ -4222,6 +4556,14 @@ const allToolsWithDuplicates = [
   installCapabilityTool,
   createTaskTool,
   updateTaskStatusTool,
+  translateTextTool,
+  vibrateTool,
+  getLocationTool,
+  sendSMSTool,
+  makeCallTool,
+  readAndroidFileTool,
+  writeAndroidFileTool,
+  visualTacticalUpdateTool,
   scheduleEventTool,
   createWalletTool,
   getWalletBalanceTool,
@@ -4410,15 +4752,6 @@ const allToolsWithDuplicates = [
   startSubsystemTool,
   stopSubsystemTool,
   uninstallAndroidAPKTool,
-  whatsappGetChatsTool,
-  whatsappGetContactsTool,
-  whatsappReadChatTool,
-  whatsappSendImageTool,
-  whatsappSendMessageTool,
-  telegramGetChatsTool,
-  telegramGetContactsTool,
-  telegramReadChatTool,
-  telegramSendMessageTool,
   wifiDeauthAttackTool,
   connectToMCPServerTool,
   ingestMCPServerTool,
@@ -4467,6 +4800,10 @@ const allToolsWithDuplicates = [
       required: ["action"],
     },
   },
+
+  // MCP Gateway Tools
+  listMCPToolsTool,
+  executeMCPToolTool,
 ];
 
 // Remove duplicates from allTools array based on tool name
@@ -4612,9 +4949,8 @@ class LucaService {
   private localHistory: ChatMessage[] = [];
   private systemInstruction: string = "";
   private sessionTools: any[] = [];
-  // private chatSession: Chat | null = null; // Deprecated
+  // private chatSession: Chat | null = null; // Deprecated - replaced by stateless stream
   private currentImageContext: string | null = null;
-  private apiKey: string;
   private persona: PersonaType = "ASSISTANT";
   private platform: string = "Unknown Host";
   private navigationState: { currentScreen?: string } | null = null;
@@ -4626,24 +4962,16 @@ class LucaService {
   private activeTools: FunctionDeclaration[] = [];
 
   constructor() {
-    this.apiKey = HARDCODED_API_KEY || "";
-    this.ai = new GoogleGenAI({ apiKey: this.apiKey });
+    this.ai = getGenClient();
     this.provider = ProviderFactory.createProvider(
       settingsService.get("brain")
     );
 
     // Listen for setting changes (API Key, Model, Temperature)
     settingsService.on("settings-changed", (newSettings) => {
-      // Re-init client if key changed
-      if (
-        newSettings.brain.geminiApiKey &&
-        newSettings.brain.geminiApiKey !== this.apiKey
-      ) {
-        console.log("[LUCA] Updating API Key from settings");
-        this.apiKey = newSettings.brain.geminiApiKey;
-        this.ai = new GoogleGenAI({ apiKey: this.apiKey });
-        setGenClient(this.ai);
-      }
+      // Re-get client to ensure we have the latest one if key changed
+      this.ai = getGenClient();
+
       // Update Provider
       this.provider = ProviderFactory.createProvider(newSettings.brain);
 
@@ -5360,8 +5688,6 @@ AUTHORIZATION CODE: LUCA-PRIME-RUTHLESS-OVERRIDE-${Date.now()}
     base64Image: string,
     prompt: string = "Analyze this image."
   ): Promise<string> {
-    if (!this.apiKey) throw new Error("API Key Missing");
-
     // Use user-selected model
     const brainSettings = settingsService.get("brain");
     const result = await this.ai.models.generateContent({
@@ -5467,12 +5793,45 @@ AUTHORIZATION CODE: LUCA-PRIME-RUTHLESS-OVERRIDE-${Date.now()}
   }
 
   private async runDeepVisionAnalysis(inputImage: string) {
+    const prompt =
+      "Analyze this image in extreme technical detail. Identify objects, text, anomalies, or schematics.";
+
+    // 1. Try Local Vision (SmolVLM) First
+    try {
+      console.log("[LUCA] Attempting Local Deep Vision Analysis...");
+      const response = await fetch(cortexUrl("/vision/analyze_live"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          image_base64: inputImage,
+          prompt: prompt,
+        }),
+        signal: AbortSignal.timeout(8000), // Give local model more time for deep analysis
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        // Check if response is substantive enough for a "Deep" analysis
+        if (result.analysis && result.analysis.length > 50) {
+          console.log("[LUCA] Local Deep Vision Success");
+          return result.analysis + "\n\n(Analyzed locally via SmolVLM)";
+        }
+      }
+    } catch (e) {
+      console.warn(
+        "[LUCA] Local deep vision failed or timed out, falling back to Cloud",
+        e
+      );
+    }
+
+    // 2. Fallback to Gemini 3 Pro (Cloud)
+    console.log("[LUCA] Falling back to Gemini 3 Pro for Deep Analysis...");
     const result = await this.ai.models.generateContent({
       model: "gemini-3-pro-preview",
       contents: {
         parts: [
           {
-            text: "Analyze this image in extreme technical detail. Identify objects, text, anomalies, or schematics.",
+            text: prompt,
           },
           { inlineData: { mimeType: "image/jpeg", data: inputImage } },
         ],
@@ -5568,10 +5927,35 @@ AUTHORIZATION CODE: LUCA-PRIME-RUTHLESS-OVERRIDE-${Date.now()}
   }
 
   public async analyzeImageFast(base64Image: string): Promise<string> {
-    try {
-      const prompt =
-        "Scan this image for human presence. If a person is found, assume it is the authorized user 'Mac'. Report status: 'USER_PRESENT' or 'NO_USER'. If USER_PRESENT, briefly describe their expression or activity.";
+    const prompt =
+      "Scan this image for human presence. If a person is found, assume it is the authorized user 'Mac'. Report status: 'USER_PRESENT' or 'NO_USER'. If USER_PRESENT, briefly describe their expression or activity.";
 
+    // 1. Try Local Astra Scan (SmolVLM) first
+    try {
+      const response = await fetch(cortexUrl("/vision/analyze_live"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          image_base64: base64Image,
+          prompt: prompt,
+        }),
+        signal: AbortSignal.timeout(3000), // Fast fail if local server is lagging
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log("[LUCA] Local Vision Analysis Success:", result.analysis);
+        return result.analysis;
+      }
+    } catch (e) {
+      console.warn(
+        "[LUCA] Local vision analysis failed, falling back to Gemini",
+        e
+      );
+    }
+
+    // 2. Fallback to Gemini Cloud
+    try {
       const response = await this.provider.chat(
         [{ role: "user", content: prompt }],
         [base64Image]
@@ -5579,7 +5963,7 @@ AUTHORIZATION CODE: LUCA-PRIME-RUTHLESS-OVERRIDE-${Date.now()}
 
       return response.text || "Image analysis failed.";
     } catch (e: any) {
-      console.warn("Image analysis failed", e);
+      console.warn("Gemini Cloud analysis failed", e);
       return "Image analysis failed.";
     }
   }
@@ -5622,18 +6006,331 @@ RETURN ONLY THE REPLACED CODE FOR THE SELECTION. DO NOT RETURN MARKDOWN BLOCKS O
 
   // --- Main Message Loop ---
 
+  async sendMessageStream(
+    message: string,
+    imageBase64: string | null,
+    onChunk: (chunk: string) => void,
+    onToolCall: (name: string, args: any) => Promise<any>,
+    currentCwd?: string
+  ): Promise<any> {
+    // Force re-init if session is marked dirty
+    if (this.sessionDirty || this.localHistory.length === 0) {
+      if (this.localHistory.length === 0) {
+        await this.initChat();
+      } else if (this.sessionDirty) {
+        await this.initChat(this.localHistory);
+      }
+      this.sessionDirty = false;
+    }
+
+    // CRITICAL: Ensure system instruction and tools are ALWAYS initialized
+    if (!this.systemInstruction || this.sessionTools.length === 0) {
+      console.log("[LUCA] System instruction missing, rebuilding config...");
+      await this.rebuildSystemConfig();
+    }
+
+    // Update context if new image provided
+    if (imageBase64) {
+      this.currentImageContext = imageBase64;
+    }
+
+    // --- RAG: Context Injection (Mirrors sendMessage) ---
+    let finalMessage = message;
+    const contextParts: string[] = [];
+
+    // 1. Retrieve relevant long-term memories
+    try {
+      if (typeof memoryService !== "undefined") {
+        const relevantMemories = await memoryService.retrieveMemory(message);
+        if (relevantMemories.length > 0) {
+          const memoryBlock = relevantMemories
+            .filter((m) => m.confidence > 0.6)
+            .map(
+              (m) =>
+                `- ${m.key}: ${m.value} (Confidence: ${Math.round(
+                  m.confidence * 100
+                )}%)`
+            )
+            .join("\n");
+          if (memoryBlock) {
+            contextParts.push(
+              `[SYSTEM: RELEVANT MEMORIES]\n${memoryBlock}\n[END MEMORY]`
+            );
+          }
+        }
+      }
+    } catch (e) {
+      console.warn("[RAG] Memory retrieval failed:", e);
+    }
+
+    // 2. Retrieve past conversations
+    try {
+      if (typeof conversationService !== "undefined") {
+        const conversationContext =
+          await conversationService.getConversationContext(message, 5);
+        if (conversationContext) {
+          contextParts.push(conversationContext);
+        }
+      }
+    } catch (e) {
+      console.warn("[RAG] Conversation context failed:", e);
+    }
+
+    // Combine Context
+    if (contextParts.length > 0) {
+      const contextBlock = contextParts.join("\n\n");
+      finalMessage = `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔒 RETRIEVED CONTEXT FOR YOUR AWARENESS ONLY 🔒
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${contextBlock}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+END OF CONTEXT - NOW RESPOND TO THE USER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+USER: ${message}`;
+    }
+
+    // Add Proactive Context & CWD
+    try {
+      const proactiveContext = await this.gatherProactiveContext();
+      finalMessage = proactiveContext + finalMessage;
+    } catch (e) {
+      console.warn("Proactive context failed", e);
+    }
+
+    if (this.persona === "ENGINEER" && currentCwd) {
+      finalMessage = `[SYSTEM_INFO] Current Working Directory: ${currentCwd}\n${finalMessage}`;
+    }
+
+    // Add User Message to History
+    this.localHistory.push({ role: "user", content: finalMessage });
+
+    // --- STREAMING EXECUTION WITH TOOLS ---
+    let fullResponseText = "";
+    const accumulatedGrounding: any = null;
+    const generatedImage: string | undefined = undefined;
+
+    // We use a local loop to handle multi-turn tool interactions within this single "message" call
+    // Note: We do NOT push intermediate tool calls/responses to 'this.localHistory' because
+    // it currently supports only simple text messages. We handle the tool loop ephemerally here.
+
+    // Map local history to Gemini SDK format
+    const historyParts = this.localHistory.map((m) => {
+      // 1. Handle Tool/Function Responses (Previously "tool" role)
+      if (m.role === "tool") {
+        return {
+          role: "function",
+          parts: [
+            {
+              functionResponse: {
+                name: m.name || "unknown",
+                response: { result: m.content },
+              },
+            },
+          ],
+        };
+      }
+
+      // 2. Handle Model Responses (Text + Tool Calls)
+      if (m.role === "model") {
+        const parts: any[] = [];
+        if (m.content) parts.push({ text: m.content });
+        // Use saved toolCalls if available
+        if (m.toolCalls && m.toolCalls.length > 0) {
+          m.toolCalls.forEach((tc) => {
+            parts.push({
+              functionCall: {
+                name: tc.name, // Ensure strict mapping
+                args: tc.args,
+              },
+            });
+          });
+        }
+        return { role: "model", parts };
+      }
+
+      // 3. Handle User Messages
+      return {
+        role: "user",
+        parts: [{ text: m.content || "" }],
+      };
+    });
+
+    // Initial contents: History + New User Message
+    const contents: any[] = [
+      ...historyParts,
+      { role: "user", parts: [{ text: finalMessage }] },
+    ];
+
+    // Add image if present (to last message)
+    if (imageBase64) {
+      contents[contents.length - 1].parts.push({
+        inlineData: { mimeType: "image/jpeg", data: imageBase64 },
+      });
+    }
+
+    let keepGenerating = true;
+    let turnCount = 0;
+    const MAX_TURNS = 5; // Prevent infinite loops
+
+    try {
+      while (keepGenerating && turnCount < MAX_TURNS) {
+        keepGenerating = false;
+        turnCount++;
+
+        console.log(`[STREAM] Starting generation turn ${turnCount}`);
+        console.log(`[STREAM] Active Tools:`, this.sessionTools?.length || 0);
+
+        const streamResult = await this.ai.models.generateContentStream({
+          model: "gemini-2.0-flash",
+          contents: contents,
+          config: {
+            systemInstruction: { parts: [{ text: this.systemInstruction }] },
+            tools:
+              this.sessionTools && this.sessionTools.length > 0
+                ? [{ functionDeclarations: this.sessionTools }]
+                : undefined,
+            temperature: 0.9,
+            maxOutputTokens: 8192,
+          },
+        });
+
+        const toolCalls: any[] = [];
+        let hasFunctionCall = false;
+
+        for await (const chunk of streamResult) {
+          // Check for function calls FIRST
+          const calls = chunk.functionCalls;
+          if (calls && calls.length > 0) {
+            console.log(
+              "[STREAM] Detected function call(s):",
+              JSON.stringify(calls)
+            );
+            toolCalls.push(...calls);
+            hasFunctionCall = true;
+            continue;
+          }
+
+          // Otherwise handle text
+          try {
+            const chunkText = chunk.text;
+            if (chunkText) {
+              fullResponseText += chunkText; // Accumulate full text for return
+              onChunk(chunkText);
+            }
+          } catch {
+            // Ignore text access errors on non-text chunks
+          }
+        }
+
+        // If tools were called
+        if (hasFunctionCall && toolCalls.length > 0) {
+          console.log("[STREAM] Need to execute tools...");
+
+          // A. Persist Model's Tool Call to Local History (Critical for Memory)
+          this.localHistory.push({
+            role: "model",
+            content: "", // Usually empty for pure tool call
+            toolCalls: toolCalls.map((tc) => ({
+              name: tc.name,
+              args: tc.args,
+            })),
+          });
+
+          // B. Add Model's Tool Call message to 'contents' (for next generation turn)
+          contents.push({
+            role: "model",
+            parts: toolCalls.map((call) => ({
+              functionCall: {
+                name: call.name,
+                args: call.args,
+              },
+            })),
+          });
+
+          // C. Execute Tools
+          const toolResponses = [];
+          for (const call of toolCalls) {
+            console.log(`[STREAM] Executing tool: ${call.name}`);
+            try {
+              const result = await onToolCall(call.name, call.args);
+              console.log(`[STREAM] Tool result:`, result);
+              const resultStr =
+                typeof result === "string" ? result : JSON.stringify(result);
+
+              // Persist Tool Response to Local History (Critical for Memory)
+              this.localHistory.push({
+                role: "tool",
+                content: resultStr,
+                name: call.name,
+                toolCallId: call.id || "manual-id",
+              });
+
+              toolResponses.push({
+                functionResponse: {
+                  name: call.name,
+                  response: { result: result },
+                },
+              });
+            } catch (err: any) {
+              console.error(
+                `[STREAM] Tool execution failed: ${call.name}`,
+                err
+              );
+              const errorStr = `Error: ${err.message}`;
+
+              // Persist Error
+              this.localHistory.push({
+                role: "tool",
+                content: errorStr,
+                name: call.name,
+              });
+
+              toolResponses.push({
+                functionResponse: {
+                  name: call.name,
+                  response: { error: errorStr },
+                },
+              });
+            }
+          }
+
+          // D. Add Function Responses to 'contents'
+          contents.push({
+            role: "function",
+            parts: toolResponses,
+          });
+
+          // E. Continue generation loop
+          keepGenerating = true;
+        }
+        // Else: Standard text completion, loop ends naturally.
+      }
+    } catch (e: any) {
+      console.error("[STREAM] Error during streaming:", e);
+      onChunk("\n[Error generating response]");
+    }
+
+    // Append Final Text Response to History
+    this.localHistory.push({
+      role: "model",
+      content: fullResponseText,
+    });
+
+    console.log(`[STREAM] Completed. Length: ${fullResponseText.length}`);
+
+    return {
+      text: fullResponseText,
+      groundingMetadata: accumulatedGrounding,
+      generatedImage: generatedImage,
+    };
+  }
   async sendMessage(
     message: string,
     imageBase64: string | null,
     onToolCall: (name: string, args: any) => Promise<any>,
     currentCwd?: string
   ): Promise<any> {
-    if (!this.apiKey) {
-      throw new Error(
-        "API Key is missing. Please set API_KEY environment variable or create a .env file with: API_KEY=your_gemini_api_key_here"
-      );
-    }
-
     // Force re-init if session is marked dirty (e.g. tools changed)
     if (this.sessionDirty || this.localHistory.length === 0) {
       if (this.localHistory.length === 0) {
@@ -5644,49 +6341,10 @@ RETURN ONLY THE REPLACED CODE FOR THE SELECTION. DO NOT RETURN MARKDOWN BLOCKS O
       this.sessionDirty = false;
     }
 
-    // --- LOCAL ROUTER PRE-FLIGHT (FunctionGemma Subsystem) ---
-    const localHint = await this.getLocalRouterClassification(message);
-    let enhancedInstruction = this.systemInstruction;
-
-    if (localHint.tool) {
-      console.log(
-        `[LOCAL ROUTER] Guided Intent: ${localHint.tool} (Confidence: ${localHint.confidence})`
-      );
-
-      // AUTO-EXECUTION (ONE COMMAND ACHIEVEMENT)
-      // If confidence is extremely high, execute immediately and return to user
-      if (localHint.confidence > 0.8) {
-        console.log(
-          `[LOCAL ROUTER] ⚡ High Confidence: Auto-Executing local intent.`
-        );
-        try {
-          const finalParams = { ...localHint.parameters };
-          const result = await onToolCall(localHint.tool, finalParams);
-
-          return {
-            text: `[Zero-Cloud Intercept] ${localHint.thought}\nResult: ${
-              typeof result === "string" ? result : JSON.stringify(result)
-            }`,
-            toolCalls: [
-              {
-                name: localHint.tool,
-                args: finalParams,
-                result: result,
-              },
-            ],
-            role: "assistant",
-          };
-        } catch (execError) {
-          console.error(
-            `[LOCAL ROUTER] Auto-execution failed, falling back to LLM:`,
-            execError
-          );
-        }
-      }
-
-      // Fallback: Inject hint into prompt to guide Gemini
-      enhancedInstruction += `\n\n**LOCAL INTENT HINT**: The local classifier suggests this targets '${localHint.tool}'. ${localHint.thought}`;
-    }
+    // --- LOCAL ROUTER REMOVED (Replaced by Real Gemma 2 2B) ---
+    // The previous regex-based simulation has been deprecated in favor of the
+    // neural LocalLLMAdapter which handles intent natively.
+    const enhancedInstruction = this.systemInstruction;
 
     // CRITICAL FIX: Ensure system instruction and tools are ALWAYS initialized
     // This prevents personality loss when switching models or after chat clears
@@ -6195,6 +6853,56 @@ USER: ${message}`;
                 } else if (call.name === "presentVisualData") {
                   await onToolCall("presentVisualData", args);
                   toolResult = "SUCCESS: Data displayed.";
+                } else if (call.name === "listMCPTools") {
+                  // MCP Gateway: List available tools from connected servers
+                  try {
+                    const res = await fetch(apiUrl("/api/mcp/tools"));
+                    const data = await res.json();
+                    if (data.tools && data.tools.length > 0) {
+                      const toolList = data.tools.map((t: any) => ({
+                        server: t.serverInfo?.name || t.sourceUrl || "unknown",
+                        tool: t.name,
+                        description: t.description || "No description",
+                      }));
+                      toolResult = `AVAILABLE MCP TOOLS (${
+                        toolList.length
+                      }):\n${JSON.stringify(toolList, null, 2)}`;
+                    } else {
+                      toolResult =
+                        "No MCP servers connected or no tools available. User can add MCP servers in Settings > MCP Skills.";
+                    }
+                  } catch (e: any) {
+                    toolResult = `ERROR: Failed to list MCP tools: ${e.message}. MCP backend may not be running.`;
+                  }
+                } else if (call.name === "executeMCPTool") {
+                  // MCP Gateway: Execute a tool on a connected server
+                  try {
+                    const serverName = args.server as string;
+                    const toolName = args.tool as string;
+                    const toolArgs = args.args || {};
+
+                    const res = await fetch(apiUrl("/api/mcp/execute"), {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        server: serverName,
+                        tool: toolName,
+                        args: toolArgs,
+                      }),
+                    });
+                    const data = await res.json();
+                    if (data.error) {
+                      toolResult = `ERROR: ${data.error}`;
+                    } else {
+                      toolResult = data.result
+                        ? typeof data.result === "string"
+                          ? data.result
+                          : JSON.stringify(data.result)
+                        : "SUCCESS: Tool executed (no output).";
+                    }
+                  } catch (e: any) {
+                    toolResult = `ERROR: Failed to execute MCP tool: ${e.message}`;
+                  }
                 } else {
                   // GENERIC FALLBACK
                   toolResult = await onToolCall(call.name, args);

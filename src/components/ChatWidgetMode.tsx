@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import React, { useState, useEffect, useRef } from "react";
 import { X } from "lucide-react";
 import ChatWidgetHeader from "./ChatWidgetHeader";
@@ -7,10 +9,25 @@ import { ScreenShare, ScreenShareHandle } from "./ScreenShare";
 import { THEME_COLORS } from "./WidgetVisualizer";
 import VoiceVisualizer from "./voice/VoiceVisualizer";
 import { useVoiceInput } from "../hooks/useVoiceInput";
-import { PERSONA_UI_CONFIG, PersonaType } from "../services/lucaService";
+import {
+  lucaService,
+  PERSONA_UI_CONFIG,
+  PersonaType,
+} from "../services/lucaService";
+import { useNeuralLinkDelegation } from "../hooks/useNeuralLinkDelegation";
+import { neuralLinkManager } from "../services/neuralLink/manager";
+import { ToolRegistry } from "../services/toolRegistry";
+import conversationService from "../services/conversationService";
 
 interface ChatWidgetState {
-  history: { sender: "user" | "luca"; text: string }[];
+  history: {
+    id?: string;
+    sender: "user" | "luca";
+    text: string;
+    attachment?: string | null;
+    generatedImage?: string | null;
+    isStreaming?: boolean;
+  }[];
   isProcessing: boolean;
   persona?: string;
 }
@@ -24,6 +41,7 @@ const ChatWidgetMode: React.FC = () => {
   });
   const [inputHeight, setInputHeight] = useState(44); // Base input height
   const [isEyeActive, setIsEyeActive] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const screenShareRef = useRef<ScreenShareHandle>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -45,10 +63,39 @@ const ChatWidgetMode: React.FC = () => {
     transcriptRef.current = transcript;
   }, [transcript]);
 
+  // --- ONE OS: NEURAL LINK DELEGATION ---
+  // This enables this widget (mobile or desktop) to receive commands from other devices
+  useNeuralLinkDelegation(
+    (neuralLinkManager as any).myDeviceId,
+    undefined, // Use default ToolRegistry.execute
+    {
+      currentDeviceId: (neuralLinkManager as any).myDeviceId,
+      currentDeviceType: "android", // We assume widget mode on mobile is Android for now, or use a hook to detect
+      neuralLinkManager: neuralLinkManager,
+      lucaService: lucaService,
+      sessionId: conversationService.getSessionId(),
+    },
+    {
+      onCommandReceived: (command) => {
+        // Trigger Neural Pulse for vision/automation commands
+        if (
+          command.includes("android_") ||
+          command === "readScreen" ||
+          command === "proofreadText"
+        ) {
+          setIsScanning(true);
+        }
+      },
+      onCommandComplete: () => {
+        // Delay clearing pulses for a "fade out" effect
+        setTimeout(() => setIsScanning(false), 1500);
+      },
+    }
+  );
+
   // IPC Listener for Dictation Toggle (Alt+Space / Tray)
   useEffect(() => {
-    // @ts-ignore
-    if (window.electron && window.electron.ipcRenderer) {
+    if ((window as any).electron && (window as any).electron.ipcRenderer) {
       // @ts-ignore
       const remove = window.electron.ipcRenderer.on(
         "trigger-voice-toggle",
@@ -108,7 +155,11 @@ const ChatWidgetMode: React.FC = () => {
 
   // Scroll to bottom
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const isStreaming = state.history.some((m) => m.isStreaming);
+    messagesEndRef.current?.scrollIntoView({
+      behavior: isStreaming ? "auto" : "smooth",
+      block: "end",
+    });
   }, [state.history]);
 
   // IPC Listeners
@@ -118,16 +169,97 @@ const ChatWidgetMode: React.FC = () => {
       // @ts-ignore
       const remove = window.electron.ipcRenderer.on(
         "chat-widget-reply",
-        (response: string) => {
+        (reply: any) => {
+          // ... (keep existing logic for non-streaming fallback if needed, or minimal update) ...
+          // For now, we assume App.tsx sends chunks, so this might not be hit for streaming messages
+          // OR it might be hit at the end as a duplicate.
+          // Let's modify App.tsx to ONLY send stream chunks if streaming, or handle both.
+          // BUT: App.tsx sends 'broadcast-stream-chunk'.
+          // So we should just ADD the new listener.
+          let fullText = "";
+          let generatedImage: string | null = null;
+          if (typeof reply === "object" && reply !== null) {
+            fullText = reply.text || "";
+            generatedImage = reply.generatedImage || null;
+          } else {
+            fullText = String(reply);
+          }
+          // Fallback legacy handler (if needed)
           setState((prev) => ({
             ...prev,
-            history: [...prev.history, { sender: "luca", text: response }],
             isProcessing: false,
+            history: [
+              ...prev.history,
+              {
+                sender: "luca",
+                text: fullText,
+                generatedImage,
+                isStreaming: false,
+              },
+            ],
           }));
         }
       );
+
+      // NEW: Streaming Listener
       // @ts-ignore
-      return () => remove && remove();
+      const removeStream = window.electron.ipcRenderer.on(
+        "chat-widget-stream-chunk",
+        (data: {
+          id: string;
+          text?: string;
+          isComplete?: boolean;
+          generatedImage?: string;
+        }) => {
+          setState((prev) => {
+            const history = [...prev.history];
+            const existingIdx = history.findIndex((m) => m.id === data.id); // Assuming message has ID now
+
+            // If message doesn't exist yet, create it (streaming start)
+            if (existingIdx === -1) {
+              // Ensure we don't have a "typing..." placeholder stuck?
+              // Ideally App.tsx handles the start.
+              return {
+                ...prev,
+                isProcessing: true, // Keep processing until complete
+                history: [
+                  ...history,
+                  {
+                    id: data.id,
+                    sender: "luca",
+                    text: data.text || "",
+                    isStreaming: !data.isComplete,
+                    generatedImage: data.generatedImage,
+                  },
+                ],
+              };
+            }
+
+            // Update existing message
+            const currentMsg = history[existingIdx];
+            history[existingIdx] = {
+              ...currentMsg,
+              text: data.isComplete
+                ? data.text || currentMsg.text
+                : currentMsg.text + (data.text || ""),
+              isStreaming: !data.isComplete,
+              generatedImage: data.generatedImage || currentMsg.generatedImage,
+            };
+
+            return {
+              ...prev,
+              isProcessing: !data.isComplete,
+              history,
+            };
+          });
+        }
+      );
+
+      // @ts-ignore
+      return () => {
+        if (remove) remove();
+        if (removeStream) removeStream();
+      };
     }
   }, []);
 
@@ -251,7 +383,10 @@ const ChatWidgetMode: React.FC = () => {
       // Optimistic update
       setState((prev) => ({
         ...prev,
-        history: [...prev.history, { sender: "user", text: cmd }],
+        history: [
+          ...prev.history,
+          { sender: "user", text: cmd, attachment: finalAttachment },
+        ],
         isProcessing: true,
       }));
 
@@ -282,6 +417,7 @@ const ChatWidgetMode: React.FC = () => {
     // @ts-ignore
     if (window.electron) {
       try {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         const screenshotDataUrl = await window.electron.ipcRenderer.invoke(
           "capture-screen"
@@ -318,6 +454,21 @@ const ChatWidgetMode: React.FC = () => {
           >
             LUCA OS
           </span>
+        </div>
+      )}
+
+      {/* NEURAL SCAN PULSE */}
+      {isScanning && (
+        <div className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center overflow-hidden">
+          <div className="w-full h-full absolute inset-0 opacity-20 bg-[radial-gradient(circle,rgba(6,182,212,0.4)_1px,transparent_1px)] bg-[size:10px_10px] animate-pulse"></div>
+          <div className="w-48 h-48 rounded-full border border-rq-blue/30 animate-ping opacity-40"></div>
+          <div className="w-32 h-32 rounded-full border border-rq-blue/20 animate-ping delay-700 opacity-20"></div>
+          <div className="absolute bottom-4 left-4 flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-rq-blue animate-pulse shadow-[0_0_8px_rgba(6,182,212,0.8)]"></div>
+            <span className="text-[8px] font-mono text-rq-blue tracking-[0.2em] font-bold uppercase animate-pulse">
+              Neural Link Synchronization Active
+            </span>
+          </div>
         </div>
       )}
 
@@ -379,7 +530,7 @@ const ChatWidgetMode: React.FC = () => {
       />
 
       <div
-        className={`flex-1 overflow-y-auto transition-all duration-300 ${
+        className={`flex-1 min-h-0 transition-all duration-300 ${
           state.history.length === 0 ? "opacity-0 h-0 hidden" : "opacity-100"
         }`}
       >

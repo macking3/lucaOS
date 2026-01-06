@@ -48,6 +48,7 @@ export interface ToolExecutionContext {
   attachedImage: string | null;
   messages: any[];
   currentDeviceType?: string; // "desktop" | "mobile" | "tablet"
+  currentDeviceId?: string; // Neural Link device ID
   neuralLinkManager?: any; // For cross-device tool delegation
 
   // Callbacks
@@ -56,6 +57,7 @@ export interface ToolExecutionContext {
 
   // Context
   displayId?: number; // Origin Display ID (for Widget interactions)
+  sessionId?: string; // Active conversation session ID
 }
 
 export interface ToolHandler {

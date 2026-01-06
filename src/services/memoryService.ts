@@ -1,5 +1,5 @@
-import { MemoryNode, GraphData } from "../types";
-import { GoogleGenAI } from "@google/genai";
+import { MemoryNode } from "../types";
+// import { GoogleGenAI } from "@google/genai"; // Removed unused import
 import { settingsService } from "./settingsService";
 import { apiUrl, CORTEX_URL } from "../config/api";
 
@@ -13,8 +13,7 @@ const CORE_URL = apiUrl("/api/memory");
 type MemoryMode = "LOCAL" | "DELEGATED" | "STANDALONE";
 let _currentMode: MemoryMode = "LOCAL";
 
-// Initialize AI for Embeddings lazily
-let ai: GoogleGenAI | null = null;
+import { getGenClient } from "./genAIClient";
 
 // Track if we've already logged Cortex unavailability (to avoid spam)
 let _cortexUnavailableLogged = false;
@@ -26,7 +25,7 @@ try {
   import("./neuralLink/manager").then((module) => {
     neuralLinkManager = module.neuralLinkManager;
   });
-} catch (e) {
+} catch {
   console.warn("[MEMORY] Neural Link Manager not available for memory sync");
 }
 
@@ -168,7 +167,7 @@ export const memoryService = {
           return serverMemories;
         }
       }
-    } catch (e) {
+    } catch {
       console.log("Core Memory Sync Failed. Using Local Cache.");
     }
     return this.getAllMemories();
@@ -181,7 +180,7 @@ export const memoryService = {
     try {
       const stored = localStorage.getItem(MEMORY_STORAGE_KEY);
       return stored ? JSON.parse(stored) : [];
-    } catch (e) {
+    } catch {
       return [];
     }
   },
@@ -189,18 +188,88 @@ export const memoryService = {
   /**
    * Fetch Graph Data for Visualization (Project Synapse V2)
    */
-  async getGraphData(): Promise<GraphData | null> {
+  async getGraphData(): Promise<any | null> {
     try {
       const res = await fetch(`${CORE_URL}/graph/visualize`, {
         signal: AbortSignal.timeout(2000),
       });
       if (res.ok) {
-        return await res.json();
+        const backendGraph = await res.json();
+        return this.transformGraphData(backendGraph);
       }
-    } catch (e) {
+    } catch {
       console.warn("Graph Fetch Failed (Core Offline?)");
     }
     return null;
+  },
+
+  /**
+   * Transform Backend Graph (Nodes/Edges) into ThoughtGraph Format
+   */
+  transformGraphData(backendGraph: { nodes: any[]; edges: any[] }): {
+    nodes: any[];
+    edges: any[];
+  } {
+    if (!backendGraph || !Array.isArray(backendGraph.nodes))
+      return { nodes: [], edges: [] };
+
+    // 1. Map Nodes
+    const nodes = backendGraph.nodes.map((n) => {
+      let details: any = {};
+      try {
+        details = n.description ? JSON.parse(n.description) : {};
+      } catch {
+        // Ignore invalid JSON in description
+      }
+
+      // Determine status based on type or existing status
+      let status = "PENDING";
+      if (n.type === "EVENT") status = "COMPLETE";
+
+      // Generate human-readable label
+      let label = details.tool || n.name;
+
+      // If still looks like EXEC_toolName_timestamp, extract and format toolName
+      if (label.startsWith("EXEC_")) {
+        const parts = label.split("_");
+        if (parts.length >= 2) {
+          // Extract tool name (second part) and convert to Title Case with spaces
+          const toolName = parts[1];
+          label = toolName
+            .replace(/([A-Z])/g, " $1") // Add space before capitals
+            .replace(/^./, (str: string) => str.toUpperCase()) // Capitalize first letter
+            .trim();
+        }
+      }
+
+      return {
+        id: n.name, // Keep original name as ID
+        label: label,
+        toolName: details.tool,
+        status: status,
+        timestamp: n.last_updated || Date.now(),
+        details: details.result,
+        type: n.type,
+      };
+    });
+
+    // 2. Map Edges to find Parents (for Tree Layout)
+    const mappedNodes = nodes.map((node: any) => {
+      // Find an incoming edge that implies parentage (NEXT_STEP)
+      const incoming = backendGraph.edges.find(
+        (e: any) => e.target === node.id && e.relation === "NEXT_STEP"
+      );
+
+      if (incoming) {
+        return { ...node, parentId: incoming.source };
+      }
+      return node;
+    });
+
+    // Filter for valid ThoughtNodes (Events)
+    const eventsOnly = mappedNodes.filter((n: any) => n.type === "EVENT");
+
+    return { nodes: eventsOnly, edges: [] };
   },
 
   /**
@@ -208,31 +277,7 @@ export const memoryService = {
    */
   async generateEmbedding(text: string): Promise<number[]> {
     try {
-      // Get key dynamically from settings to ensure we have the latest one
-      const settingsKey =
-        localStorage.getItem("GEMINI_API_KEY") ||
-        (import.meta.env?.VITE_API_KEY as string) ||
-        (process?.env?.API_KEY as string) ||
-        ""; // Fallback to empty if not found
-
-      if (!ai) {
-        if (!settingsKey && !process.env.VITE_API_KEY && !process.env.API_KEY) {
-          console.warn("[MEMORY] No API Key available for embeddings yet.");
-          return [];
-        }
-        ai = new GoogleGenAI({
-          apiKey:
-            settingsKey ||
-            process.env.VITE_API_KEY ||
-            process.env.API_KEY ||
-            "",
-        });
-      } else {
-        // Re-init if key changed (simple check, or just always re-init if unsure)
-        // For now, assume single instance is fine unless we add dynamic key updating logic everywhere
-      }
-
-      if (!ai) return [];
+      const ai = getGenClient();
 
       const result = await ai.models.embedContent({
         model: "text-embedding-004",
@@ -475,7 +520,7 @@ export const memoryService = {
           }
         }
       }
-    } catch (e) {
+    } catch {
       console.warn("Vector search failed, falling back to keyword match.");
     }
 
@@ -501,7 +546,7 @@ export const memoryService = {
         signal: AbortSignal.timeout(5000), // Increased to 5s
       });
       return res.ok;
-    } catch (e) {
+    } catch {
       return false;
     }
   },
@@ -827,20 +872,44 @@ export const memoryService = {
         "\n\n";
     if (agentState.length)
       context +=
-        "[AGENT EVOLUTION]:\n" + agentState.map(formatMem).join("\n") + "\n\n";
-
-    // Strictly limit facts to the last 15 to prevent overflow, and truncate heavily
+        "[AGENT KNOWLEDGE]:\n" + agentState.map(formatMem).join("\n") + "\n\n";
     if (facts.length)
-      context +=
-        "[SEMANTIC KNOWLEDGE (Recent 15)]:\n" +
-        facts
-          .slice(-15)
-          .map(
-            (m) => `[${m.category}] ${m.key}: ${m.value.substring(0, 200)}...`
-          )
-          .join("\n");
+      context += "[SEMANTIC FACTS]:\n" + facts.map(formatMem).join("\n");
 
     return context;
+  },
+
+  /**
+   * LANGGRAPH: Persist Tool Execution to Graph
+   */
+  async logExecutionEvent(
+    toolName: string,
+    args: any,
+    result: string,
+    sessionId: string,
+    previousEventId: string | null = null
+  ): Promise<string | null> {
+    try {
+      const res = await fetch(`${CORE_URL}/log-event`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          toolName,
+          args,
+          result: typeof result === "string" ? result : JSON.stringify(result),
+          sessionId,
+          previousEventId,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        return data.eventId;
+      }
+    } catch (e) {
+      console.warn("[MEMORY] Failed to persist persist execution event:", e);
+    }
+    return null;
   },
 
   /**
@@ -902,10 +971,9 @@ export const memoryService = {
       }
     }
 
-    fetch(`${CORE_URL}/save`, {
+    fetch(`${CORE_URL}/wipe`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify([]),
     }).catch(() => {});
   },
 

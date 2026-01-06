@@ -187,40 +187,69 @@ router.post('/control', (req, res) => {
 });
 
 
-// --- HOTSPOT CONTROL (PHASE 8) ---
+// --- HOTSPOT CONTROL (RELEASE CANDIDATE) ---
 router.post('/hotspot', (req, res) => {
-    const { action } = req.body; // 'on', 'off', 'toggle'
+    const { action } = req.body; // 'on', 'off', 'toggle', 'status'
     const platform = os.platform();
 
-    if (platform !== 'darwin') {
-        return res.json({ success: false, error: "Hotspot control only supported on macOS." });
-    }
-    
-    // Path to our JXA script
-    const scriptPath = path.resolve(process.cwd(), 'ops', 'scripts', 'hotspot.js');
+    if (platform === 'darwin') {
+        // macOS: JXA Automation
+        const scriptPath = path.resolve(process.cwd(), 'ops', 'scripts', 'hotspot.js');
+        if (!fs.existsSync(scriptPath)) {
+            return res.status(404).json({ error: "Hotspot automation script not found." });
+        }
+        console.log(`[SYSTEM] Executing Hotspot Automation (macOS): ${action}`);
+        safeExec(`osascript -l JavaScript "${scriptPath}" "${action}"`, (error, stdout, stderr) => {
+            if (error) {
+                console.error("[HOTSPOT] Execution Failed:", stderr);
+                return res.json({ success: false, error: error.message, details: stderr });
+            }
+            const result = stdout.trim();
+            console.log("[HOTSPOT] Result:", result);
+            if (result.startsWith("ERROR")) return res.json({ success: false, error: result });
+            res.json({ success: true, message: result, platform: 'darwin' });
+        });
 
-    if (!fs.existsSync(scriptPath)) {
-        return res.status(404).json({ error: "Hotspot automation script not found." });
-    }
+    } else if (platform === 'win32') {
+        // Windows: PowerShell (Hosted Network or Tethering)
+        // Note: 'netsh wlan' requires driver support. Win 10+ uses Mobile Hotspot API better via PS.
+        console.log(`[SYSTEM] Executing Hotspot Automation (Windows): ${action}`);
+        let psCmd = "";
+        
+        if (action === 'on') {
+             // Basic netsh fallback (requires Admin)
+             psCmd = 'netsh wlan set hostednetwork mode=allow ssid=Luca_Secure key=LucaTrust123; netsh wlan start hostednetwork';
+        } else if (action === 'off') {
+             psCmd = 'netsh wlan stop hostednetwork';
+        } else {
+             return res.json({ success: false, error: "Only 'on'/'off' supported on Windows cli for now." });
+        }
 
-    console.log(`[SYSTEM] Executing Hotspot Automation: ${action}`);
-    
-    // Execute JXA via osascript -l JavaScript
-    exec(`osascript -l JavaScript "${scriptPath}" "${action}"`, (error, stdout, stderr) => {
-        if (error) {
-            console.error("[HOTSPOT] Execution Failed:", stderr);
-            return res.json({ success: false, error: error.message, details: stderr });
+        safeExec(`powershell -Command "${psCmd}"`, (err, stdout, stderr) => {
+             if (err) return res.json({ success: false, error: err.message, details: stderr });
+             res.json({ success: true, message: stdout.trim(), platform: 'win32' });
+        });
+
+    } else if (platform === 'linux') {
+        // Linux: nmcli (NetworkManager)
+        console.log(`[SYSTEM] Executing Hotspot Automation (Linux): ${action}`);
+        let cmd = "";
+        
+        if (action === 'on') {
+            // Create and activate hotspot profile
+            cmd = 'nmcli device wifi hotspot ifname wlan0 ssid Luca_Secure password LucaTrust123';
+        } else if (action === 'off') {
+            cmd = 'nmcli connection down "Luca_Secure"'; // Assuming profile name matches
         }
         
-        const output = stdout.trim();
-        console.log("[HOTSPOT] Result:", output);
-        
-        if (output.startsWith("ERROR")) {
-            return res.json({ success: false, error: output });
-        }
-        
-        res.json({ success: true, message: output });
-    });
+        safeExec(cmd, (err, stdout, stderr) => {
+             if (err) return res.json({ success: false, error: err.message, details: stderr });
+             res.json({ success: true, message: stdout.trim(), platform: 'linux' });
+        });
+
+    } else {
+        res.json({ success: false, error: `Platform ${platform} not supported for Hotspot control.` });
+    }
 });
 
 import { cortexService } from '../../services/cortexService.js';

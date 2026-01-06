@@ -213,7 +213,7 @@ const VisionCameraModal: React.FC<Props> = ({
               <span className="text-[10px] md:text-xs font-bold tracking-[0.3em]">
                 {isLiveScanning
                   ? "ASTRA_PROTOCOL: ONLINE"
-                  : "VISION_UPLINK_ACTIVE"}
+                  : "VISION UPLINK ACTIVE"}
               </span>
             </div>
             <div className="text-[8px] md:text-[10px] text-white/40 uppercase tracking-widest">

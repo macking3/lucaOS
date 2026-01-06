@@ -51,7 +51,6 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
     null
   );
   const [showKeyHelp, setShowKeyHelp] = useState(false);
-  const [faceData, setFaceData] = useState<string | null>(null);
 
   // Boot Sequence Animation
   const [bootText, setBootText] = useState<string[]>([]);
@@ -262,7 +261,13 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
       <HologramFace step={step} />
 
       {/* UI Overlay */}
-      <div className="z-10 w-full max-w-md p-8 relative">
+      <div
+        className={`z-10 w-full relative transition-all duration-700 ease-in-out ${
+          step === "CONVERSATION"
+            ? "max-w-5xl h-[85vh] flex flex-col px-4"
+            : "max-w-md p-8"
+        }`}
+      >
         {/* BOOT STEP */}
         {step === "BOOT" && (
           <div className="space-y-2">
@@ -490,7 +495,12 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
             onComplete={(completedProfile) => {
               console.log("[Onboarding] Profile complete:", completedProfile);
               setProfile(completedProfile);
-              setStep("COMPLETE");
+              setStep("CALIBRATION");
+
+              // Simulate calibration/saving phase
+              setTimeout(() => {
+                setStep("COMPLETE");
+              }, 3000);
             }}
           />
         )}
@@ -498,10 +508,16 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
         {/* CALIBRATION STEP */}
         {step === "CALIBRATION" && (
           <div className="text-center space-y-6 animate-pulse">
-            <div className="w-16 h-16 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto" />
+            <div
+              className="w-16 h-16 border-4 border-t-transparent rounded-full animate-spin mx-auto"
+              style={{ borderColor: theme.hex, borderTopColor: "transparent" }}
+            />
             <div className="space-y-2">
-              <h2 className="text-xl font-bold text-amber-500 tracking-widest">
-                CALIBRATING NEURAL PATHWAYS
+              <h2
+                className="text-xl font-bold tracking-widest"
+                style={{ color: theme.hex }}
+              >
+                CALIBRATING PATHWAYS
               </h2>
               <p className="text-xs text-gray-400">
                 Optimizing cognitive tensors...
@@ -527,7 +543,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
                 SYSTEM READY
               </h2>
               <p className="text-sm text-gray-400">
-                Neural pathways established
+                Connection Established
               </p>
             </div>
           </div>

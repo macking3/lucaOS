@@ -2,7 +2,7 @@ import os
 import sys
 import asyncio
 from typing import Optional, List, Dict, Any, Union
-from fastapi import FastAPI, HTTPException, Body
+from fastapi import FastAPI, HTTPException, Body, Depends
 from pydantic import BaseModel
 import uvicorn
 try:
@@ -100,6 +100,9 @@ else:
 app = FastAPI()
 
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import socket
 
 app.add_middleware(
     CORSMiddleware,
@@ -108,6 +111,129 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Import and Include OSINT Router
+from osint_endpoints import router as osint_router
+app.include_router(osint_router)
+
+# --- REMOTE ACCESS SERVER ---
+# Get local IP address for remote access
+def get_local_ip():
+    """Get the local IP address for LAN access"""
+    try:
+        # Create a socket to get local IP
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except Exception:
+        return "127.0.0.1"
+
+REMOTE_ACCESS_ENABLED = os.environ.get("ENABLE_REMOTE_ACCESS", "true").lower() == "true"
+LOCAL_IP = get_local_ip()
+
+# --- REMOTE ACCESS PIN SECURITY ---
+# PIN is stored in a file for persistence across restarts
+def get_pin_file_path():
+    """Get the path to the PIN file"""
+    if getattr(sys, 'frozen', False):
+        base_path = Path(sys.executable).parent / "models"
+    else:
+        base_path = Path(__file__).parent.parent.parent / "models"
+    return base_path / ".remote_access_pin"
+
+def get_stored_pin():
+    """Get the stored PIN, or None if not set"""
+    pin_file = get_pin_file_path()
+    if pin_file.exists():
+        return pin_file.read_text().strip()
+    return None
+
+def set_stored_pin(pin: str):
+    """Store the PIN"""
+    pin_file = get_pin_file_path()
+    pin_file.parent.mkdir(parents=True, exist_ok=True)
+    pin_file.write_text(pin)
+
+def clear_stored_pin():
+    """Clear the stored PIN"""
+    pin_file = get_pin_file_path()
+    if pin_file.exists():
+        pin_file.unlink()
+
+# Validated session tokens (in memory, cleared on restart)
+validated_sessions = set()
+
+@app.get("/api/remote-access/info")
+async def get_remote_access_info():
+    """Get information for remote access (QR code generation)"""
+    port = int(os.environ.get("CORTEX_PORT", 8000))
+    has_pin = get_stored_pin() is not None
+    return {
+        "enabled": REMOTE_ACCESS_ENABLED,
+        "ip": LOCAL_IP,
+        "port": port,
+        "url": f"http://{LOCAL_IP}:{port}",
+        "pinRequired": has_pin,
+        "features": ["chat", "voiceHUD", "settings"]
+    }
+
+class SetPinRequest(BaseModel):
+    pin: str  # 4-6 digit PIN
+    currentPin: str = None  # Required if already set
+
+@app.post("/api/remote-access/set-pin")
+async def set_remote_access_pin(request: SetPinRequest):
+    """Set or update the remote access PIN"""
+    current_pin = get_stored_pin()
+    
+    # If PIN already set, verify current PIN
+    if current_pin and request.currentPin != current_pin:
+        return {"success": False, "error": "Current PIN is incorrect"}
+    
+    # Validate new PIN (4-6 digits)
+    if not request.pin.isdigit() or len(request.pin) < 4 or len(request.pin) > 6:
+        return {"success": False, "error": "PIN must be 4-6 digits"}
+    
+    set_stored_pin(request.pin)
+    return {"success": True, "message": "PIN set successfully"}
+
+@app.post("/api/remote-access/clear-pin")
+async def clear_remote_access_pin(request: SetPinRequest):
+    """Clear the remote access PIN"""
+    current_pin = get_stored_pin()
+    
+    if current_pin and request.currentPin != current_pin:
+        return {"success": False, "error": "Current PIN is incorrect"}
+    
+    clear_stored_pin()
+    validated_sessions.clear()
+    return {"success": True, "message": "PIN cleared"}
+
+class VerifyPinRequest(BaseModel):
+    pin: str
+    sessionId: str = None
+
+@app.post("/api/remote-access/verify-pin")
+async def verify_remote_access_pin(request: VerifyPinRequest):
+    """Verify PIN and create validated session"""
+    stored_pin = get_stored_pin()
+    
+    # No PIN set = always valid
+    if not stored_pin:
+        return {"success": True, "message": "No PIN required"}
+    
+    if request.pin != stored_pin:
+        return {"success": False, "error": "Invalid PIN"}
+    
+    # Create session token
+    import secrets
+    session_id = request.sessionId or secrets.token_hex(16)
+    validated_sessions.add(session_id)
+    
+    return {"success": True, "sessionId": session_id}
+
 
 import subprocess
 
@@ -239,8 +365,25 @@ async def query_memory(request: MemoryQueryRequest):
 
 # --- SYSTEM CONTROL ENDPOINTS ---
 
+# Helper for PIN validation
+from fastapi import Header, HTTPException, Request
+
+def verify_session(request: Request, x_session_token: str = Header(None)):
+    """dependency to verify session token if PIN is set"""
+    # Allow localhost (Desktop App) to always bypass PIN
+    if request.client.host in ["127.0.0.1", "localhost", "::1"]:
+        return True
+
+    stored_pin = get_stored_pin()
+    if not stored_pin:
+        return True
+    
+    if not x_session_token or x_session_token not in validated_sessions:
+        raise HTTPException(status_code=401, detail="Invalid or missing session token")
+    return True
+
 @app.post("/mouse/move")
-async def mouse_move(request: MouseMoveRequest):
+async def mouse_move(request: MouseMoveRequest, authorized: bool = Depends(verify_session)):
     if not PYAUTOGUI_AVAILABLE:
         return {"status": "error", "message": "Mouse control not available on server"}
     try:
@@ -250,7 +393,7 @@ async def mouse_move(request: MouseMoveRequest):
         return {"status": "error", "message": str(e)}
 
 @app.post("/keyboard/type")
-async def keyboard_type(request: KeyboardTypeRequest):
+async def keyboard_type(request: KeyboardTypeRequest, authorized: bool = Depends(verify_session)):
     if not PYAUTOGUI_AVAILABLE:
         return {"status": "error", "message": "Keyboard control not available on server"}
     try:
@@ -260,7 +403,7 @@ async def keyboard_type(request: KeyboardTypeRequest):
         return {"status": "error", "message": str(e)}
 
 @app.post("/keyboard/press")
-async def keyboard_press(request: KeyboardPressRequest):
+async def keyboard_press(request: KeyboardPressRequest, authorized: bool = Depends(verify_session)):
     if not PYAUTOGUI_AVAILABLE:
         return {"status": "error", "message": "Keyboard control not available on server"}
     try:
@@ -271,7 +414,7 @@ async def keyboard_press(request: KeyboardPressRequest):
         return {"status": "error", "message": str(e)}
 
 @app.post("/system/applescript")
-async def system_applescript(request: SystemCommandRequest):
+async def system_applescript(request: SystemCommandRequest, authorized: bool = Depends(verify_session)):
     try:
         # Execute AppleScript via osascript
         result = subprocess.run(
@@ -314,7 +457,7 @@ class VoiceAgentHelper:
             # Gemini Native Audio Processing
             response = model.generate_content([
                 {"mime_type": "audio/webm", "data": audio_data},
-                "Listen to this audio. The user ('Commander') always starts with 'Hey Luca' or 'Luca'. Transcribe the command ONLY if it starts with these words. If it is background noise, silence, or not addressed to Luca, return an empty string."
+                "Listen to this audio chunk. Transcribe all speech you hear. If there is background noise, silence, or no clear speech, return an empty string. If you hear a command for an AI assistant named 'Luca', transcribe it accurately."
             ])
             return response.text.strip()
         except Exception as e:
@@ -443,6 +586,7 @@ async def websocket_audio_endpoint(websocket: WebSocket):
                 # A. HEAR (Gemini ASR)
                 # Decode Base64 Audio
                 audio_b64 = message_json.get("data")
+                print(f"[VOICE] Received audio chunk ({len(audio_b64)} chars b64)")
                 audio_bytes = base64.b64decode(audio_b64)
                 
                 await websocket.send_json({"type": "status", "message": "LISTENING"})
@@ -488,64 +632,107 @@ except ImportError:
 
 class TTSRequest(BaseModel):
     text: str
-    voice: str = "en_US-bryce-medium"
+    voice: str = "amy"
     speed: float = 1.0
 
 class PiperTTSWrapper:
-    def __init__(self, models_dir="./models/piper"):
-        self.models_dir = models_dir
+    def __init__(self, models_dir=None):
+        import sys
+        is_frozen = getattr(sys, 'frozen', False)
+        mode_env = os.environ.get("LUCA_MODE", "").lower()
+        mode = "production" if (is_frozen or mode_env == "production") else "development"
+        
+        # Determine base models directory
+        home_dir = os.path.expanduser("~")
+        prod_base = os.path.join(home_dir, "Luca", "models")
+        dev_base = os.path.join(os.path.dirname(os.path.abspath(__file__)), "models")
+        
+        if mode == "production":
+            base_dir = prod_base
+        else:
+            try:
+                os.makedirs(dev_base, exist_ok=True)
+                test_file = os.path.join(dev_base, ".write_test")
+                with open(test_file, "w") as f: f.write("test")
+                os.remove(test_file)
+                base_dir = dev_base
+            except:
+                base_dir = prod_base
+        
+        self.models_dir = os.path.join(base_dir, "piper")
         self.voices = {}
+        
+        # Unified Voice Map (Customizable for Luca's persona)
+        # Structure: name -> path_on_huggingface
+        self.VOICE_MAP = {
+            "amy": "en/en_US/amy/medium",       # Smooth, expressive female (Default)
+            "kristin": "en/en_US/kristin/medium", # Clear, professional female
+            "hannah": "en/en_US/hannah/medium",   # Bright, friendly female
+            "linda": "en/en_US/linda/medium",     # Soft, melodic female
+            "ryan": "en/en_US/ryan/medium",       # Deep, calm male
+        }
+        
         if not os.path.exists(self.models_dir):
-            os.makedirs(self.models_dir)
+            os.makedirs(self.models_dir, exist_ok=True)
             
-    def get_model_path(self, voice_name):
-        onnx_file = os.path.join(self.models_dir, f"{voice_name}.onnx")
-        json_file = os.path.join(self.models_dir, f"{voice_name}.onnx.json")
-        return onnx_file, json_file
+        print(f"[CORTEX] Piper Initialized (Mode: {mode}, Dir: {self.models_dir})")
+            
+    def get_model_path(self, voice_alias):
+        # Convert alias to full filename if needed
+        # e.g. "amy" -> "en_US-amy-medium"
+        full_name = voice_alias
+        if voice_alias in self.VOICE_MAP:
+            # Reconstruct the Piper naming convention en_US-[voice]-[quality]
+            parts = self.VOICE_MAP[voice_alias].split('/')
+            voice_id = parts[2]
+            quality = parts[3]
+            full_name = f"en_US-{voice_id}-{quality}"
 
-    def ensure_model(self, voice_name):
-        onnx_path, json_path = self.get_model_path(voice_name)
+        onnx_file = os.path.join(self.models_dir, f"{full_name}.onnx")
+        json_file = os.path.join(self.models_dir, f"{full_name}.onnx.json")
+        return onnx_file, json_file, full_name
+
+    def ensure_model(self, voice_alias):
+        onnx_path, json_path, full_name = self.get_model_path(voice_alias)
+        
         if not os.path.exists(onnx_path) or not os.path.exists(json_path):
-            print(f"[CORTEX] Downloading Piper Model: {voice_name}...")
-            # Repository for Piper Voices
-            base_url = "https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/amy/medium"
-            # NOTE: Hardcoded for 'amy' demo. Real implementation would map voice names to URLs.
-            # Fallback for strict demo purposes:
-            if "amy" in voice_name:
-                base_url = "https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/amy/medium"
-            elif "ryan" in voice_name:
-                 base_url = "https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/ryan/medium"
-            elif "bryce" in voice_name:
-                 base_url = "https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/bryce/medium"
+            # Check if we have a mapping for this alias
+            hf_path = self.VOICE_MAP.get(voice_alias)
+            if not hf_path:
+                print(f"[CORTEX] Unknown voice alias: {voice_alias}")
+                return False
+
+            print(f"[CORTEX] Downloading Piper Model for Luca: {voice_alias} ({full_name})...")
+            base_url = f"https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/{hf_path}"
             
             try:
                 # Download .onnx
-                r = requests.get(f"{base_url}/{voice_name}.onnx")
+                r = requests.get(f"{base_url}/{full_name}.onnx")
                 with open(onnx_path, 'wb') as f: f.write(r.content)
                 
                 # Download .json
-                r = requests.get(f"{base_url}/{voice_name}.onnx.json")
+                r = requests.get(f"{base_url}/{full_name}.onnx.json")
                 with open(json_path, 'wb') as f: f.write(r.content)
-                print(f"[CORTEX] Download Complete: {voice_name}")
+                print(f"[CORTEX] Download Complete: {voice_alias}")
             except Exception as e:
                 print(f"[CORTEX] Model Download Failed: {e}")
                 return False
         return True
 
-    def synthesize(self, text, voice_name="en_US-amy-medium", speed=1.0) -> Optional[str]:
+    def synthesize(self, text, voice_name="amy", speed=1.0) -> Optional[str]:
         if not PIPER_AVAILABLE: return None
         
         try:
             if not self.ensure_model(voice_name):
                 return None
                 
-            onnx_path, json_path = self.get_model_path(voice_name)
+            onnx_path, json_path, full_name = self.get_model_path(voice_name)
             
-            # Load voice if not cached
-            if voice_name not in self.voices:
-                self.voices[voice_name] = PiperVoice.load(onnx_path, config_path=json_path)
+            # Load voice if not cached (use full_name for storage key)
+            if full_name not in self.voices:
+                self.voices[full_name] = PiperVoice.load(onnx_path, config_path=json_path)
             
-            voice = self.voices[voice_name]
+            voice = self.voices[full_name]
             
             # Synthesize to BytesIO
             wav_io = io.BytesIO()
@@ -580,11 +767,67 @@ try:
     from vision_agent import ui_tars
     VISION_AGENT_AVAILABLE = True
     print("[CORTEX] Vision Agent (UI-TARS) loaded successfully")
-except ImportError as e:
-    print(f"[CORTEX] WARN: Vision Agent not available: {e}")
-    print("[CORTEX] Vision analysis features will be disabled.")
+except Exception as e:
     VISION_AGENT_AVAILABLE = False
-    ui_tars = None
+    print(f"[CORTEX] Vision Agent (UI-TARS) loading failed: {e}")
+
+# --- LIVE VISION AGENT (SmolVLM / Astra Scan) ---
+try:
+    from live_vision_agent import astra_local
+    LIVE_VISION_AVAILABLE = True
+    print("[CORTEX] Live Vision Agent (SmolVLM) loaded successfully")
+except Exception as e:
+    LIVE_VISION_AVAILABLE = False
+    print(f"[CORTEX] Live Vision Agent loading failed: {e}")
+
+class VisionAgentRequest(BaseModel):
+    image_base64: str
+    target: str = "Describe what you see"
+    screen_width: int = 1920
+    screen_height: int = 1080
+    prompt: Optional[str] = None
+
+@app.post("/vision/analyze_live")
+async def analyze_live_endpoint(request: VisionAgentRequest):
+    if not LIVE_VISION_AVAILABLE:
+        raise HTTPException(status_code=503, detail="Local Live Vision Agent not available")
+    
+    # Use custom prompt if provided, else use default logic
+    analysis = astra_local.analyze(request.image_base64, request.prompt or request.target)
+    if analysis:
+        return {"status": "success", "analysis": analysis}
+    else:
+        raise HTTPException(status_code=500, detail="Live analysis failed")
+
+# --- LOCAL LLM AGENT (SmolLM2 / Offline Chat) ---
+try:
+    from local_llm_agent import local_brain
+    LOCAL_LLM_AVAILABLE = True
+    print("[CORTEX] Local LLM Agent (SmolLM2) loaded successfully")
+except Exception as e:
+    LOCAL_LLM_AVAILABLE = False
+    print(f"[CORTEX] Local LLM Agent loading failed: {e}")
+
+class ChatCompletionRequest(BaseModel):
+    messages: List[Dict[str, str]]
+    tools: Optional[List[Dict[str, Any]]] = None
+    temperature: float = 0.7
+    max_tokens: int = 512
+
+@app.post("/chat/completions")
+async def chat_completions_endpoint(request: ChatCompletionRequest):
+    if not LOCAL_LLM_AVAILABLE:
+        raise HTTPException(status_code=503, detail="Local LLM Agent not available")
+    
+    try:
+        response = local_brain.generate_chat(
+            messages=request.messages,
+            tools=request.tools
+        )
+        return response
+    except Exception as e:
+        print(f"[CORTEX] Chat Generation Error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 class VisionRequest(BaseModel):
     screenshot: str # Base64
@@ -602,10 +845,79 @@ async def vision_analyze(request: VisionRequest):
         # Lazy load happens inside the agent
         result = ui_tars.process_screenshot(request.screenshot, request.instruction)
         
+        # Check if result indicates an error (UI-TARS returns "Error: ..." on failure)
+        if result and (result.startswith("Error:") or "error" in result.lower()[:50]):
+            return {"status": "error", "message": result}
+        
         # Parse result (naive parsing for now, UI-TARS usually returns "(0.5, 0.5)" or action)
         return {"status": "success", "prediction": result}
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+class AgentClickRequest(BaseModel):
+    target: str  # e.g. "5 button", "Send button", "Settings icon"
+    screenshot: str = None  # Optional - if not provided, will capture screen
+    screen_width: int = None
+    screen_height: int = None
+
+@app.post("/vision/agent-click")
+async def vision_agent_click(request: AgentClickRequest):
+    """
+    Agentic Click: Use UI-TARS vision to locate and click a UI element.
+    This combines readScreen + controlSystemInput into one atomic operation.
+    """
+    if not VISION_AGENT_AVAILABLE:
+        raise HTTPException(
+            status_code=503,
+            detail="Vision Agent not available. Install torch and ui_tars dependencies."
+        )
+    
+    try:
+        import pyautogui
+        
+        # Get screen dimensions
+        screen_width = request.screen_width or pyautogui.size()[0]
+        screen_height = request.screen_height or pyautogui.size()[1]
+        
+        # Capture screenshot if not provided
+        if request.screenshot:
+            screenshot_b64 = request.screenshot
+        else:
+            # Take screenshot using pyautogui
+            import io
+            import base64
+            screenshot = pyautogui.screenshot()
+            buffer = io.BytesIO()
+            screenshot.save(buffer, format='PNG')
+            screenshot_b64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+        
+        # Execute the agentic click
+        result = ui_tars.process_and_execute(
+            screenshot_base64=screenshot_b64,
+            target_element=request.target,
+            screen_width=screen_width,
+            screen_height=screen_height
+        )
+        
+        if result.get("success"):
+            return {
+                "status": "success",
+                "message": f"Clicked on '{request.target}' at ({result['x']}, {result['y']})",
+                "action": result.get("action"),
+                "coordinates": {"x": result['x'], "y": result['y']},
+                "raw_prediction": result.get("raw_response")
+            }
+        else:
+            return {
+                "status": "error",
+                "message": result.get("error", "Unknown error during agent click")
+            }
+            
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return {"status": "error", "message": str(e)}
+
 # This file contains the pattern-based router code to add to cortex.py
 # Insert this BEFORE the "if __name__ == '__main__':" line (around line 571)
 
@@ -1306,7 +1618,7 @@ except ImportError as e:
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 @app.post("/api/execute/playMusic")
-async def execute_play_music(request: dict = Body(...)):
+async def execute_play_music(request: dict = Body(...), authorized: bool = Depends(verify_session)):
     """Play music on specified app"""
     if not automate:
         return {"success": False, "error": "Automation system not loaded"}
@@ -1327,7 +1639,7 @@ async def execute_play_music(request: dict = Body(...)):
 
 
 @app.post("/api/execute/pauseMedia")
-async def execute_pause_media(request: dict = Body(...)):
+async def execute_pause_media(request: dict = Body(...), authorized: bool = Depends(verify_session)):
     """Pause currently playing media"""
     if not automate:
         return {"success": False, "error": "Automation system not loaded"}
@@ -1345,7 +1657,7 @@ async def execute_pause_media(request: dict = Body(...)):
 
 
 @app.post("/api/execute/nextTrack")
-async def execute_next_track(request: dict = Body(...)):
+async def execute_next_track(request: dict = Body(...), authorized: bool = Depends(verify_session)):
     """Skip to next track"""
     if not automate:
         return {"success": False, "error": "Automation system not loaded"}
@@ -1360,7 +1672,7 @@ async def execute_next_track(request: dict = Body(...)):
 
 
 @app.post("/api/execute/messageContact")
-async def execute_message_contact(request: dict = Body(...)):
+async def execute_message_contact(request: dict = Body(...), authorized: bool = Depends(verify_session)):
     """Send message to contact"""
     if not automate:
         return {"success": False, "error": "Automation system not loaded"}
@@ -1381,7 +1693,7 @@ async def execute_message_contact(request: dict = Body(...)):
 
 
 @app.post("/api/execute/openUrl")
-async def execute_open_url(request: dict = Body(...)):
+async def execute_open_url(request: dict = Body(...), authorized: bool = Depends(verify_session)):
     """Open URL in browser"""
     if not automate:
         return {"success": False, "error": "Automation system not loaded"}
@@ -1400,7 +1712,7 @@ async def execute_open_url(request: dict = Body(...)):
 
 
 @app.post("/api/execute/takeScreenshot")
-async def execute_screenshot(request: dict = Body(...)):
+async def execute_screenshot(request: dict = Body(...), authorized: bool = Depends(verify_session)):
     """Take screenshot (CROSS-PLATFORM)"""
     try:
         adapter = get_adapter()
@@ -1433,7 +1745,7 @@ async def execute_screenshot(request: dict = Body(...)):
 
 
 @app.get("/api/system/permissions")
-async def get_permissions():
+async def get_permissions(authorized: bool = Depends(verify_session)):
     """Check all required system permissions"""
     try:
         adapter = get_adapter()
@@ -1443,7 +1755,7 @@ async def get_permissions():
 
 
 @app.post("/api/system/permissions/request")
-async def request_permissions():
+async def request_permissions(authorized: bool = Depends(verify_session)):
     """Request required system permissions"""
     try:
         adapter = get_adapter()
@@ -1453,7 +1765,7 @@ async def request_permissions():
 
 
 @app.get("/api/system/apps")
-async def get_installed_apps():
+async def get_installed_apps(authorized: bool = Depends(verify_session)):
     """List all installed applications"""
     try:
         adapter = get_adapter()
@@ -1463,7 +1775,7 @@ async def get_installed_apps():
 
 
 @app.post("/api/system/control")
-async def system_control(request: Dict[str, Any] = Body(...)):
+async def system_control(request: Dict[str, Any] = Body(...), authorized: bool = Depends(verify_session)):
     """General system control endpoint (Battery, Volume, etc.)"""
     try:
         action = request.get("action")
@@ -1482,7 +1794,7 @@ async def system_control(request: Dict[str, Any] = Body(...)):
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 @app.post("/api/execute/openFile")
-async def execute_open_file(request: dict = Body(...)):
+async def execute_open_file(request: dict = Body(...), authorized: bool = Depends(verify_session)):
     """Open a file"""
     if not file_operation:
         return {"success": False, "error": "File operations not loaded"}
@@ -1502,7 +1814,7 @@ async def execute_open_file(request: dict = Body(...)):
 
 
 @app.post("/api/execute/createFolder")
-async def execute_create_folder(request: dict = Body(...)):
+async def execute_create_folder(request: dict = Body(...), authorized: bool = Depends(verify_session)):
     """Create a new folder"""
     if not file_operation:
         return {"success": False, "error": "File operations not loaded"}
@@ -1522,7 +1834,7 @@ async def execute_create_folder(request: dict = Body(...)):
 
 
 @app.post("/api/execute/deleteFile")
-async def execute_delete_file(request: dict = Body(...)):
+async def execute_delete_file(request: dict = Body(...), authorized: bool = Depends(verify_session)):
     """Delete a file (moves to trash)"""
     if not file_operation:
         return {"success": False, "error": "File operations not loaded"}
@@ -1541,7 +1853,7 @@ async def execute_delete_file(request: dict = Body(...)):
 
 
 @app.post("/api/execute/organizeFiles")
-async def execute_organize_files(request: dict = Body(...)):
+async def execute_organize_files(request: dict = Body(...), authorized: bool = Depends(verify_session)):
     """AI-powered file organization"""
     if not file_operation:
         return {"success": False, "error": "File operations not loaded"}
@@ -1565,7 +1877,7 @@ async def execute_organize_files(request: dict = Body(...)):
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 @app.post("/api/execute/appendToFile")
-async def execute_append_to_file(request: dict = Body(...)):
+async def execute_append_to_file(request: dict = Body(...), authorized: bool = Depends(verify_session)):
     """Append text to file"""
     if not edit_file:
         return {"success": False, "error": "File editor not loaded"}
@@ -1585,7 +1897,7 @@ async def execute_append_to_file(request: dict = Body(...)):
 
 
 @app.post("/api/execute/findReplace")
-async def execute_find_replace(request: dict = Body(...)):
+async def execute_find_replace(request: dict = Body(...), authorized: bool = Depends(verify_session)):
     """Find and replace text in file"""
     if not edit_file:
         return {"success": False, "error": "File editor not loaded"}
@@ -1610,7 +1922,7 @@ async def execute_find_replace(request: dict = Body(...)):
 
 
 @app.post("/api/execute/improveWriting")
-async def execute_improve_writing(request: dict = Body(...)):
+async def execute_improve_writing(request: dict = Body(...), authorized: bool = Depends(verify_session)):
     """AI-powered writing improvement"""
     if not edit_file:
         return {"success": False, "error": "File editor not loaded"}
@@ -1631,7 +1943,7 @@ async def execute_improve_writing(request: dict = Body(...)):
 
 
 @app.post("/api/execute/refactorCode")
-async def execute_refactor_code(request: dict = Body(...)):
+async def execute_refactor_code(request: dict = Body(...), authorized: bool = Depends(verify_session)):
     """AI-powered code refactoring"""
     if not edit_file:
         return {"success": False, "error": "File editor not loaded"}
@@ -1652,7 +1964,7 @@ async def execute_refactor_code(request: dict = Body(...)):
 
 
 @app.post("/api/execute/openApp")
-async def execute_open_app(request: dict = Body(...)):
+async def execute_open_app(request: dict = Body(...), authorized: bool = Depends(verify_session)):
     """Launch an application"""
     appName = request.get("appName")
     try:
@@ -1663,7 +1975,7 @@ async def execute_open_app(request: dict = Body(...)):
         return {"success": False, "error": str(e)}
 
 @app.post("/api/execute/closeApp")
-async def execute_close_app(request: dict = Body(...)):
+async def execute_close_app(request: dict = Body(...), authorized: bool = Depends(verify_session)):
     """Close an application"""
     appName = request.get("appName")
     try:
@@ -1674,7 +1986,7 @@ async def execute_close_app(request: dict = Body(...)):
         return {"success": False, "error": str(e)}
 
 @app.post("/api/execute/controlSystem")
-async def execute_control_system(request: dict = Body(...)):
+async def execute_control_system(request: dict = Body(...), authorized: bool = Depends(verify_session)):
     """System control (brightness, volume, etc)"""
     action = request.get("action")
     value = request.get("value")
@@ -1690,12 +2002,168 @@ async def execute_control_system(request: dict = Body(...)):
     except Exception as e:
         return {"success": False, "error": str(e)}
 
+# ============ MODEL MANAGER ENDPOINTS ============
+# Unified management of local AI models (Gemma, SmolVLM, UI-TARS, Piper)
+
+# Model definitions with paths
+MODEL_PATHS = {
+    "gemma-2b": {
+        "path": os.path.expanduser("~/Luca/models/llm/gemma-2-2b-it-Q6_K.gguf"),
+        "repo_id": "bartowski/gemma-2-2b-it-GGUF",
+        "filename": "gemma-2-2b-it-Q6_K.gguf"
+    },
+    "smolvlm-500m": {
+        "path": os.path.expanduser("~/Luca/models/vision/smolvlm"),
+        "repo_id": "HuggingFaceTB/SmolVLM-500M-Instruct",
+        "is_folder": True
+    },
+    "ui-tars-2b": {
+        "path": os.path.expanduser("~/Luca/models/vision/ui-tars"),
+        "repo_id": "bytedance-research/UI-TARS-2B-SFT",
+        "is_folder": True
+    },
+    "piper-amy": {
+        "path": os.path.expanduser("~/Luca/models/tts/en_US-amy-medium.onnx"),
+        "url": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/amy/medium/en_US-amy-medium.onnx"
+    }
+}
+
+@app.get("/models/status")
+async def get_models_status():
+    """Check which models are downloaded"""
+    status = {}
+    for model_id, config in MODEL_PATHS.items():
+        path = config["path"]
+        if config.get("is_folder"):
+            downloaded = os.path.isdir(path) and len(os.listdir(path)) > 0 if os.path.exists(path) else False
+        else:
+            downloaded = os.path.isfile(path)
+        status[model_id] = {"downloaded": downloaded, "path": path}
+    return {"models": status}
+
+@app.get("/models/download/{model_id}")
+async def download_model(model_id: str):
+    """Download a model (returns SSE stream for progress)"""
+    from fastapi.responses import StreamingResponse
+    import json
+    
+    if model_id not in MODEL_PATHS:
+        raise HTTPException(status_code=404, detail=f"Unknown model: {model_id}")
+    
+    config = MODEL_PATHS[model_id]
+    
+    async def generate():
+        try:
+            # Ensure directory exists
+            os.makedirs(os.path.dirname(config["path"]), exist_ok=True)
+            
+            if "repo_id" in config:
+                # Hugging Face model
+                try:
+                    from huggingface_hub import hf_hub_download, snapshot_download
+                    
+                    yield f"data: {json.dumps({'progress': 10, 'status': 'starting'})}\n\n"
+                    
+                    if config.get("is_folder"):
+                        # Download entire model folder
+                        snapshot_download(
+                            repo_id=config["repo_id"],
+                            local_dir=config["path"],
+                            local_dir_use_symlinks=False
+                        )
+                    else:
+                        # Download single file
+                        hf_hub_download(
+                            repo_id=config["repo_id"],
+                            filename=config["filename"],
+                            local_dir=os.path.dirname(config["path"]),
+                            local_dir_use_symlinks=False
+                        )
+                    
+                    yield f"data: {json.dumps({'progress': 100, 'status': 'complete'})}\n\n"
+                except Exception as e:
+                    yield f"data: {json.dumps({'status': 'error', 'message': str(e)})}\n\n"
+            
+            elif "url" in config:
+                # Direct URL download (for Piper)
+                import aiohttp
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(config["url"]) as resp:
+                        total = int(resp.headers.get("content-length", 0))
+                        downloaded = 0
+                        with open(config["path"], "wb") as f:
+                            async for chunk in resp.content.iter_chunked(1024 * 1024):
+                                f.write(chunk)
+                                downloaded += len(chunk)
+                                progress = int((downloaded / total) * 100) if total > 0 else 50
+                                yield f"data: {json.dumps({'progress': progress})}\n\n"
+                
+                yield f"data: {json.dumps({'progress': 100, 'status': 'complete'})}\n\n"
+                
+        except Exception as e:
+            yield f"data: {json.dumps({'status': 'error', 'message': str(e)})}\n\n"
+    
+    return StreamingResponse(generate(), media_type="text/event-stream")
+
+@app.delete("/models/delete/{model_id}")
+async def delete_model(model_id: str):
+    """Delete a downloaded model to free storage"""
+    import shutil
+    
+    if model_id not in MODEL_PATHS:
+        raise HTTPException(status_code=404, detail=f"Unknown model: {model_id}")
+    
+    config = MODEL_PATHS[model_id]
+    path = config["path"]
+    
+    try:
+        if config.get("is_folder"):
+            if os.path.isdir(path):
+                shutil.rmtree(path)
+        else:
+            if os.path.isfile(path):
+                os.remove(path)
+        return {"success": True, "message": f"Deleted {model_id}"}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
 if __name__ == "__main__":
     # Get port from environment (passed by Electron) or default
     port = int(os.environ.get("CORTEX_PORT", 8000))
-    print(f"[CORTEX] Starting Server on Port {port}")
     
-    # Use 0.0.0.0 to be safe, or 127.0.0.1
-    # Increase Workers/Loop for concurrency if needed, but standard run is fine
-    uvicorn.run(app, host="127.0.0.1", port=port)
-
+    # Determine host based on remote access setting
+    # 0.0.0.0 allows access from other devices on the network
+    host = "0.0.0.0" if REMOTE_ACCESS_ENABLED else "127.0.0.1"
+    
+    # --- STATIC FILE SERVING FOR PRODUCTION ---
+    # In production, serve the built frontend from dist folder
+    # The dist folder is relative to the project root (2 levels up from cortex/python)
+    project_root = Path(__file__).resolve().parent.parent.parent
+    dist_path = project_root / "dist"
+    
+    if dist_path.exists() and dist_path.is_dir():
+        print(f"[CORTEX] Serving frontend from: {dist_path}")
+        
+        # Serve index.html for root path
+        @app.get("/")
+        async def serve_index():
+            return FileResponse(dist_path / "index.html")
+        
+        # Serve static assets
+        app.mount("/assets", StaticFiles(directory=dist_path / "assets"), name="assets")
+        
+        # Catch-all for SPA routing (must be last)
+        @app.get("/{full_path:path}")
+        async def serve_spa(full_path: str):
+            file_path = dist_path / full_path
+            if file_path.exists() and file_path.is_file():
+                return FileResponse(file_path)
+            return FileResponse(dist_path / "index.html")
+    else:
+        print(f"[CORTEX] No dist folder found at {dist_path} - API only mode")
+    
+    print(f"[CORTEX] Starting Server on {host}:{port}")
+    if host == "0.0.0.0":
+        print(f"[CORTEX] Remote Access URL: http://{LOCAL_IP}:{port}")
+    
+    uvicorn.run(app, host=host, port=port)

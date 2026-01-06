@@ -1,46 +1,58 @@
-import { GoogleGenAI } from "@google/genai";
-// import { settingsService } from "./settingsService"; // Removed to avoid Node.js crash
+/**
+ * Embedding Service - JavaScript wrapper for memoryService
+ * This provides a CommonJS/ESM compatible interface for Node.js backend services
+ */
 
-// Initialize AI for Embeddings
+// Since memoryService is TypeScript, we need to use a workaround
+// We'll use the Google GenAI SDK directly here for backend embedding generation
+
+import { GoogleGenAI } from '@google/genai';
+
 let aiInstance = null;
 
 const getAI = () => {
     if (aiInstance) return aiInstance;
     
-    // settingsService might not be ready in module scope if cyclic dependency, 
-    // but usually fine in function scope.
-    // const settingsKey = settingsService.get("brain").geminiApiKey; // Removed for Node compatibility
-    const envKey = (typeof process !== 'undefined' && (process.env.API_KEY || process.env.GEMINI_API_KEY)) || 
-                   (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_API_KEY);
+    // Get API key from environment
+    const key = process.env.VITE_API_KEY || 
+                process.env.API_KEY || 
+                process.env.GEMINI_API_KEY || 
+                '';
     
-    const key = envKey || "";
+    if (!key) {
+        console.warn('[EMBEDDING] No API Key found in environment');
+        return null;
+    }
     
     try {
         aiInstance = new GoogleGenAI({ apiKey: key });
+        console.log('[EMBEDDING] Initialized with API key from environment');
     } catch (e) {
-        console.error("Failed to init embedding AI", e);
+        console.error('[EMBEDDING] Failed to init GoogleGenAI:', e);
     }
     return aiInstance;
 };
 
-
 export const embeddingService = {
     /**
-     * Generate Embedding Vector for text using Gemini 2.5 Flash or embedding model
+     * Generate Embedding Vector for text using Gemini embedding model
      */
     async generateEmbedding(text) {
         try {
             const client = getAI();
-            if (!client) return [];
+            if (!client) {
+                console.warn('[EMBEDDING] No AI client available, returning empty vector');
+                return [];
+            }
             
             const result = await client.models.embedContent({
-                model: "text-embedding-004",
+                model: 'text-embedding-004',
                 contents: [{ parts: [{ text }] }]
             });
             return result.embeddings?.[0]?.values || [];
         } catch (e) {
-            console.error("Embedding Generation Failed:", e);
-            return []; // Fallback
+            console.error('[EMBEDDING] Generation failed:', e.message);
+            return []; // Fallback to empty vector
         }
     }
 };

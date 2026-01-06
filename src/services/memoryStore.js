@@ -91,6 +91,14 @@ export const memoryStore = {
         );
     },
 
+    // Wipe all memory data (Factory Reset)
+    wipe: () => {
+        db.prepare('DELETE FROM memories').run();
+        db.prepare('DELETE FROM entities').run();
+        db.prepare('DELETE FROM relationships').run();
+        console.log('[MEMORY_STORE] All memories wiped.');
+    },
+
     // Bulk Save (Overwrite/Sync from Frontend)
     // NOTE: In a real DB, we wouldn't wipe and replace, but for now we maintain compatibility
     // with the frontend's "save all" behavior, but we'll try to be smarter.
@@ -163,7 +171,7 @@ export const memoryStore = {
 
     // Save Vector (Called by vector-save endpoint)
     addVector: (data) => {
-        const { id, content, embedding, metadata } = data;
+        const { content, embedding, metadata } = data;
 
         // Check if memory exists by content (or we could use ID if we synced them better)
         // For now, we treat vector-save as an UPSERT on the memory
@@ -197,7 +205,7 @@ export const memoryStore = {
         return stmt.run(name, type, description, Date.now());
     },
 
-    addRelationship: (sourceName, relation, targetName) => {
+    addRelationship: (sourceName, relation, targetName, context = {}) => {
         const getEntity = db.prepare('SELECT id FROM entities WHERE name = ?');
         let source = getEntity.get(sourceName);
         let target = getEntity.get(targetName);
@@ -213,24 +221,66 @@ export const memoryStore = {
         }
 
         const stmt = db.prepare(`
-            INSERT INTO relationships (source_id, target_id, relation)
-            VALUES (?, ?, ?)
-            ON CONFLICT(source_id, target_id, relation) DO NOTHING
+            INSERT INTO relationships (source_id, target_id, relation, created_at, valid_until, context_event_id, weight)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(source_id, target_id, relation) DO UPDATE SET
+                weight = excluded.weight,
+                created_at = excluded.created_at, -- Update timestamp on re-affirmation
+                context_event_id = excluded.context_event_id
         `);
 
-        return stmt.run(source.id, target.id, relation);
+        return stmt.run(
+            source.id, 
+            target.id, 
+            relation, 
+            context.timestamp || Date.now(),
+            context.validUntil || null,
+            context.eventId || null,
+            context.weight || 1.0
+        );
     },
 
     getGraph: () => {
         const nodes = db.prepare('SELECT id, name, type FROM entities').all();
         const edges = db.prepare(`
-            SELECT r.id, s.name as source, t.name as target, r.relation
+            SELECT r.id, s.name as source, t.name as target, r.relation, r.created_at, r.context_event_id
             FROM relationships r
             JOIN entities s ON r.source_id = s.id
             JOIN entities t ON r.target_id = t.id
         `).all();
 
         return { nodes, edges };
+    },
+
+    /**
+     * LANGGRAPH LAYER: Persist Execution Trace
+     * Creates an Event Node and links it to the previous event (if any)
+     */
+    logExecutionEvent: (toolName, args, result, sessionId, previousEventId = null) => {
+        const timestamp = Date.now();
+        // const eventId = `evt_${timestamp}_${Math.random().toString(36).substr(2, 5)}`;
+        const eventName = `EXEC_${toolName}_${timestamp}`;
+
+        // 1. Create the Event Node
+        memoryStore.addEntity(eventName, 'EVENT', JSON.stringify({
+            tool: toolName,
+            args: args,
+            result: result.substring(0, 200), // Truncate for summary
+            sessionId: sessionId
+        }));
+
+        // 2. Link to Session (Context)
+        if (sessionId) {
+            memoryStore.addRelationship(sessionId, 'CONTAINS_EVENT', eventName, { timestamp });
+        }
+
+        // 3. Link to Previous Event (Temporal Chain)
+        if (previousEventId) {
+            // We assume previousEventId is the NAME of the previous node
+            memoryStore.addRelationship(previousEventId, 'NEXT_STEP', eventName, { timestamp });
+        }
+
+        return eventName;
     }
 };
 

@@ -3,6 +3,7 @@ import HologramWidget from "./Hologram/HologramWidget";
 import { useVoiceInput } from "../hooks/useVoiceInput";
 import { PersonaType } from "../services/lucaService";
 import { settingsService } from "../services/settingsService";
+import { eventBus } from "../services/eventBus";
 
 /**
  * Dedicated Mode for the Holographic Overlay
@@ -75,12 +76,26 @@ const HologramMode: React.FC = () => {
   };
 
   const primaryColor = THEME_COLORS[persona] || THEME_COLORS.RUTHLESS;
+  const [liveVolume, setLiveVolume] = useState(0);
 
+  // --- AUDIO REACTIVITY (Global) ---
   useEffect(() => {
-    // No need for interval if hook provides volume updates via state re-renders.
-    // But to force animation if hook updates are throttled:
-    // actually hook updates state on animation frame if volume changes > 0.01
-  }, [status]);
+    const handleAmplitude = (data: { amplitude: number; source: string }) => {
+      // Smooth the input slightly if needed, but here we just take the peak
+      setLiveVolume(data.amplitude);
+
+      // Auto-reset after a short delay if no more data comes in
+      // (Though continuous streams like liveService will keep it high)
+    };
+
+    eventBus.on("audio-amplitude", handleAmplitude);
+    return () => {
+      eventBus.off("audio-amplitude", handleAmplitude);
+    };
+  }, []);
+
+  // Calculate final animation volume
+  const displayVolume = Math.max(volume, liveVolume);
 
   return (
     <div className="w-screen h-screen bg-transparent overflow-hidden flex items-end justify-end p-0">
@@ -88,8 +103,8 @@ const HologramMode: React.FC = () => {
         isVoiceActive={true} // Always visible in Hologram Mode
         isMicOpen={isListening} // Visual Feedback for Mic Status
         transcript={transcript}
-        isSpeaking={status === "SPEAKING"}
-        audioLevel={volume}
+        isSpeaking={status === "SPEAKING" || liveVolume > 0.05}
+        audioLevel={displayVolume}
         primaryColor={isListening ? "#22c55e" : primaryColor} // Use dynamic theme color
         onClick={handleToggleVoice}
       />

@@ -1,0 +1,153 @@
+  async sendMessageStream(
+    message: string,
+    imageBase64: string | null,
+    onChunk: (chunk: string) => void,
+    onToolCall: (name: string, args: any) => Promise<any>,
+    currentCwd?: string
+  ): Promise<any> {
+    // Force re-init if session is marked dirty
+    if (this.sessionDirty || this.localHistory.length === 0) {
+      if (this.localHistory.length === 0) {
+        await this.initChat();
+      } else if (this.sessionDirty) {
+        await this.initChat(this.localHistory);
+      }
+      this.sessionDirty = false;
+    }
+
+    // CRITICAL: Ensure system instruction and tools are ALWAYS initialized
+    if (!this.systemInstruction || this.sessionTools.length === 0) {
+      console.log("[LUCA] System instruction missing, rebuilding config...");
+      await this.rebuildSystemConfig();
+    }
+
+    // Update context if new image provided
+    if (imageBase64) {
+      this.currentImageContext = imageBase64;
+    }
+
+    // --- RAG: Context Injection (Mirrors sendMessage) ---
+    let finalMessage = message;
+    const contextParts: string[] = [];
+
+    // 1. Retrieve relevant long-term memories
+    try {
+      if (typeof memoryService !== "undefined") {
+        const relevantMemories = await memoryService.retrieveMemory(message);
+        if (relevantMemories.length > 0) {
+          const memoryBlock = relevantMemories
+            .filter((m) => m.confidence > 0.6)
+            .map(
+              (m) =>
+                `- ${m.key}: ${m.value} (Confidence: ${Math.round(
+                  m.confidence * 100
+                )}%)`
+            )
+            .join("\n");
+          if (memoryBlock) {
+            contextParts.push(
+              `[SYSTEM: RELEVANT MEMORIES]\n${memoryBlock}\n[END MEMORY]`
+            );
+          }
+        }
+      }
+    } catch (e) {
+      console.warn("[RAG] Memory retrieval failed:", e);
+    }
+
+    // 2. Retrieve past conversations
+    try {
+      if (typeof conversationService !== "undefined") {
+        const conversationContext =
+          await conversationService.getConversationContext(message, 5);
+        if (conversationContext) {
+          contextParts.push(conversationContext);
+        }
+      }
+    } catch (e) {
+      console.warn("[RAG] Conversation context failed:", e);
+    }
+
+    // Combine Context
+    if (contextParts.length > 0) {
+      const contextBlock = contextParts.join("\n\n");
+      finalMessage = `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔒 RETRIEVED CONTEXT FOR YOUR AWARENESS ONLY 🔒
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${contextBlock}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+END OF CONTEXT - NOW RESPOND TO THE USER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+USER: ${message}`;
+    }
+
+    // Add Proactive Context & CWD
+    try {
+      const proactiveContext = await this.gatherProactiveContext();
+      finalMessage = proactiveContext + finalMessage;
+    } catch (e) {
+      console.warn("Proactive context failed", e);
+    }
+
+    if (this.persona === "ENGINEER" && currentCwd) {
+      finalMessage = `[SYSTEM_INFO] Current Working Directory: ${currentCwd}\n${finalMessage}`;
+    }
+
+    // Add User Message to History
+    this.localHistory.push({ role: "user", content: finalMessage });
+
+    // --- STREAMING EXECUTION ---
+    let fullResponseText = "";
+    let accumulatedGrounding: any = null;
+    let generatedImage: string | undefined = undefined;
+
+    try {
+      // Direct call to Gemini streaming
+      const streamResult = await this.chatSession.sendMessageStream(
+        finalMessage
+      );
+
+      for await (const chunk of streamResult.stream) {
+        const chunkText = chunk.text();
+        if (chunkText) {
+          fullResponseText += chunkText;
+          onChunk(chunkText);
+        }
+      }
+
+      // Finalize response
+      const response = await streamResult.response;
+      // Capture grounding/tools if any (usually available in final response)
+      accumulatedGrounding = response.candidates?.[0]?.groundingMetadata;
+
+      // Handle Tool Calls (Post-stream check)
+      // Note: Streaming tool calls is complex. For now, we assume if tools are called,
+      // the model might output text reasoning first, then the tool call.
+      // Getting tool calls from stream varies by SDK version.
+      // This basic implementation prioritizes text streaming.
+      const functionCalls = response.functionCalls();
+      if (functionCalls && functionCalls.length > 0) {
+         // Logic to handle tools if needed (omitted for speed unless requested)
+         console.log("[STREAM] Tool calls detected (not auto-executed in fast stream mode)");
+      }
+
+    } catch (e: any) {
+      console.error("[STREAM] Error during streaming:", e);
+      onChunk("\n[Error generating response]");
+    }
+
+    // Append Model Response to History
+    this.localHistory.push({
+      role: "model",
+      content: fullResponseText,
+    });
+
+    console.log(`[STREAM] Completed. Length: ${fullResponseText.length}`);
+
+    return {
+      text: fullResponseText,
+      groundingMetadata: accumulatedGrounding,
+      generatedImage: generatedImage
+    };
+  }

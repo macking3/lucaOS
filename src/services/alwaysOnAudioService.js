@@ -7,7 +7,7 @@
 import { audioCaptureService } from './audioCaptureService.js';
 import { audioAnalyzerService } from './audioAnalyzerService.js';
 import { audioEventDetector } from './audioEventDetector.js';
-import { eventBus } from './eventBus.js';
+import { eventBus } from './eventBus.ts';
 import { notificationService } from './notificationService.js';
 
 class AlwaysOnAudioService {

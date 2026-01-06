@@ -6,7 +6,7 @@
 
 import { screenCaptureService } from './screenCaptureService.js';
 import { visionAnalyzerService } from './visionAnalyzerService.js';
-import { eventBus } from './eventBus.js';
+import { eventBus } from './eventBus.ts';
 import { notificationService } from './notificationService.js';
 
 class AlwaysOnVisionService {

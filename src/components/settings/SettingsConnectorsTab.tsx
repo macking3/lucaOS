@@ -6,13 +6,15 @@ import {
   Video,
   Send,
   Hexagon,
+  Twitter,
+  Instagram,
+  Shield,
 } from "lucide-react";
 import { LucaSettings } from "../../services/settingsService";
 import { apiUrl } from "../../config/api";
 
 interface SettingsConnectorsTabProps {
   settings: LucaSettings;
-  connectors: { site: string; username: string; linked: boolean }[];
   theme: any;
   onClose: () => void;
   setStatusMsg: (msg: string) => void;
@@ -20,7 +22,6 @@ interface SettingsConnectorsTabProps {
 
 const SettingsConnectorsTab: React.FC<SettingsConnectorsTabProps> = ({
   settings,
-  connectors,
   theme,
   onClose,
   setStatusMsg,
@@ -36,7 +37,7 @@ const SettingsConnectorsTab: React.FC<SettingsConnectorsTabProps> = ({
         const res = await fetch(apiUrl("/api/google/status"));
         const data = await res.json();
         setGoogleStatus(data);
-      } catch (e) {
+      } catch {
         setGoogleStatus({ status: "OFFLINE" });
       }
     };
@@ -44,6 +45,7 @@ const SettingsConnectorsTab: React.FC<SettingsConnectorsTabProps> = ({
     const interval = setInterval(checkGoogleStatus, 5000);
     return () => clearInterval(interval);
   }, []);
+
   const SOCIAL_APPS = [
     {
       id: "whatsapp",
@@ -51,21 +53,49 @@ const SettingsConnectorsTab: React.FC<SettingsConnectorsTabProps> = ({
       icon: MessageCircle,
       color: "text-green-500",
       desc: "Messaging & Calls",
+      event: "WHATSAPP_NEURAL_LINK",
+    },
+    {
+      id: "telegram",
+      name: "Telegram",
+      icon: Send,
+      color: "",
+      style: { color: theme.hex },
+      desc: "Full Neural Link Integration",
+      event: "TELEGRAM_NEURAL_LINK",
+    },
+    {
+      id: "google",
+      name: "Google Workspace",
+      icon: Globe,
+      color: "text-red-500",
+      desc: "Gmail, Drive, Calendar",
+      event: null, // Uses OAuth flow instead
+    },
+    {
+      id: "twitter",
+      name: "X (Twitter)",
+      icon: Twitter,
+      color: "text-slate-300",
+      desc: "Posts, DMs & Trends",
+      event: "TWITTER_NEURAL_LINK",
+    },
+    {
+      id: "instagram",
+      name: "Instagram",
+      icon: Instagram,
+      color: "text-pink-500",
+      desc: "Photos, Stories & Reels",
+      event: "INSTAGRAM_NEURAL_LINK",
     },
     {
       id: "linkedin",
       name: "LinkedIn",
       icon: Linkedin,
       color: "",
-      style: { color: theme.hex },
+      style: { color: "#0A66C2" },
       desc: "Professional Network",
-    },
-    {
-      id: "google",
-      name: "Google (Neural Link)",
-      icon: Globe,
-      color: "text-red-500",
-      desc: "Full Workspace Access (Gmail, Drive, etc.)",
+      event: "LINKEDIN_NEURAL_LINK",
     },
     {
       id: "youtube",
@@ -73,29 +103,23 @@ const SettingsConnectorsTab: React.FC<SettingsConnectorsTabProps> = ({
       icon: Video,
       color: "text-red-600",
       desc: "Video & Streaming",
-    },
-    {
-      id: "telegram",
-      name: "Telegram (Neural Link)",
-      icon: Send, // Updated icon
-      color: "",
-      style: { color: theme.hex },
-      desc: "Full Neural Link Integration",
+      event: "YOUTUBE_NEURAL_LINK",
     },
     {
       id: "discord",
       name: "Discord",
-      icon: Hexagon, // Updated icon
-      color: "",
-      style: { color: theme.hex },
-      desc: "Community & Server Mgmt (Coming Soon)",
+      icon: Hexagon,
+      color: "text-indigo-400",
+      desc: "Community & Servers",
+      event: "DISCORD_NEURAL_LINK",
     },
     {
       id: "signal",
       name: "Signal Private",
-      icon: MessageCircle, // Placeholder
-      color: "text-slate-400",
-      desc: "E2E Encrypted Messaging (Coming Soon)",
+      icon: Shield,
+      color: "text-blue-400",
+      desc: "E2E Encrypted Messaging",
+      event: "SIGNAL_NEURAL_LINK",
     },
   ];
 
@@ -157,51 +181,32 @@ const SettingsConnectorsTab: React.FC<SettingsConnectorsTabProps> = ({
 
               <button
                 onClick={() => {
-                  if (app.id === "whatsapp") {
-                    // Trigger Neural Link for WhatsApp
-                    const event = new CustomEvent("WHATSAPP_NEURAL_LINK");
-                    window.dispatchEvent(event);
-                    onClose();
-                    return;
-                  }
-
-                  if (app.id === "telegram") {
-                    // Trigger Neural Link for Telegram
-                    const event = new CustomEvent("TELEGRAM_NEURAL_LINK");
-                    window.dispatchEvent(event);
-                    onClose();
-                    return;
-                  }
-
+                  // Google uses OAuth flow, not Neural Link
                   if (app.id === "google") {
-                    // Start Google Auth Flow
                     fetch(apiUrl("/api/google/auth/url"))
                       .then((res) => res.json())
                       .then((data) => {
                         if (data.url) {
-                          // @ts-ignore
+                          // @ts-expect-error - Electron IPC bridge
                           if (window.luca?.openExternal) {
-                            // @ts-ignore
+                            // @ts-expect-error - Electron IPC bridge
                             window.luca.openExternal(data.url);
                           } else {
                             window.open(data.url, "_blank");
                           }
                         }
                       })
-                      .catch((err) =>
-                        setStatusMsg("Failed to start Google Auth")
-                      );
+                      .catch(() => setStatusMsg("Failed to start Google Auth"));
                     return;
                   }
 
-                  // TODO: Implement Social Auth Flow for others
-                  setStatusMsg(`Connecting to ${app.name}...`);
-                  // @ts-ignore
-                  if (window.luca?.connectSocial) {
-                    // @ts-ignore
-                    window.luca.connectSocial(app.id);
+                  // All other platforms use Neural Link event pattern
+                  if (app.event) {
+                    const customEvent = new CustomEvent(app.event);
+                    window.dispatchEvent(customEvent);
+                    onClose();
                   } else {
-                    console.warn("Social Connector IPC not ready");
+                    setStatusMsg(`${app.name} connector not yet implemented.`);
                   }
                 }}
                 className={`w-full py-1.5 rounded textxs font-bold border transition-all flex items-center justify-center gap-2

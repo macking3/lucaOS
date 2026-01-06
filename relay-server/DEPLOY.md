@@ -1,99 +1,62 @@
-# Deploy Luca Neural Link Relay to Vercel
+# 🚀 Relay Server Deployment Guide
 
-## Quick Deployment Guide
+This server handles the real-time `Socket.IO` connections between your **Luca Desktop** and **Mobile/Guest** clients.
 
-### Step 1: Install Vercel CLI
+> **⚠️ IMPORTANT:** This server **CANNOT** be deployed on Vercel or Netlify because they are "stateless" (serverless) and kill ephemeral connections. You must use a "stateful" provider that supports Docker/Node.js background processes.
 
-```bash
-npm install -g vercel
-```
+We recommend **Render** or **Railway** (both have free/cheap tiers and are very easy to use).
 
-### Step 2: Login to Vercel
+---
 
-```bash
-vercel login
-```
+## Option 1: Deploy to Render (Recommended)
 
-This will open your browser to authenticate with Vercel (free account).
+Render is the easiest option because we included a `render.yaml` blueprint.
 
-### Step 3: Deploy
+1.  **Push your code to GitHub/GitLab.**
+    - Make sure the `relay-server` folder is in your repository.
+2.  **Create a Render Account** at [render.com](https://render.com).
+3.  **Click "New +"** -> **"Web Service"**.
+4.  **Connect your Repo**.
+5.  **Settings**:
+    - **Root Directory:** `relay-server` (Very Important!)
+    - **Runtime:** `Docker`
+    - **Region:** Choose one close to you (e.g., Oregon, Frankfurt).
+    - **Instance Type:** "Free" is fine for testing, "Starter" ($7/mo) is recommended for 24/7 reliability (prevents sleep).
+6.  **Click "Create Web Service"**.
 
-```bash
-cd /Users/macking/Downloads/kaleido/luca/relay-server
-vercel
-```
+_Render will automatically detect the `Dockerfile` in the `relay-server` folder and build it._
 
-Follow the prompts:
+---
 
-- **Set up and deploy?** → Yes
-- **Which scope?** → Your personal account
-- **Link to existing project?** → No
-- **Project name?** → luca-neural-link-relay (or your choice)
-- **Directory?** → ./ (current directory)
-- **Override settings?** → No
+## Option 2: Deploy to Railway
 
-### Step 4: Production Deployment
+Railway is excellent for zero-config deployments.
 
-```bash
-vercel --prod
-```
+1.  **Create a Railway Account** at [railway.app](https://railway.app).
+2.  **Click "New Project"** -> **"Deploy from GitHub repo"**.
+3.  **Select your repository.**
+4.  **Configure**:
+    - Click on the new service block.
+    - Go to **Settings** -> **Root Directory**.
+    - Set it to `/relay-server`.
+5.  **Variables**:
+    - Railway usually detects the port automatically, but if not, create a variable `PORT` = `3003` (or `8080`).
+6.  **Domain**:
+    - Go to **Settings** -> **Domains** -> **Generate Domain**.
+    - You will get something like `relay-server-production-xxxx.up.railway.app`.
 
-This deploys to production and gives you a permanent URL like:
-`https://luca-neural-link-relay.vercel.app`
+---
 
-### Step 5: Update Luca Settings
+## 🏁 Post-Deployment: Update Your App
 
-Copy the production URL and update in Luca settings:
+Once your server is running (it usually takes 2-3 minutes), get the **URL** (e.g., `https://luca-relay.onrender.com`).
 
-1. Open Luca → Settings → Neural Link
-2. Paste URL in "Cloud Relay Server" field
-3. Save settings
-
-## Alternative: Deploy via Vercel Dashboard
-
-1. Go to [vercel.com](https://vercel.com)
-2. Click "Add New" → "Project"
-3. Import from Git or upload `relay-server/` folder
-4. Vercel auto-detects Node.js
-5. Click "Deploy"
-
-## Testing
-
-After deployment, test the relay server:
+1.  Open your local project **`.env`** file.
+2.  Update the `VITE_RELAY_SERVER_URL` variable:
 
 ```bash
-curl https://your-relay-url.vercel.app/health
+# In your .env file
+VITE_RELAY_SERVER_URL=https://your-new-render-url.onrender.com
 ```
 
-Should return:
-
-```json
-{
-  "status": "healthy",
-  "uptime": 12345,
-  "activeDevices": 0,
-  "totalConnections": 0,
-  "messagesRelayed": 0
-}
-```
-
-## Troubleshooting
-
-**Issue**: Vercel CLI not found
-**Solution**: Make sure npm global bin is in PATH:
-
-```bash
-npm config get prefix
-# Add to PATH if needed
-```
-
-**Issue**: Socket.IO not working on Vercel
-**Solution**: Vercel supports WebSocket, but may need serverless function wrapper. The current setup should work with polling fallback.
-
-## Cost
-
-- **Free Tier**: 100GB bandwidth/month, unlimited requests
-- **Hobby**: Free forever for personal projects
-- **Pro**: $20/month if you need more bandwidth
-
-For most users, the free tier is more than enough! 🎉
+3.  **Restart your Luca Desktop App**. The new settings will take effect, and the QR code will now point to this stable, permanent server!

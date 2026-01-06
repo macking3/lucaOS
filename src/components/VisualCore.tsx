@@ -5,7 +5,6 @@ import CinemaPlayer from "./CinemaPlayer";
 import CastPicker from "./CastPicker";
 import { X, Activity, Cast } from "lucide-react";
 import { SmartDevice } from "../types";
-import AutonomyTile from "./visual/AutonomyTile";
 import SecurityHUD from "./visual/SecurityHUD";
 import SovereigntyDashboard from "./visual/SovereigntyDashboard";
 import OsintDossier from "./OsintDossier";
@@ -95,7 +94,7 @@ const VisualCore: React.FC<VisualCoreProps> = ({
   browserUrl,
   visualData,
   onClearData,
-  sessionId,
+
   devices = [],
   onCast,
   themeColor: propThemeColor,
@@ -136,11 +135,19 @@ const VisualCore: React.FC<VisualCoreProps> = ({
   // Auto-switch modes based on props updates
   useEffect(() => {
     if (visualData) {
-      if (visualData.topic === "DATA_ROOM") {
+      if (visualData.topic === "DATA_ROOM" || visualData.type === "DATA_ROOM") {
         setMode("DATA");
-      } else if (visualData.topic === "SECURITY") {
+      } else if (visualData.type === "CINEMA") {
+        setMode("CINEMA");
+      } else if (
+        visualData.topic === "SECURITY" ||
+        visualData.type === "SECURITY"
+      ) {
         setMode("SECURITY");
-      } else if (visualData.topic === "GLOBAL_SOVEREIGNTY") {
+      } else if (
+        visualData.topic === "GLOBAL_SOVEREIGNTY" ||
+        visualData.type === "SOVEREIGNTY"
+      ) {
         setMode("SOVEREIGNTY");
       } else if (visualData.type === "OSINT") {
         setMode("OSINT");
@@ -415,7 +422,12 @@ const VisualCore: React.FC<VisualCoreProps> = ({
           {mode === "CINEMA" && (
             <CinemaPlayer
               onClose={() => setMode("IDLE")}
-              videoUrl={cinemaUrl}
+              videoUrl={
+                cinemaUrl ||
+                visualData?.data?.url ||
+                visualData?.url ||
+                visualData?.items?.[0]?.videoUrl
+              }
               videoStream={videoStream}
               sourceType={videoStream ? "mirror" : cinemaSourceType}
               title={videoStream ? "Ghost Mirror Active" : cinemaTitle}
@@ -674,7 +686,9 @@ const VisualCore: React.FC<VisualCoreProps> = ({
               : "opacity-0 pointer-events-none"
           }`}
         >
-          {mode === "NETWORK" && <NetworkMap onClose={() => setMode("IDLE")} />}
+          {mode === "NETWORK" && (
+            <NetworkMap onClose={() => setMode("IDLE")} theme={theme} />
+          )}
         </div>
 
         {/* HACKING TERMINAL LAYER */}
@@ -855,6 +869,7 @@ const VisualCore: React.FC<VisualCoreProps> = ({
               onClose={() => setMode("IDLE")}
               activeTab="WIFI"
               onConnect={() => {}}
+              theme={theme}
             />
           )}
         </div>

@@ -4,7 +4,6 @@ import {
   Pause,
   Volume2,
   Maximize,
-  Loader2,
   SkipForward,
   SkipBack,
   Monitor,
@@ -12,6 +11,7 @@ import {
 
 // Electron webview type declaration
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
     interface IntrinsicElements {
       webview: React.DetailedHTMLProps<
@@ -60,34 +60,121 @@ const CinemaPlayer: React.FC<CinemaPlayerProps> = ({
     setActiveColor(`rgba(${r}, ${g}, ${b}, 0.4)`);
   }, [themeColor]);
 
-  const controlsTimeoutRef = useRef<any>(null);
+  const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // --- AUDIO VISUALIZER SIMULATION ---
+  const handleMouseMove = () => {
+    setShowControls(true);
+    if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
+    controlsTimeoutRef.current = setTimeout(() => {
+      if (isPlaying) setShowControls(false);
+    }, 3000);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
+    };
+  }, []);
+
+  // --- REAL AUDIO VISUALIZER (Web Audio API) ---
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    // Initialize Audio Context (Lazy load on user interaction/play effectively)
+    if (!audioContextRef.current) {
+      const AudioContextClass =
+        window.AudioContext || (window as any).webkitAudioContext;
+      audioContextRef.current = new AudioContextClass();
+    }
+
+    const audioCtx = audioContextRef.current;
+
+    // Connect to Video Element (Once Only)
+    if (videoRef.current && !sourceRef.current && isPlaying) {
+      try {
+        // Check for CORS on the video element if it's a URL
+        if (
+          videoUrl &&
+          !videoUrl.startsWith("blob:") &&
+          !videoUrl.startsWith("file:")
+        ) {
+          videoRef.current.crossOrigin = "anonymous";
+        }
+
+        sourceRef.current = audioCtx.createMediaElementSource(videoRef.current);
+        analyserRef.current = audioCtx.createAnalyser();
+
+        // Configuration
+        analyserRef.current.fftSize = 256;
+        analyserRef.current.smoothingTimeConstant = 0.8;
+
+        // Connect Graph: Source -> Analyser -> Destination (Speakers)
+        sourceRef.current.connect(analyserRef.current);
+        analyserRef.current.connect(audioCtx.destination);
+
+        // Resume context if suspended (browser policy)
+        if (audioCtx.state === "suspended") {
+          audioCtx.resume();
+        }
+      } catch (e) {
+        console.warn(
+          "[VisualCore] AudioContext connection failed (likely CORS or Source already connected):",
+          e
+        );
+      }
+    }
+
+    // Animation Loop
     let animationId: number;
-    let bars = 64;
+    const bufferLength = analyserRef.current
+      ? analyserRef.current.frequencyBinCount
+      : 64;
+    const dataArray = new Uint8Array(bufferLength);
+    const bars = 64; // Rendered bars
 
     const draw = () => {
-      if (!isPlaying) {
-        animationId = requestAnimationFrame(draw);
-        return;
+      if (!isPlaying || !analyserRef.current) {
+        // Fallback/Simulated view if AudioAPI failed (e.g. CORS) or execution paused
+        // But here we just stop rendering or render flat line
+        if (!isPlaying) {
+          animationId = requestAnimationFrame(draw);
+          return;
+        }
+      }
+
+      // Get Data
+      if (analyserRef.current) {
+        analyserRef.current.getByteFrequencyData(dataArray);
       }
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       const width = canvas.width / bars;
 
       for (let i = 0; i < bars; i++) {
-        // Simulate frequency data based on math ranom + sine wave for smooth movement
-        const time = Date.now() / 300;
-        const height =
-          Math.abs(Math.sin(time + i * 0.2)) *
-          (canvas.height * 0.8) *
-          Math.random();
+        // Map frequency data to bars. We use lower frequencies (bass) mostly as they look better.
+        // We step through the dataArray which has 128 bins (fft 256 / 2).
+        // We want to map roughly the first ~64 bins to the 64 bars.
+
+        let value = 0;
+        if (analyserRef.current) {
+          value = dataArray[i]; // Direct mapping for simplicity
+          // Optional: Scale/Boost
+          value = value * 1.2;
+        } else {
+          // Fallback Simulation if analyser failed (maintain aesthetics)
+          const time = Date.now() / 300;
+          value = Math.abs(Math.sin(time + i * 0.2)) * 100 * Math.random();
+        }
+
+        const percent = value / 255;
+        const height = canvas.height * 0.9 * percent;
 
         const gradient = ctx.createLinearGradient(
           0,
@@ -96,11 +183,14 @@ const CinemaPlayer: React.FC<CinemaPlayerProps> = ({
           canvas.height - height
         );
         // Use theme color for base
-        gradient.addColorStop(0, activeColor.replace("0.4", "0.8"));
-        gradient.addColorStop(1, "rgba(255, 255, 255, 0.2)"); // White top
+        gradient.addColorStop(0, activeColor.replace("0.4", "0.9")); // Strong base
+        gradient.addColorStop(1, "rgba(255, 255, 255, 0.4)"); // White top tip
 
         ctx.fillStyle = gradient;
-        ctx.fillRect(i * width, canvas.height - height, width - 2, height);
+        // Draw rounded top bar
+        if (height > 2) {
+          ctx.fillRect(i * width, canvas.height - height, width - 4, height);
+        }
       }
 
       animationId = requestAnimationFrame(draw);
@@ -108,7 +198,7 @@ const CinemaPlayer: React.FC<CinemaPlayerProps> = ({
 
     draw();
     return () => cancelAnimationFrame(animationId);
-  }, [isPlaying, activeColor]);
+  }, [isPlaying, activeColor, videoUrl]);
 
   // --- MEDIASTREAM ATTACHMENT (for Ghost Mirror mode) ---
   useEffect(() => {
@@ -140,7 +230,11 @@ const CinemaPlayer: React.FC<CinemaPlayerProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[200] bg-black font-sans">
+    <div
+      className="fixed inset-0 z-[200] bg-black font-sans"
+      onMouseMove={handleMouseMove}
+      onClick={handleMouseMove}
+    >
       <div className="relative w-full h-full">
         {/* Main Video Layer - Priority: videoStream > videoUrl > idle */}
         {videoStream ? (
@@ -190,10 +284,11 @@ const CinemaPlayer: React.FC<CinemaPlayerProps> = ({
             ref={webviewRef}
             src={videoUrl}
             style={{ width: "100%", height: "100%" }}
-            allowpopups={true}
-            // @ts-ignore - Electron webview attributes
-            plugins
-            webpreferences="nodeIntegration=no,contextIsolation=yes"
+            {...({
+              allowpopups: "true",
+              plugins: "true",
+              webpreferences: "nodeIntegration=no,contextIsolation=yes",
+            } as any)}
           />
         ) : sourceType === "local" ||
           sourceType === "file" ||

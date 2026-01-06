@@ -1,9 +1,7 @@
 import { ToolExecutionContext } from "../types";
 import { uiTarsService } from "../../services/uiTarsService";
-// @ts-ignore
+// @ts-expect-error - Module available at runtime
 import { screenCaptureService } from "../../services/screenCaptureService.js";
-// @ts-ignore
-import { visionAnalyzerService } from "../../services/visionAnalyzerService.js";
 import { settingsService } from "../../services/settingsService";
 import { apiUrl } from "../../config/api";
 
@@ -141,6 +139,7 @@ const SERVER_TOOLS = [
   "manageBluetoothDevices",
   "runNativeAutomation",
   "closeAllPositions",
+  "osintIdentitySearch",
   "executeTrade",
   "getPositions",
   "startDebate",
@@ -297,7 +296,12 @@ export class ServerToolDispatcher {
               `[DISPATCH] Auto-scaled coordinates to: ${args.x}, ${args.y}`
             );
           }
-        } catch (e) {}
+        } catch (e: any) {
+          console.error(
+            "[DISPATCH] Failed to auto-scale coordinates:",
+            e.message
+          );
+        }
       }
     }
     // Engineer Tools Mapping
@@ -447,24 +451,6 @@ export class ServerToolDispatcher {
       endpoint = apiUrl("/api/hacking/stress");
     else if (name === "scanPublicCameras")
       endpoint = apiUrl("/api/hacking/camera");
-    // --- CRYPTO & TRADING ---
-    else if (name === "createWallet")
-      endpoint = apiUrl("/api/crypto/wallet/create");
-    else if (name === "getWalletBalance") {
-      endpoint = apiUrl(
-        `/api/crypto/balance?chain=${args.chain || "ethereum"}&address=${
-          args.address
-        }`
-      );
-      method = "GET";
-      body = undefined;
-    } else if (name === "sendCryptoTransaction")
-      endpoint = apiUrl("/api/crypto/transaction");
-    else if (name === "listWallets") {
-      endpoint = apiUrl("/api/crypto/wallets");
-      method = "GET";
-      body = undefined;
-    }
     // --- FOREX/MT4 TOOLS ---
     else if (name === "executeForexTrade")
       endpoint = apiUrl("/api/forex/trade");
@@ -519,14 +505,7 @@ export class ServerToolDispatcher {
     else if (name === "scanWiFiDevices" || name === "scanWifiDevices")
       endpoint = apiUrl("/api/mobile/scan-wifi-devices");
     // --- IOT & CASTING ---
-    else if (name === "castToDevice") {
-      endpoint = apiUrl("/api/iot/control");
-      body = {
-        deviceId: args.deviceId,
-        action: "CAST",
-        params: args,
-      };
-    }
+    // (Handled earlier in list)
     // --- OFFICE & WORKSPACE ---
     else if (
       name.startsWith("gmail_") ||
@@ -543,9 +522,7 @@ export class ServerToolDispatcher {
     else if (name === "writeToExcel")
       endpoint = apiUrl("/api/office/excel/write");
     // --- GOALS & AUTONOMY ---
-    else if (name === "addSecurityGoal") endpoint = apiUrl("/api/goals/add");
-    else if (name === "updateSecurityGoalStatus")
-      endpoint = apiUrl("/api/goals/update");
+    // (Handled earlier in list)
     // Market News
     else if (name === "getMarketNews") {
       const sectorParam = args.sector
@@ -594,7 +571,15 @@ export class ServerToolDispatcher {
       endpoint = apiUrl("/api/osint/darkweb");
     else if (name === "osintGoogleDork")
       endpoint = apiUrl("/api/osint/google-dork");
-    else if (name === "traceSignalSource")
+    else if (name === "osintIdentitySearch") {
+      endpoint = apiUrl("/api/osint/identity");
+      // Map 'query' to 'username' if not explicitly provided, for chat compatibility
+      if (!args.username && !args.email && args.query) {
+        // Simple heuristic: if it looks like an email, use email field
+        if (args.query.includes("@")) args.email = args.query;
+        else args.username = args.query;
+      }
+    } else if (name === "traceSignalSource")
       endpoint = apiUrl("/api/osint/trace");
     else if (name === "refineQuery")
       endpoint = apiUrl("/api/osint/refine-query");
@@ -729,6 +714,30 @@ export class ServerToolDispatcher {
     else if (name === "aiWaitFor") endpoint = apiUrl("/api/vision/ai-wait-for");
     else if (name === "aiAct") endpoint = apiUrl("/api/vision/ai-act");
 
+    // --- TACTICAL OPS: LOCKDOWN (IPC Priority) ---
+    if (name === "initiateLockdown") {
+      try {
+        // Try Electron IPC first
+        if (window.electron?.ipcRenderer) {
+          console.log("[LOCKDOWN] Using Electron IPC");
+          const result = await window.electron.ipcRenderer.invoke(
+            "initiate-lockdown"
+          );
+          if (result.success) {
+            return `🔴 LOCKDOWN INITIATED\n${result.message}\n\nRed Queen Protocol: ACTIVE`;
+          } else {
+            return `LOCKDOWN FAILED: ${result.error}`;
+          }
+        }
+      } catch (e: any) {
+        console.error(
+          "[LOCKDOWN] IPC failed, falling back to HTTP:",
+          e.message
+        );
+        // Continue to HTTP fallback below
+      }
+    }
+
     try {
       const options: RequestInit = {
         method: method,
@@ -753,7 +762,8 @@ export class ServerToolDispatcher {
           (name === "osintDomainIntel" ||
             name === "osintUsernameSearch" ||
             name === "osintDarkWebScan" ||
-            name === "osintGoogleDork") &&
+            name === "osintGoogleDork" ||
+            name === "osintIdentitySearch") &&
           context.setOsintProfile &&
           context.setShowOsintDossier
         ) {
@@ -763,6 +773,61 @@ export class ServerToolDispatcher {
             SOURCE: "NEURAL_LINK_NODE_X7",
             TIMESTAMP: new Date().toISOString(),
           };
+
+          // --- OSINT: Identity & Domain ---
+          if (name === "osintIdentitySearch" && data) {
+            const resultData = data.data || {};
+            const hits: any[] = [];
+
+            // Process Username Hits (Blackbird/Maigret)
+            const userScan = resultData.username_scan;
+            if (userScan && userScan.sites) {
+              userScan.sites.forEach((site: any) => {
+                hits.push({
+                  category: "SOCIAL",
+                  platform: site.site || "Unknown",
+                  url: site.url,
+                  confidence: 0.95,
+                  metadata: { source: userScan.tool },
+                });
+              });
+            }
+
+            // Process Email Hits (Holehe)
+            const emailScan = resultData.email_scan;
+            if (emailScan && emailScan.found_sites) {
+              emailScan.found_sites.forEach((site: string) => {
+                hits.push({
+                  category: "SOCIAL",
+                  platform: site,
+                  url: `N/A`,
+                  confidence: 1.0,
+                  metadata: { source: "holehe" },
+                });
+              });
+            }
+
+            const osintProfile = {
+              target: args.username || args.email || "Unknown Target",
+              riskScore: hits.length > 5 ? 75 : 30, // Dynamic risk score
+              hits: hits,
+              meta: {
+                ...resultData.summary,
+                scan_time: new Date().toISOString(),
+              },
+              intel: null, // Start with no intel, can be added if available
+              status: "COMPLETE",
+            };
+
+            context.setOsintProfile(osintProfile);
+            // Trigger Visual Core
+            context.setVisualData({
+              type: "OSINT",
+              topic: "INTEL_DOSSIER", // Added topic for consistency
+              profile: osintProfile,
+            });
+            return `Identity Scan Complete. Found ${hits.length} profiles. Check the Dossier view.`;
+          }
 
           if (name === "osintUsernameSearch" && data.matches) {
             data.matches.forEach((m: any) => {

@@ -33,7 +33,7 @@ const CastPicker: React.FC<CastPickerProps> = ({
   const [lanIp, setLanIp] = useState("localhost");
 
   // Use query param for routing as handled in index.tsx
-  const localUrl = `http://${lanIp}:${FRONTEND_PORT}?mode=mobile`;
+  const localUrl = `http://${lanIp}:${FRONTEND_PORT}?mode=visual_core`;
 
   useEffect(() => {
     // Fetch LAN IP for mobile connection
@@ -60,8 +60,10 @@ const CastPicker: React.FC<CastPickerProps> = ({
   const handleActivateBeacon = async () => {
     setIsActivating(true);
     try {
-      const res = await fetch(apiUrl("/api/network/hotspot/activate"), {
+      const res = await fetch(apiUrl("/api/system/hotspot"), {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "on" }),
       });
       const data = await res.json();
       if (data.success) {
@@ -238,7 +240,18 @@ const CastPicker: React.FC<CastPickerProps> = ({
                     Broadcasting...
                   </div>
                   <button
-                    onClick={() => setIsBeaconActive(false)}
+                    onClick={async () => {
+                      try {
+                        await fetch(apiUrl("/api/system/hotspot"), {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ action: "off" }),
+                        });
+                      } catch (e) {
+                        console.error(e);
+                      }
+                      setIsBeaconActive(false);
+                    }}
                     className="mt-4 text-[10px] text-slate-500 hover:text-slate-300 underline"
                   >
                     Reset Beacon

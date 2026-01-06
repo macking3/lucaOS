@@ -76,6 +76,68 @@ class SystemControlService {
     }
 
     /**
+     * REAL-TIME SYSTEM MONITOR
+     * Returns CPU, RAM, and Uptime for the HUD.
+     */
+    async getRealtimeStats() {
+        return new Promise((resolve) => {
+            const platform = os.platform();
+            
+            // Baseline (Fast)
+            const stats = {
+                hostname: os.hostname(),
+                platform: platform,
+                arch: os.arch(),
+                uptime: os.uptime(),
+                totalMem: os.totalmem(),
+                freeMem: os.freemem(),
+                cpuLoad: 0,
+                topProc: []
+            };
+
+            if (platform === 'darwin') {
+                // macOS: Use top -l 1 for CPU load
+                exec('top -l 1 | grep -E "^CPU usage|^PhysMem"', (err, stdout) => {
+                    if (!err && stdout) {
+                        // Parse CPU: "CPU usage: 10.5% user, 20.2% sys, 69.3% idle"
+                        const cpuMatch = stdout.match(/CPU usage:.*?(\d+\.\d+)% user,\s+(\d+\.\d+)% sys/);
+                        if (cpuMatch) {
+                            stats.cpuLoad = parseFloat(cpuMatch[1]) + parseFloat(cpuMatch[2]);
+                        }
+                    }
+                    // Fetch generic top processes (lightweight) aka "Steps"
+                    exec('ps -Ao comm,pcpu --sort=-pcpu | head -n 6', (err2, stdout2) => {
+                         if (!err2 && stdout2) {
+                             stats.topProc = stdout2.trim().split('\n').slice(1).map(l => {
+                                 const parts = l.trim().split(/\s+/);
+                                 return parts[0].split('/').pop(); // Just the name
+                             });
+                         }
+                         resolve(stats);
+                    });
+                });
+            } else if (platform === 'win32') {
+                 // Windows: WMIC
+                 exec('wmic cpu get loadpercentage', (err, stdout) => {
+                    if (!err && stdout) {
+                        const lines = stdout.trim().split('\n');
+                        if (lines.length > 1) stats.cpuLoad = parseFloat(lines[1].trim());
+                    }
+                    resolve(stats);
+                 });
+            } else {
+                // Linux / Other fallback
+                const cpus = os.cpus();
+                // Rough estimate from tick count (not accurate instantaneous but fast)
+                const idle = cpus.reduce((acc, cpu) => acc + cpu.times.idle, 0);
+                const total = cpus.reduce((acc, cpu) => acc + Object.values(cpu.times).reduce((a, b) => a + b, 0), 0);
+                stats.cpuLoad = 100 - ((idle / total) * 100);
+                resolve(stats);
+            }
+        });
+    }
+
+    /**
      * MACOS ACTION DISPATCHER
      */
     async executeMacOSAction(params) {

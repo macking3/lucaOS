@@ -26,6 +26,16 @@ router.post('/save', (req, res) => {
     }
 });
 
+// Wipe all memories (Factory Reset)
+router.post('/wipe', (req, res) => {
+    try {
+        memoryStore.wipe();
+        res.json({ success: true, message: "All memories wiped" });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
 // --- VECTOR OPERATIONS ---
 router.post('/vector-search', (req, res) => {
     try {
@@ -54,6 +64,17 @@ router.get('/graph/visualize', (req, res) => {
     try {
         const graph = memoryStore.getGraph();
         res.json(graph);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// --- LANGGRAPH EVENT LOGGING ---
+router.post('/log-event', (req, res) => {
+    try {
+        const { toolName, args, result, sessionId, previousEventId } = req.body;
+        const eventId = memoryStore.logExecutionEvent(toolName, args, result, sessionId, previousEventId);
+        res.json({ success: true, eventId });
     } catch (e) {
         res.status(500).json({ error: e.message });
     }

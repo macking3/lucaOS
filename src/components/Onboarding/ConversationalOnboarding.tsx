@@ -9,7 +9,8 @@ import { ProfileExtractionService } from "../../services/profileExtractionServic
 import { settingsService } from "../../services/settingsService";
 import { personalityService } from "../../services/personalityService";
 import { InteractionContext } from "../../types/lucaPersonality";
-import { ArrowLeft, X } from "lucide-react";
+import { liveService } from "../../services/liveService";
+import { X } from "lucide-react";
 
 interface ConversationalOnboardingProps {
   mode: ConversationMode;
@@ -32,13 +33,11 @@ const ConversationalOnboarding: React.FC<ConversationalOnboardingProps> = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [profile, setProfile] = useState<Partial<OperatorProfile>>({});
   const [messageCount, setMessageCount] = useState(0);
   const extractionServiceRef = useRef<ProfileExtractionService | null>(null);
   const interactionStartTime = useRef<number>(Date.now());
 
-  // Track latest Luca message for voice TTS
-  const [lucaMessage, setLucaMessage] = useState<string | null>(null);
+  // Note: lucaMessage state removed - Gemini speaks natively in voice-to-voice mode
 
   // Silence detection for voice mode
   const lastUserResponseTime = useRef<number>(Date.now());
@@ -204,11 +203,8 @@ Let's start simple - what would you like me to call you?`;
       };
       setMessages([openingMessage]);
 
-      // Speak opening message in voice mode
-      if (mode === "voice") {
-        console.log("[Voice Mode] Speaking opening message...");
-        setLucaMessage(openingContent);
-      }
+      // Note: For voice mode, liveService handles the opening greeting via system instruction.
+      // No separate TTS needed - Gemini speaks natively.
     };
 
     generateOpening();
@@ -227,7 +223,7 @@ Let's start simple - what would you like me to call you?`;
     try {
       // Build conversation context
       const conversationContext = history
-        .slice(-5) // Last 5 messages for context
+        .slice(-50) // Expanded context window to prevent "amnesia" loop
         .map((m) => `${m.role === "luca" ? "Luca" : userName}: ${m.content}`)
         .join("\n");
 
@@ -257,8 +253,7 @@ ${userName} just said: "${userMessage}"
 
 FIRST, review the conversation above and identify what you have ALREADY learned:
 - Have you learned their preferred name? ${
-        conversationContext.toLowerCase().includes("call") ||
-        conversationContext.toLowerCase().includes("name")
+        conversationContext.toLowerCase().includes(userName.toLowerCase())
           ? "YES"
           : "NO"
       }
@@ -362,6 +357,32 @@ Response:`;
   const handleSend = async (message: string) => {
     if (!message.trim() || isProcessing) return;
 
+    // --- MODE-AWARE ROUTING ---
+    // In VOICE mode, liveService handles the full conversation (user speech → Gemini → AI voice response)
+    // We only use handleSend in text mode where we need to make direct API calls to Gemini
+    if (mode === "voice") {
+      console.log(
+        "[Onboarding Voice] Message logged (liveService handles conversation):",
+        message
+      );
+      // Just add to message history for display/profile extraction purposes
+      const userMessage: Message = {
+        id: Date.now().toString(),
+        role: "user",
+        content: message,
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, userMessage]);
+      // Profile extraction can still happen
+      const newMessageCount = messageCount + 1;
+      setMessageCount(newMessageCount);
+      if (newMessageCount >= 6 && newMessageCount % 4 === 0) {
+        extractProfile([...messages, userMessage]);
+      }
+      return; // Don't make separate API call - liveService handles response
+    }
+
+    // --- TEXT MODE: Make direct Gemini API call ---
     // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -373,7 +394,7 @@ Response:`;
     setInput("");
     setIsProcessing(true);
 
-    // Get Luca's response
+    // Get Luca's response (TEXT MODE ONLY)
     const response = await getLucaResponse([...messages, userMessage], message);
 
     // Check if Luca wants to complete onboarding (skip detected)
@@ -393,10 +414,7 @@ Response:`;
         };
         setMessages((prev) => [...prev, lucaMessage]);
 
-        // Speak in voice mode
-        if (mode === "voice") {
-          setLucaMessage(cleanResponse);
-        }
+        // Note: For voice mode, liveService handles speaking natively
       }
 
       setIsProcessing(false);
@@ -437,7 +455,7 @@ Response:`;
       timestamp: new Date(),
     };
     setMessages((prev) => [...prev, lucaMessage]);
-    setLucaMessage(response); // Set for voice TTS
+    // Note: For voice mode, liveService handles speaking natively (no separate TTS)
     setIsProcessing(false);
 
     // Track interaction for personality evolution
@@ -522,7 +540,8 @@ Response:`;
 
         // Save to settings
         settingsService.saveOperatorProfile(updatedProfile);
-        setProfile(updatedProfile);
+        // Profile state is managed via onComplete for persistence
+        // setProfile(updatedProfile);
 
         console.log("[Profile] Profile updated:", updatedProfile);
       }
@@ -559,7 +578,7 @@ Response:`;
           // Using the same Progressive Questioning strategy as the main flow
           // but tailored for a gentle nudge
           const conversationContext = messages
-            .slice(-5)
+            .slice(-50) // Expanded context window
             .map(
               (m) => `${m.role === "luca" ? "Luca" : userName}: ${m.content}`
             )
@@ -623,7 +642,7 @@ Nudge:`;
             };
 
             setMessages((prev) => [...prev, lucaContinuation]);
-            setLucaMessage(continuation.trim()); // Speak it
+            // Note: For voice mode, liveService handles silence nudging natively
           }
         } catch (error) {
           console.error(
@@ -669,7 +688,14 @@ Nudge:`;
         <div className="flex items-center gap-3">
           {onBack && (
             <button
-              onClick={onBack}
+              onClick={() => {
+                // EXPLICIT MIC CLEANUP: Don't wait for React unmount
+                console.log(
+                  "[Onboarding] X button pressed - disconnecting liveService immediately"
+                );
+                liveService.disconnect();
+                onBack();
+              }}
               className="
                 p-2
                 text-white/60 
@@ -729,7 +755,7 @@ Nudge:`;
       </div>
       {/* Messages - Hidden in voice mode (VoiceHud handles conversation) */}
       {mode === "text" && (
-        <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-3 sm:space-y-4">
+        <div className="flex-1 min-h-0 overflow-y-auto p-3 sm:p-6 space-y-3 sm:space-y-4">
           {messages.map((message) => (
             <MessageBubble key={message.id} message={message} />
           ))}
@@ -747,16 +773,128 @@ Nudge:`;
 
       {/* Input */}
       <MessageInput
+        userName={userName}
         value={input}
         onChange={setInput}
         onSend={handleSend}
         disabled={isProcessing}
         mode={mode}
         theme={{ primary: "cyan", hex: "#06b6d4" }}
-        lucaMessage={lucaMessage}
-        onLucaMessageSpoken={() => setLucaMessage(null)}
         onModeChange={onBack}
         onActivity={handleUserActivity}
+        onVoiceComplete={async () => {
+          console.log(
+            "[Onboarding Voice] Conversation complete - triggering onComplete"
+          );
+
+          const extractionService = extractionServiceRef.current;
+          if (extractionService) {
+            console.log(
+              "[Onboarding Voice] Performing final profile extraction..."
+            );
+            try {
+              // NEW: Add a timeout to the extraction so it doesn't hang the transition
+              const extractionResult = await Promise.race([
+                extractionService.extractFromConversation(messages, userName),
+                new Promise<null>((resolve) =>
+                  setTimeout(() => resolve(null), 5000)
+                ), // 5s timeout
+              ]);
+
+              if (extractionResult) {
+                const currentProfile =
+                  settingsService.getOperatorProfile() ||
+                  extractionService.createInitialProfile(userName);
+                const finalProfile = extractionService.mergeWithProfile(
+                  currentProfile,
+                  extractionResult as any
+                );
+
+                // Ensure conversation count is accurate
+                finalProfile.metadata.conversationCount = messages.length;
+
+                console.log(
+                  "[Onboarding Voice] Final extracted profile:",
+                  finalProfile
+                );
+                onComplete(finalProfile);
+                return;
+              }
+            } catch (err) {
+              console.error("[Onboarding Voice] Extraction error:", err);
+            }
+          }
+
+          // FALLBACK LOGIC: If final extraction failed (or timed out), check if we have an existing profile
+          // We likely extracted profiles during the conversation (intermediate extractions)
+          const existingProfile = settingsService.getOperatorProfile();
+          if (existingProfile && existingProfile.identity?.name) {
+            console.log(
+              "[Onboarding Voice] Final extraction failed/timeout, but valid existing profile found. Proceeding."
+            );
+            // Ensure metadata is up to date
+            existingProfile.metadata.conversationCount = messages.length;
+            existingProfile.metadata.lastUpdated = new Date();
+            onComplete(existingProfile);
+            return;
+          }
+
+          // NO FALLBACK: If we have NO profile at all, then we must abort.
+          // This should be rare if intermediate extractions are working.
+          console.warn(
+            "[Onboarding Voice] Completion reached but no profile could be resolved. Dashboard transition aborted."
+          );
+        }}
+        onLucaResponse={(text: string) => {
+          // Add Luca's voice response to message history (for UI and profile extraction)
+          if (!text.trim()) return;
+
+          const lucaMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            role: "luca",
+            content: text.trim(),
+            timestamp: new Date(),
+          };
+
+          setMessages((prev) => {
+            const lastMessage = prev[prev.length - 1];
+            if (
+              lastMessage &&
+              lastMessage.role === "luca" &&
+              (lastMessage.content === text.trim() ||
+                text.trim().startsWith(lastMessage.content))
+            ) {
+              const updated = [...prev];
+              updated[updated.length - 1] = lucaMessage;
+              return updated;
+            }
+            return [...prev, lucaMessage];
+          });
+        }}
+        onUserResponse={(text: string) => {
+          // Add User's voice response to message history (for UI and profile extraction)
+          if (!text.trim()) return;
+
+          const userMessage: Message = {
+            id: (Date.now() + 2).toString(),
+            role: "user",
+            content: text.trim(),
+            timestamp: new Date(),
+          };
+
+          setMessages((prev) => {
+            const lastMessage = prev[prev.length - 1];
+            if (
+              lastMessage &&
+              lastMessage.role === "user" &&
+              (lastMessage.content === text.trim() ||
+                text.trim().startsWith(lastMessage.content))
+            ) {
+              return prev;
+            }
+            return [...prev, userMessage];
+          });
+        }}
       />
     </div>
   );

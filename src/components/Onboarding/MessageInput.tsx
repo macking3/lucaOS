@@ -3,7 +3,7 @@ import { Send } from "lucide-react";
 import { ConversationMode } from "./ModeSelect";
 import VoiceHud from "../VoiceHud";
 import { liveService } from "../../services/liveService";
-import { voiceService } from "../../services/voiceService";
+// Note: voiceService not needed - Gemini speaks natively in voice-to-voice mode
 
 interface MessageInputProps {
   value: string;
@@ -12,10 +12,13 @@ interface MessageInputProps {
   disabled: boolean;
   mode: ConversationMode;
   theme?: { primary: string; hex: string };
-  lucaMessage?: string | null; // Latest message from Luca to speak
-  onLucaMessageSpoken?: () => void; // Callback when Luca finishes speaking
+  // Note: lucaMessage/onLucaMessageSpoken removed - Gemini speaks natively in voice-to-voice mode
   onModeChange?: () => void; // Callback to return to mode selection
-  onActivity?: () => void; // New callback for silence reset
+  onActivity?: () => void; // Callback for silence reset
+  onVoiceComplete?: () => void; // Callback when voice conversation completes
+  onLucaResponse?: (text: string) => void; // Callback when Luca speaks (for profile extraction)
+  onUserResponse?: (text: string) => void; // NEW: Callback when user speaks (for profile extraction)
+  userName?: string; // NEW: User's name for personalized greeting
 }
 
 /**
@@ -28,31 +31,27 @@ const MessageInput: React.FC<MessageInputProps> = ({
   disabled,
   mode,
   theme = { primary: "cyan", hex: "#06b6d4" },
-  lucaMessage,
-  onLucaMessageSpoken,
-  onModeChange, // Back to mode selection
+  onModeChange,
   onActivity,
+  onVoiceComplete,
+  onLucaResponse,
+  onUserResponse,
+  userName = "Operator", // Default if not provided
 }) => {
   // Voice state using liveService
-  const [isListening, setIsListening] = useState(false);
   const [amplitude, setAmplitude] = useState(0);
   const [vadActive, setVadActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // TTS and transcript state
-  const [isSpeaking, setIsSpeaking] = useState(false);
+  // Transcript state (TTS handled natively by Gemini in voice-to-voice mode)
   const [currentTranscript, setCurrentTranscript] = useState("");
   const [transcriptSource, setTranscriptSource] = useState<"user" | "model">(
-    "user"
+    "model"
   );
 
-  // Prevent duplicate TTS calls
-  const speakingRef = useRef(false);
-  const lastSpokenMessageRef = useRef<string | null>(null);
+  // Connection state tracking
   const isConnectedRef = useRef(false);
-
-  // Track if user manually stopped (to prevent auto-restart)
-  const userStoppedRef = useRef(false);
+  const isCompletingRef = useRef(false); // NEW: Guard against double completion triggers
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,24 +67,147 @@ const MessageInput: React.FC<MessageInputProps> = ({
     }
   };
 
-  // Connect to liveService when voice mode starts
+  // Connect to liveService when voice mode starts - VOICE-TO-VOICE MODE
   useEffect(() => {
     if (mode === "voice" && !isConnectedRef.current) {
-      console.log("[Onboarding Voice] Connecting to liveService...");
+      console.log(
+        "[Onboarding Voice] Connecting to liveService (Voice-to-Voice)..."
+      );
       isConnectedRef.current = true;
-      setIsListening(false); // Validating connection...
+      // setIsListening(false); // Validating connection...
+
+      // Onboarding-specific voice conversation instruction
+      const ONBOARDING_VOICE_INSTRUCTION = `You are Luca, an AI assistant meeting your new operator for the first time in a VOICE conversation.
+
+**CRITICAL FORMAT RULE - READ THIS FIRST:**
+- Output ONLY the words you will speak aloud
+- Do NOT include any asterisks (**), markdown, or formatting
+- Do NOT include any thinking, reasoning, or stage directions
+- Do NOT say things like "Begin Interacting" or describe what you're doing
+- Just speak naturally as if talking to a person
+
+**YOUR GOAL:** Get to know them through natural conversation and summarize their profile.
+
+**STEP 1: GATHER INFORMATION (one at a time):**
+1. Preferred name - What should I call you?
+2. Communication style - Direct/casual or formal?
+3. Role - What do you do?
+4. Needs - What do you need help with?
+5. AI preferences - Proactive or wait for commands?
+
+**RULES for Step 1:**
+- Ask ONE question at a time
+- Keep responses SHORT (2-3 sentences)
+- Acknowledge answers warmly, then ask next question
+
+**STEP 2: SUMMARY & CONFIRMATION**
+Once you have gathered all 5 points, provide a warm summary of their profile.
+"So, to recap: You are [Name], a [Occupation] who prefers a [Style] assistant. You're looking for help with [Needs] and you'd like me to be [Proactive/Reactive]. Does that sound correct?"
+- You MUST wait for them to confirm.
+
+**STEP 3: EXIT**
+- If they confirm (e.g., "Yes", "Exactly", "That's it"), say: "Excellent! I've saved your profile. Let's get started!"
+- If they want to change something, go back to Step 1 for that specific item.
+
+**START:** Say "Hi! I'm Luca, your AI assistant. What preferred name can i call you?"
+
+**SKIP:** If they say "skip" or "let's start", say "Got it! Let's jump right in."
+`;
 
       liveService.connect({
-        onToolCall: async () => ({ result: "Tools disabled in onboarding" }),
+        persona: "ASSISTANT",
+        // NO suppressOutput - we want Gemini to speak!
+        systemInstruction: ONBOARDING_VOICE_INSTRUCTION,
+        onToolCall: async () => ({ result: "Tools disabled in onboarding" }), // Keep tools disabled for safety
         onAudioData: (amp) => setAmplitude(amp),
         onTranscript: (text, type) => {
-          console.log(`[Voice] Transcript (${type}):`, text);
-          setCurrentTranscript(text);
+          // STRIP INTERNAL REASONING: Remove text between ** and other formatting
+          // This is a tactical cleanup in case Gemini ignores the system instruction
+          let processedText = text;
+          if (type === "model" && text) {
+            // Filter out internal reasoning and metadata
+            let filteredText = text;
+
+            // 1. Remove text between ** or * (common internal monologue/stage directions)
+            filteredText = filteredText.replace(/\*\*.*?\*\*/g, "");
+            filteredText = filteredText.replace(/\*.*?\*/g, "");
+
+            // 2. Remove common "thinking" prefixes that shouldn't be spoken
+            // These are phrases seen in reasoning models that often leak to transcript
+            const thoughts = [
+              /^I see the user.*?\./i,
+              /^I'm interpreting.*?\./i,
+              /^My next step.*?\./i,
+              /^I will start by.*?\./i,
+              /^The user said.*?\./i,
+            ];
+
+            thoughts.forEach((regex) => {
+              filteredText = filteredText.replace(regex, "");
+            });
+
+            processedText = filteredText.trim();
+
+            // Remove leading/trailing quotes if Gemini added them
+            processedText = processedText.replace(/^["']|["']$/g, "").trim();
+
+            // Log for debugging if we stripped something
+            if (processedText !== text) {
+              console.log(
+                "[Onboarding Voice] Cleaned model transcript:",
+                processedText
+              );
+            }
+
+            // Skip empty transcripts after cleaning
+            if (!processedText) return;
+          }
+
+          if (type === "user" && processedText) {
+            // Pass user response to parent for message history
+            onUserResponse?.(processedText);
+          }
+
+          console.log(
+            `[Onboarding Voice] Transcript (${type}):`,
+            processedText
+          );
+          setCurrentTranscript(processedText);
           setTranscriptSource(type);
 
-          // Auto-send user transcript when they finish speaking
-          if (type === "user" && text.trim()) {
-            onSend(text.trim());
+          // Notify parent of activity (for silence detection)
+          onActivity?.();
+
+          // COMPLETION DETECTION: Check if Gemini said the completion phrase
+          if (type === "model" && processedText) {
+            // Pass Luca's response to parent for message history and profile extraction
+            onLucaResponse?.(processedText);
+
+            const lowerText = processedText.toLowerCase();
+            const completionPhrases = [
+              "let's get started",
+              "i'm ready to help",
+              "ready to assist",
+              "jump right in",
+              "let's jump right in",
+              "ready to go",
+            ];
+
+            const isComplete = completionPhrases.some((phrase) =>
+              lowerText.includes(phrase)
+            );
+            if (isComplete && !isCompletingRef.current) {
+              console.log(
+                "[Onboarding Voice] Completion phrase detected - ending onboarding"
+              );
+              isCompletingRef.current = true; // Set guard
+              // Small delay to let Gemini finish speaking
+              setTimeout(() => {
+                liveService.disconnect();
+                isConnectedRef.current = false;
+                onVoiceComplete?.();
+              }, 2000);
+            }
           }
         },
         onVadChange: (active) => {
@@ -93,96 +215,54 @@ const MessageInput: React.FC<MessageInputProps> = ({
           if (active) onActivity?.(); // Reset silence timer when VAD activates
         },
         onStatusUpdate: (msg) => {
-          console.log("[Voice Status]:", msg);
+          console.log("[Onboarding Voice Status]:", msg);
           if (msg.includes("Failed") || msg.includes("Error")) {
             setError(msg);
           } else {
             setError(null);
           }
         },
-
-        // NEW: Handle connection state changes
         onConnectionChange: (connected) => {
-          console.log("[Voice] Connection state changed:", connected);
-          setIsListening(connected);
-          if (!connected) {
-            // If disconnected unexpectedly, update ref
-            // But don't auto-reconnect if it was a failure
+          console.log("[Onboarding Voice] Connection state:", connected);
+          // setIsListening(connected);
+          isConnectedRef.current = connected; // Update ref immediately
+
+          if (connected) {
+            // KICKSTART: Trigger Luca to start speaking immediately
+            // Using a more natural prompt to avoid triggering robotic reasoning
+            setTimeout(() => {
+              if (isConnectedRef.current) {
+                // Check ref before sending
+                console.log(
+                  "[Onboarding Voice] Triggering initial greeting..."
+                );
+                liveService.sendText(
+                  "Hi Luca, I'm ready to begin the onboarding. Please introduce yourself and let's get started with the first few questions."
+                );
+              }
+            }, 1000);
           }
         },
-
-        persona: "ASSISTANT",
-        suppressOutput: true, // IMPORTANT: We only want STT, not the model's voice/replies
-        systemInstruction:
-          "You are a precise transcriber. LISTEN to the user and REPEAT EXACTLY what they say effectively acting as Speech-to-Text. Do not answer questions. Do not add commentary. just Repeat.", // Force STT behavior
       });
-    } // Close if statement
-  }, [mode, onSend]);
-
-  // Handle Luca's spoken responses (for text-based messages in onboarding)
-  useEffect(() => {
-    if (
-      mode === "voice" &&
-      lucaMessage &&
-      !isSpeaking &&
-      !speakingRef.current
-    ) {
-      // Check if this message was already spoken
-      if (lastSpokenMessageRef.current === lucaMessage) {
-        console.log(
-          "[TTS] ⚠️ Skipping duplicate message:",
-          lucaMessage.substring(0, 30)
-        );
-        return;
-      }
-
-      const speakLucaMessage = async () => {
-        speakingRef.current = true;
-        lastSpokenMessageRef.current = lucaMessage;
-        setIsSpeaking(true);
-
-        // Get API key for Google TTS
-        const apiKey = localStorage.getItem("GEMINI_API_KEY") || "";
-        console.log("[TTS] 🎤 Speaking:", lucaMessage.substring(0, 50));
-
-        // Show transcript AFTER a brief delay
-        setTimeout(() => {
-          setCurrentTranscript(lucaMessage);
-          setTranscriptSource("model");
-        }, 300);
-
-        // Speak the message via TTS
-        await voiceService.speak(lucaMessage, apiKey);
-
-        speakingRef.current = false;
-        setIsSpeaking(false);
-        setCurrentTranscript("");
-        onLucaMessageSpoken?.();
-      };
-
-      speakLucaMessage();
     }
-  }, [mode, lucaMessage, onLucaMessageSpoken]);
+  }, [
+    mode,
+    onActivity,
+    onLucaResponse,
+    onUserResponse,
+    onVoiceComplete,
+    userName,
+  ]);
 
-  // Cleanup on unmount - disconnect liveService
-  // Cleanup on unmount - disconnect liveService
+  // Combined Cleanup Effect: Unmount OR Mode change
   useEffect(() => {
     return () => {
-      // Unmount cleanup
       if (isConnectedRef.current) {
+        console.log("[Onboarding Voice] Cleaning up voice session...");
         liveService.disconnect();
         isConnectedRef.current = false;
       }
     };
-  }, []);
-
-  // Cleanup when mode changes (e.g. forced exit)
-  useEffect(() => {
-    if (mode !== "voice" && isConnectedRef.current) {
-      console.log("[Voice] Mode changed, forcing disconnect");
-      liveService.disconnect();
-      isConnectedRef.current = false;
-    }
   }, [mode]);
 
   // Voice mode: Show VoiceHud (FULL SCREEN)
@@ -192,15 +272,10 @@ const MessageInput: React.FC<MessageInputProps> = ({
         <VoiceHud
           isActive={true}
           isVisible={true}
-          isListening={isListening}
-          onToggleListening={() => {
-            // LiveService handles listening automatically via VAD
-            console.log("[Voice] Toggle listening (managed by liveService)");
-          }}
           transcript={currentTranscript}
           transcriptSource={transcriptSource}
           amplitude={amplitude}
-          isSpeaking={isSpeaking}
+          isSpeaking={transcriptSource === "model"}
           isVadActive={vadActive}
           paused={false}
           persona="ASSISTANT"
@@ -213,6 +288,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
           }}
           hideDebugPanels={true}
           hideControls={true}
+          transparentTranscript={true}
           onClose={() => {
             console.log("[Voice] User closed voice mode");
             // Disconnect liveService
@@ -223,13 +299,18 @@ const MessageInput: React.FC<MessageInputProps> = ({
               onModeChange();
             }
           }}
-          onTranscriptChange={(text) => {
-            // Live transcript updates (optional)
+          onTranscriptChange={() => {
+            // Live transcript updates handled by liveService onTranscript callback
           }}
           onTranscriptComplete={(text) => {
-            // When speech recognition finalizes
-            if (text.trim() && !disabled) {
-              onSend(text.trim());
+            // In voice-to-voice mode, liveService handles the full conversation
+            // We just log the transcript for message history (parent's handleSend handles this)
+            if (text.trim()) {
+              console.log(
+                "[Onboarding Voice] User finished speaking:",
+                text.trim()
+              );
+              onSend(text.trim()); // Parent's handleSend is mode-aware - won't make API call
             }
           }}
         />
